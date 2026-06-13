@@ -1,12 +1,32 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Enable and start qemu-guest-agent on KVM guests
+- name: Enable qemu-guest-agent on KVM guests
   ansible.builtin.systemd:
     name: qemu-guest-agent.service
     enabled: true
+  become: true
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - ansible_facts['virtualization_type'] is defined
+    - ansible_facts['virtualization_type'] == 'kvm'
+
+- name: Check for QEMU virtio guest agent channel
+  ansible.builtin.stat:
+    path: /dev/virtio-ports/org.qemu.guest_agent.0
+  register: common_qemu_agent_channel
+  when:
+    - ansible_facts['distribution'] == 'Fedora'
+    - ansible_facts['virtualization_type'] is defined
+    - ansible_facts['virtualization_type'] == 'kvm'
+
+- name: Start qemu-guest-agent on KVM guests
+  ansible.builtin.systemd:
+    name: qemu-guest-agent.service
     state: started
   become: true
   when:
     - ansible_facts['distribution'] == 'Fedora'
     - ansible_facts['virtualization_type'] is defined
     - ansible_facts['virtualization_type'] == 'kvm'
+    - common_qemu_agent_channel.stat is defined
+    - common_qemu_agent_channel.stat.exists
