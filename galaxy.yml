@@ -1,0 +1,23 @@
+---
+# SPDX-License-Identifier: MIT
+namespace: danmwallace
+name: podman
+version: 0.1.0
+readme: README.md
+description: Ansible collection for managing Podman-based homelab services on Fedora Server
+license:
+  - MIT
+tags:
+  - linux
+  - fedora
+  - podman
+  - containers
+  - systemd
+repository: https://github.com/danmwallace/ansible-collection-podman
+documentation: https://github.com/danmwallace/ansible-collection-podman
+homepage: https://github.com/danmwallace/ansible-collection-podman
+issues: https://github.com/danmwallace/ansible-collection-podman/issues
+dependencies:
+  "containers.podman": ">=1.11.0"
+  "ansible.posix": ">=1.5.0"
+  "community.general": ">=8.0.0"
