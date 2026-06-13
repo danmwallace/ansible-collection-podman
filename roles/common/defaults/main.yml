@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: MIT
+---
+podman_common_timezone: "America/New_York"
+podman_common_cockpit_enabled: false
+podman_common_users:
+  - name: ansible
+    groups:
+      - wheel
+  - name: dwallace
+    groups:
+      - wheel

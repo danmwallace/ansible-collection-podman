@@ -1,0 +1,14 @@
+---
+- name: Prepare molecule instance
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Install Python3
+      ansible.builtin.raw: dnf install -y python3
+      register: podman_common_python3_install
+      changed_when: "'Nothing to do' not in podman_common_python3_install.stdout"
+
+    - name: Start D-Bus (required by firewalld and systemd tasks)
+      ansible.builtin.raw: systemctl start dbus.socket dbus.service
+      failed_when: false
+      changed_when: false

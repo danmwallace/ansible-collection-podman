@@ -1,0 +1,15 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply common role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.common
+      vars:
+        podman_common_timezone: "Etc/UTC"
+        podman_common_cockpit_enabled: false
+        podman_common_users:
+          - name: ansible
+            groups:
+              - wheel

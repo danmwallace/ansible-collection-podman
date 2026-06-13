@@ -4,6 +4,8 @@ namespace: danmwallace
 name: podman
 version: 0.1.0
 readme: README.md
+authors:
+  - danmwallace
 description: Ansible collection for managing Podman-based homelab services on Fedora Server
 license:
   - MIT

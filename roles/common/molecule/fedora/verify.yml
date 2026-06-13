@@ -1,0 +1,90 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Check podman version
+      ansible.builtin.command:
+        cmd: podman --version
+      register: podman_common_podman_version
+      changed_when: false
+
+    - name: Assert podman is installed
+      ansible.builtin.assert:
+        that:
+          - podman_common_podman_version.rc == 0
+
+    - name: Stat the Quadlet directory
+      ansible.builtin.stat:
+        path: /etc/containers/systemd
+      register: podman_common_quadlet_stat
+
+    - name: Assert Quadlet directory exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - podman_common_quadlet_stat.stat.exists
+          - podman_common_quadlet_stat.stat.isdir
+          - podman_common_quadlet_stat.stat.mode == '0755'
+
+    - name: Check podman.socket is enabled
+      ansible.builtin.command:
+        cmd: systemctl is-enabled podman.socket
+      register: podman_common_socket_enabled
+      changed_when: false
+      failed_when: false
+
+    - name: Assert podman.socket is enabled
+      ansible.builtin.assert:
+        that:
+          - podman_common_socket_enabled.stdout == 'enabled'
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert firewalld.service is enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['firewalld.service']['status'] == 'enabled'
+
+    - name: Look up the ansible user
+      ansible.builtin.getent:
+        database: passwd
+        key: ansible
+
+    - name: Assert ansible user exists
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.getent_passwd['ansible'] is defined
+
+    - name: Read ansible user group membership
+      ansible.builtin.command:
+        cmd: id -nG ansible
+      register: podman_common_ansible_groups
+      changed_when: false
+
+    - name: Assert ansible user is in wheel group
+      ansible.builtin.assert:
+        that:
+          - "'wheel' in podman_common_ansible_groups.stdout.split()"
+
+    - name: Stat sudoers file for ansible user
+      ansible.builtin.stat:
+        path: /etc/sudoers.d/ansible
+      register: podman_common_sudoers_stat
+
+    - name: Assert sudoers file exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - podman_common_sudoers_stat.stat.exists
+          - podman_common_sudoers_stat.stat.mode == '0440'
+
+    - name: Read sudoers file content
+      ansible.builtin.slurp:
+        src: /etc/sudoers.d/ansible
+      register: podman_common_sudoers_content
+
+    - name: Assert sudoers file grants NOPASSWD sudo
+      ansible.builtin.assert:
+        that:
+          - "'NOPASSWD' in (podman_common_sudoers_content.content | b64decode)"
+          - "'ALL' in (podman_common_sudoers_content.content | b64decode)"
