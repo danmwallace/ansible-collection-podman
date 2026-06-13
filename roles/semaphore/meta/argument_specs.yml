@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Semaphore Ansible UI with Postgres as Podman Quadlets on Fedora.
+    options:
+      semaphore_version:
+        type: str
+        default: latest
+        description: Semaphore image tag.
+      semaphore_hostname:
+        type: str
+        required: true
+        description: Hostname for the Semaphore web interface (e.g. semaphore.example.com).
+      semaphore_data_dir:
+        type: str
+        default: /opt/podman/semaphore
+        description: Host base directory for Semaphore data, config, and Postgres volumes.
+      semaphore_postgres_db:
+        type: str
+        default: semaphore
+        description: Name of the Postgres database for Semaphore.
+      semaphore_postgres_user:
+        type: str
+        default: semaphore
+        description: Postgres username for Semaphore.
+      semaphore_postgres_password:
+        type: str
+        required: true
+        description: Postgres password for Semaphore. Must not be empty.
+      semaphore_admin:
+        type: str
+        default: admin
+        description: Semaphore admin username.
+      semaphore_admin_password:
+        type: str
+        required: true
+        description: Semaphore admin password. Must not be empty.
+      semaphore_admin_name:
+        type: str
+        default: Admin
+        description: Display name for the Semaphore admin user.
+      semaphore_admin_email:
+        type: str
+        default: admin@example.com
+        description: Email address for the Semaphore admin user.
+      semaphore_ansible_host_key_checking:
+        type: str
+        default: "False"
+        description: Value for ANSIBLE_HOST_KEY_CHECKING in the Semaphore container environment.

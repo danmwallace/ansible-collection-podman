@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply it_tools role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.it_tools
+      vars:
+        it_tools_hostname: it-tools.test.local

@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure librechat data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ librechat_data_dir }}"
+    - "{{ librechat_data_dir }}/images"
+    - "{{ librechat_data_dir }}/logs"
+    - "{{ librechat_data_dir }}/meilisearch"
+    - "{{ librechat_data_dir }}/vectordb"
+  become: true
+
+- name: Render librechat.yaml config
+  ansible.builtin.template:
+    src: librechat.yaml.j2
+    dest: "{{ librechat_data_dir }}/librechat.yaml"
+    mode: "0600"
+  become: true
+  notify: Restart librechat
+
+- name: Deploy librechat Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/librechat.network
+    mode: "0644"
+  become: true
+
+- name: Render librechat-vectordb Quadlet container unit
+  ansible.builtin.template:
+    src: librechat-vectordb.container.j2
+    dest: /etc/containers/systemd/librechat-vectordb.container
+    mode: "0644"
+  become: true
+  notify: Restart librechat
+
+- name: Render librechat-meilisearch Quadlet container unit
+  ansible.builtin.template:
+    src: librechat-meilisearch.container.j2
+    dest: /etc/containers/systemd/librechat-meilisearch.container
+    mode: "0644"
+  become: true
+  notify: Restart librechat
+
+- name: Render librechat-rag-api Quadlet container unit
+  ansible.builtin.template:
+    src: librechat-rag-api.container.j2
+    dest: /etc/containers/systemd/librechat-rag-api.container
+    mode: "0644"
+  become: true
+  notify: Restart librechat
+
+- name: Render librechat-api Quadlet container unit
+  ansible.builtin.template:
+    src: librechat-api.container.j2
+    dest: /etc/containers/systemd/librechat-api.container
+    mode: "0644"
+  become: true
+  notify: Restart librechat
+
+- name: Enable and start librechat-vectordb.service
+  ansible.builtin.systemd:
+    name: librechat-vectordb.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start librechat-meilisearch.service
+  ansible.builtin.systemd:
+    name: librechat-meilisearch.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start librechat-rag-api.service
+  ansible.builtin.systemd:
+    name: librechat-rag-api.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start librechat-api.service
+  ansible.builtin.systemd:
+    name: librechat-api.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]

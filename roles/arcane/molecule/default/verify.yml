@@ -1,0 +1,65 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat arcane Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/arcane.container
+      register: arcane_container_unit
+
+    - name: Assert arcane.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - arcane_container_unit.stat.exists
+          - arcane_container_unit.stat.mode == '0644'
+
+    - name: Stat arcane-postgres Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/arcane-postgres.container
+      register: arcane_postgres_container_unit
+
+    - name: Assert arcane-postgres.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - arcane_postgres_container_unit.stat.exists
+          - arcane_postgres_container_unit.stat.mode == '0644'
+
+    - name: Stat arcane Quadlet network unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/arcane.network
+      register: arcane_network_unit
+
+    - name: Assert arcane.network unit exists
+      ansible.builtin.assert:
+        that:
+          - arcane_network_unit.stat.exists
+
+    - name: Read arcane.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/arcane.container
+      register: arcane_container_contents
+
+    - name: Assert arcane.container has expected content
+      vars:
+        rendered: "{{ arcane_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'arcane.test.local' in rendered"
+          - "'ghcr.io/getarcaneapp/arcane:latest' in rendered"
+          - "'proxy_network.network' in rendered"
+          - "'arcane.network' in rendered"
+          - "'/run/podman/podman.sock' in rendered"
+
+    - name: Read arcane-postgres.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/arcane-postgres.container
+      register: arcane_postgres_container_contents
+
+    - name: Assert arcane-postgres.container has expected content
+      vars:
+        rendered: "{{ arcane_postgres_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'postgres:17-alpine' in rendered"
+          - "'arcane.network' in rendered"

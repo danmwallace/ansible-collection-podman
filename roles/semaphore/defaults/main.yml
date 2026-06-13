@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: MIT
+---
+semaphore_version: latest
+semaphore_hostname: semaphore.example.com
+semaphore_data_dir: /opt/podman/semaphore
+semaphore_postgres_db: semaphore
+semaphore_postgres_user: semaphore
+semaphore_postgres_password: ""
+semaphore_admin: admin
+semaphore_admin_password: ""
+semaphore_admin_name: Admin
+semaphore_admin_email: admin@example.com
+semaphore_ansible_host_key_checking: "False"

@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply traefik role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.traefik
+      vars:
+        traefik_hostname: traefik.test.local
+        traefik_cloudflare_email: test@example.com
+        traefik_cloudflare_api_token: test-token-not-for-production

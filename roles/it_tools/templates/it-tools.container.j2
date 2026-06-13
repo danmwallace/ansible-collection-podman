@@ -1,0 +1,21 @@
+# Managed by Ansible - danmwallace.podman.it_tools
+[Unit]
+Description=IT-Tools developer utility suite
+After=network-online.target
+
+[Container]
+Image=corentinth/it-tools:latest
+ContainerName=it-tools
+Network=proxy_network.network
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.it-tools.rule=Host(`{{ it_tools_hostname }}`)
+Label=traefik.http.routers.it-tools.entrypoints=websecure
+Label=traefik.http.routers.it-tools.tls.certresolver=cloudflare
+Label=traefik.http.services.it-tools.loadbalancer.server.port=80
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

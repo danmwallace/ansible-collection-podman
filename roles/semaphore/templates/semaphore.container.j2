@@ -1,0 +1,34 @@
+# Managed by Ansible - danmwallace.podman.semaphore
+[Unit]
+Description=Semaphore Ansible UI
+After=network-online.target semaphore-postgres.service
+
+[Container]
+Image=semaphoreui/semaphore:{{ semaphore_version }}
+ContainerName=semaphore
+Network=semaphore.network
+Network=proxy_network.network
+Volume={{ semaphore_data_dir }}/data:/var/lib/semaphore:z
+Volume={{ semaphore_data_dir }}/config:/etc/semaphore:z
+Environment=SEMAPHORE_DB_DIALECT=postgres
+Environment=SEMAPHORE_DB_HOST=semaphore-postgres
+Environment=SEMAPHORE_DB_NAME={{ semaphore_postgres_db }}
+Environment=SEMAPHORE_DB_USER={{ semaphore_postgres_user }}
+Environment=SEMAPHORE_DB_PASS={{ semaphore_postgres_password }}
+Environment=SEMAPHORE_ADMIN={{ semaphore_admin }}
+Environment=SEMAPHORE_ADMIN_PASSWORD={{ semaphore_admin_password }}
+Environment=SEMAPHORE_ADMIN_NAME={{ semaphore_admin_name }}
+Environment=SEMAPHORE_ADMIN_EMAIL={{ semaphore_admin_email }}
+Environment=ANSIBLE_HOST_KEY_CHECKING={{ semaphore_ansible_host_key_checking }}
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.semaphore.rule=Host(`{{ semaphore_hostname }}`)
+Label=traefik.http.routers.semaphore.entrypoints=websecure
+Label=traefik.http.routers.semaphore.tls.certresolver=cloudflare
+Label=traefik.http.services.semaphore.loadbalancer.server.port=3000
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

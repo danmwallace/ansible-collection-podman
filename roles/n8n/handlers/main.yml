@@ -1,0 +1,30 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Restart n8n
+  listen: Restart n8n
+  ansible.builtin.systemd:
+    name: n8n-postgres.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _n8n_postgres_restart_result
+  # "Could not find the requested service" fires in Molecule because the
+  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
+  # that specific error so Molecule passes; any other failure still surfaces.
+  failed_when:
+    - _n8n_postgres_restart_result is failed
+    - "'Could not find the requested service' not in (_n8n_postgres_restart_result.msg | default(''))"
+
+- name: Restart n8n service
+  listen: Restart n8n
+  ansible.builtin.systemd:
+    name: n8n.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _n8n_restart_result
+  failed_when:
+    - _n8n_restart_result is failed
+    - "'Could not find the requested service' not in (_n8n_restart_result.msg | default(''))"

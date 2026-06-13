@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply semaphore role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.semaphore
+      vars:
+        semaphore_hostname: semaphore.test.local
+        semaphore_postgres_password: test-pass
+        semaphore_admin_password: test-admin-pass

@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Traefik reverse proxy as a Podman Quadlet on Fedora.
+    options:
+      traefik_version:
+        type: str
+        default: v3.6.2
+        description: Traefik image tag.
+      traefik_hostname:
+        type: str
+        required: true
+        description: Hostname for the Traefik dashboard (e.g. traefik.example.com).
+      traefik_data_dir:
+        type: str
+        default: /opt/podman/traefik
+        description: Host directory for Traefik config files and Let's Encrypt data.
+      traefik_cloudflare_email:
+        type: str
+        required: true
+        description: Cloudflare account email for ACME DNS challenge.
+      traefik_cloudflare_api_token:
+        type: str
+        required: true
+        description: Cloudflare DNS API token for ACME challenge (needs Zone.DNS write).

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: MIT
+---
+traefik_version: v3.6.2
+traefik_hostname: traefik.example.com
+traefik_data_dir: /opt/podman/traefik
+traefik_cloudflare_email: ""
+traefik_cloudflare_api_token: ""

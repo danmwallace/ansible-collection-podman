@@ -1,0 +1,29 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat the it-tools Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/it-tools.container
+      register: it_tools_container_unit
+
+    - name: Assert it-tools.container unit exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - it_tools_container_unit.stat.exists
+          - it_tools_container_unit.stat.mode == '0644'
+
+    - name: Read it-tools.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/it-tools.container
+      register: it_tools_container_contents
+
+    - name: Assert it-tools.container has expected hostname, image, and network
+      vars:
+        rendered: "{{ it_tools_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'it-tools.test.local' in rendered"
+          - "'corentinth/it-tools:latest' in rendered"
+          - "'proxy_network.network' in rendered"

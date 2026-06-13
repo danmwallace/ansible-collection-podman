@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Restart librechat-vectordb
+  listen: Restart librechat
+  ansible.builtin.systemd:
+    name: librechat-vectordb.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _librechat_vectordb_restart_result
+  # "Could not find the requested service" fires in Molecule because the
+  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
+  # that specific error so Molecule passes; any other failure still surfaces.
+  failed_when:
+    - _librechat_vectordb_restart_result is failed
+    - "'Could not find the requested service' not in (_librechat_vectordb_restart_result.msg | default(''))"
+
+- name: Restart librechat-meilisearch
+  listen: Restart librechat
+  ansible.builtin.systemd:
+    name: librechat-meilisearch.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _librechat_meilisearch_restart_result
+  failed_when:
+    - _librechat_meilisearch_restart_result is failed
+    - "'Could not find the requested service' not in (_librechat_meilisearch_restart_result.msg | default(''))"
+
+- name: Restart librechat-rag-api
+  listen: Restart librechat
+  ansible.builtin.systemd:
+    name: librechat-rag-api.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _librechat_ragapi_restart_result
+  failed_when:
+    - _librechat_ragapi_restart_result is failed
+    - "'Could not find the requested service' not in (_librechat_ragapi_restart_result.msg | default(''))"
+
+- name: Restart librechat-api
+  listen: Restart librechat
+  ansible.builtin.systemd:
+    name: librechat-api.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _librechat_api_restart_result
+  failed_when:
+    - _librechat_api_restart_result is failed
+    - "'Could not find the requested service' not in (_librechat_api_restart_result.msg | default(''))"

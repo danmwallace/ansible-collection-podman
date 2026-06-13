@@ -1,0 +1,38 @@
+# Managed by Ansible - danmwallace.podman.n8n
+[Unit]
+Description=n8n workflow automation
+After=network-online.target n8n-postgres.service
+
+[Container]
+Image=n8nio/n8n:latest
+ContainerName=n8n
+Network=n8n.network
+Network=proxy_network.network
+Volume={{ n8n_data_dir }}/data:/home/node/.n8n:z
+Volume={{ n8n_data_dir }}/local-files:/files:z
+Environment=N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+Environment=N8N_HOST={{ n8n_hostname }}
+Environment=N8N_PORT=5678
+Environment=N8N_PROTOCOL=https
+Environment=N8N_ENCRYPTION_KEY={{ n8n_encryption_key }}
+Environment=N8N_RUNNERS_ENABLED=true
+Environment=NODE_ENV=production
+Environment=WEBHOOK_URL=https://{{ n8n_hostname }}/
+Environment=GENERIC_TIMEZONE=UTC
+Environment=DB_TYPE=postgresdb
+Environment=DB_POSTGRESDB_HOST=n8n-postgres
+Environment=DB_POSTGRESDB_PORT=5432
+Environment=DB_POSTGRESDB_USER={{ n8n_postgres_user }}
+Environment=DB_POSTGRESDB_PASSWORD={{ n8n_postgres_password }}
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.n8n.rule=Host(`{{ n8n_hostname }}`)
+Label=traefik.http.routers.n8n.entrypoints=websecure
+Label=traefik.http.routers.n8n.tls.certresolver=cloudflare
+Label=traefik.http.services.n8n.loadbalancer.server.port=5678
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

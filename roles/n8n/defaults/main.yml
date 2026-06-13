@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: MIT
+---
+n8n_hostname: n8n.example.com
+n8n_data_dir: /opt/podman/n8n
+n8n_encryption_key: ""
+n8n_postgres_password: ""
+n8n_postgres_user: n8n
+n8n_postgres_db: n8n

@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure semaphore data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ semaphore_data_dir }}"
+    - "{{ semaphore_data_dir }}/data"
+    - "{{ semaphore_data_dir }}/config"
+    - "{{ semaphore_data_dir }}/postgres"
+  become: true
+
+- name: Deploy semaphore Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/semaphore.network
+    mode: "0644"
+  become: true
+
+- name: Deploy semaphore-postgres Quadlet container unit
+  ansible.builtin.template:
+    src: semaphore-postgres.container.j2
+    dest: /etc/containers/systemd/semaphore-postgres.container
+    mode: "0644"
+  become: true
+  notify: Restart semaphore-postgres
+
+- name: Deploy semaphore Quadlet container unit
+  ansible.builtin.template:
+    src: semaphore.container.j2
+    dest: /etc/containers/systemd/semaphore.container
+    mode: "0644"
+  become: true
+  notify: Restart semaphore
+
+- name: Enable and start semaphore-postgres.service
+  ansible.builtin.systemd:
+    name: semaphore-postgres.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start semaphore.service
+  ansible.builtin.systemd:
+    name: semaphore.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]

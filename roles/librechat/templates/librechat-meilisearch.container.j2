@@ -1,0 +1,19 @@
+# Managed by Ansible - danmwallace.podman.librechat
+[Unit]
+Description=LibreChat meilisearch
+After=network-online.target
+
+[Container]
+Image={{ librechat_meilisearch_image }}
+ContainerName=librechat-meilisearch
+Network=librechat.network
+Volume={{ librechat_data_dir }}/meilisearch:/meili_data:z
+Environment=MEILI_HOST=http://librechat-meilisearch:7700
+Environment=MEILI_NO_ANALYTICS=true
+Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

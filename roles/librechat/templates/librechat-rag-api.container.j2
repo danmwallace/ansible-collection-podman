@@ -1,0 +1,21 @@
+# Managed by Ansible - danmwallace.podman.librechat
+[Unit]
+Description=LibreChat RAG API
+After=network-online.target librechat-vectordb.service
+
+[Container]
+Image={{ librechat_ragapi_image }}
+ContainerName=librechat-rag-api
+Network=librechat.network
+Environment=DB_HOST=librechat-vectordb
+Environment=RAG_PORT=8000
+Environment=POSTGRES_DB={{ librechat_vectordb_postgres_db }}
+Environment=POSTGRES_USER={{ librechat_vectordb_postgres_user }}
+Environment=POSTGRES_PASSWORD={{ librechat_vectordb_postgres_password }}
+Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

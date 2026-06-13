@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+it_tools_hostname: it-tools.example.com
+it_tools_data_dir: /opt/podman/it-tools

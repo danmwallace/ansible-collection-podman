@@ -1,0 +1,35 @@
+# Managed by Ansible - danmwallace.podman.librechat
+[Unit]
+Description=LibreChat API
+After=network-online.target librechat-meilisearch.service librechat-rag-api.service
+
+[Container]
+Image={{ librechat_api_image }}
+ContainerName=librechat-api
+Network=librechat.network
+Network=proxy_network.network
+Volume={{ librechat_data_dir }}/librechat.yaml:/app/librechat.yaml:ro,z
+Volume={{ librechat_data_dir }}/images:/app/client/public/images:z
+Volume={{ librechat_data_dir }}/logs:/app/api/logs:z
+{% if librechat_obsidian_mount_enabled %}
+Volume={{ librechat_obsidian_mount_path }}:{{ librechat_obsidian_mount_path }}:z
+{% endif %}
+Environment=HOST=0.0.0.0
+Environment=NODE_ENV=production
+Environment=MONGO_URI={{ librechat_mongo_uri }}
+Environment=MEILI_HOST=http://librechat-meilisearch:7700
+Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
+Environment=RAG_PORT=8000
+Environment=RAG_API_URL=http://librechat-rag-api:8000
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.librechat.rule=Host(`{{ librechat_hostname }}`)
+Label=traefik.http.routers.librechat.entrypoints=websecure
+Label=traefik.http.routers.librechat.tls.certresolver=cloudflare
+Label=traefik.http.services.librechat.loadbalancer.server.port={{ librechat_port }}
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

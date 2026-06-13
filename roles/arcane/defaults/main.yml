@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+---
+arcane_version: latest
+arcane_hostname: arcane.example.com
+arcane_data_dir: /opt/podman/arcane
+arcane_postgres_db: arcane
+arcane_postgres_user: arcane
+arcane_postgres_password: ""
+arcane_encryption_key: ""
+arcane_jwt_secret: ""

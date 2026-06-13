@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure arcane data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ arcane_data_dir }}"
+    - "{{ arcane_data_dir }}/postgres"
+  become: true
+
+- name: Deploy arcane Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/arcane.network
+    mode: "0644"
+  become: true
+
+- name: Deploy arcane-postgres Quadlet container unit
+  ansible.builtin.template:
+    src: arcane-postgres.container.j2
+    dest: /etc/containers/systemd/arcane-postgres.container
+    mode: "0644"
+  become: true
+  notify: Restart arcane-postgres
+
+- name: Deploy arcane Quadlet container unit
+  ansible.builtin.template:
+    src: arcane.container.j2
+    dest: /etc/containers/systemd/arcane.container
+    mode: "0644"
+  become: true
+  notify: Restart arcane
+
+- name: Enable and start arcane-postgres.service
+  ansible.builtin.systemd:
+    name: arcane-postgres.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start arcane.service
+  ansible.builtin.systemd:
+    name: arcane.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]

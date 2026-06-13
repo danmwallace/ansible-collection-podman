@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure it-tools data directory exists
+  ansible.builtin.file:
+    path: "{{ it_tools_data_dir }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Deploy it-tools Quadlet container unit
+  ansible.builtin.template:
+    src: it-tools.container.j2
+    dest: /etc/containers/systemd/it-tools.container
+    mode: "0644"
+  become: true
+  notify: Restart it-tools
+
+- name: Enable and start it-tools.service
+  ansible.builtin.systemd:
+    name: it-tools.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]

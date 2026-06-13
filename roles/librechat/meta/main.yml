@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+---
+galaxy_info:
+  role_name: librechat
+  namespace: danmwallace
+  author: Dan Wallace
+  description: Deploy LibreChat (api, meilisearch, vectordb, rag_api) as Podman Quadlet units on Fedora.
+  license: MIT
+  min_ansible_version: "2.16"
+  platforms:
+    - name: Fedora
+      versions:
+        - all
+
+dependencies: []

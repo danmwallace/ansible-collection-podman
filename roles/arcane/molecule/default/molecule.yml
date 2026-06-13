@@ -1,0 +1,21 @@
+---
+dependency:
+  name: galaxy
+provisioner:
+  name: ansible
+  inventory:
+    hosts:
+      molecule:
+        hosts:
+          arcane-instance:
+            ansible_connection: containers.podman.podman
+scenario:
+  test_sequence:
+    - dependency
+    - destroy
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy

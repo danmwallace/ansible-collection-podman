@@ -1,0 +1,76 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat the traefik Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/traefik.container
+      register: traefik_container_unit
+
+    - name: Assert traefik.container unit exists
+      ansible.builtin.assert:
+        that:
+          - traefik_container_unit.stat.exists
+          - traefik_container_unit.stat.mode == '0644'
+
+    - name: Read traefik.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/traefik.container
+      register: traefik_container_contents
+
+    - name: Assert traefik.container has expected image, hostname, and socket mount
+      vars:
+        rendered: "{{ traefik_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'traefik:v3.6.2' in rendered"
+          - "'traefik.test.local' in rendered"
+          - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
+          - "'proxy_network.network' in rendered"
+
+    - name: Stat the proxy_network Quadlet network unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/proxy_network.network
+      register: traefik_proxy_network_unit
+
+    - name: Assert proxy_network.network unit exists
+      ansible.builtin.assert:
+        that:
+          - traefik_proxy_network_unit.stat.exists
+
+    - name: Stat traefik.yml static config
+      ansible.builtin.stat:
+        path: /opt/podman/traefik/traefik.yml
+      register: traefik_yml_stat
+
+    - name: Assert traefik.yml rendered with restrictive permissions
+      ansible.builtin.assert:
+        that:
+          - traefik_yml_stat.stat.exists
+          - traefik_yml_stat.stat.mode == '0600'
+
+    - name: Read traefik.yml
+      ansible.builtin.slurp:
+        src: /opt/podman/traefik/traefik.yml
+      register: traefik_yml_contents
+
+    - name: Assert traefik.yml has expected content
+      vars:
+        rendered: "{{ traefik_yml_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'test@example.com' in rendered"
+          - "'proxy_network' in rendered"
+          - "'/letsencrypt/acme.json' in rendered"
+
+    - name: Stat acme.json
+      ansible.builtin.stat:
+        path: /opt/podman/traefik/letsencrypt/acme.json
+      register: traefik_acme_json_stat
+
+    - name: Assert acme.json exists with mode 0600
+      ansible.builtin.assert:
+        that:
+          - traefik_acme_json_stat.stat.exists
+          - traefik_acme_json_stat.stat.mode == '0600'

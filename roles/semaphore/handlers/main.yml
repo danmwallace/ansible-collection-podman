@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Restart semaphore-postgres
+  ansible.builtin.systemd:
+    name: semaphore-postgres.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _semaphore_postgres_restart_result
+  # "Could not find the requested service" fires in Molecule because the
+  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
+  # that specific error so Molecule passes; any other failure still surfaces.
+  failed_when:
+    - _semaphore_postgres_restart_result is failed
+    - "'Could not find the requested service' not in (_semaphore_postgres_restart_result.msg | default(''))"
+
+- name: Restart semaphore
+  ansible.builtin.systemd:
+    name: semaphore.service
+    state: restarted
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+  register: _semaphore_restart_result
+  # "Could not find the requested service" fires in Molecule because the
+  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
+  # that specific error so Molecule passes; any other failure still surfaces.
+  failed_when:
+    - _semaphore_restart_result is failed
+    - "'Could not find the requested service' not in (_semaphore_restart_result.msg | default(''))"

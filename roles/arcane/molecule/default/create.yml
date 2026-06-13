@@ -1,0 +1,16 @@
+---
+- name: Create molecule instance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Start arcane-instance container
+      containers.podman.podman_container:
+        name: arcane-instance
+        image: docker.io/jrei/systemd-fedora:42
+        state: started
+        command: /sbin/init
+        privileged: true
+        systemd: always
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns: host

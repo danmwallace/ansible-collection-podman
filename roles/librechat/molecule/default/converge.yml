@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply librechat role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.librechat
+      vars:
+        librechat_hostname: chat.test.local
+        librechat_mongo_uri: mongodb://localhost:27017/librechat-test
+        librechat_meili_master_key: test-meili-key
+        librechat_vectordb_postgres_password: test-pg-pass

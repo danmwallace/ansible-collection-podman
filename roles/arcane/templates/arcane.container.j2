@@ -1,0 +1,34 @@
+# Managed by Ansible - danmwallace.podman.arcane
+[Unit]
+Description=Arcane container management UI
+After=network-online.target arcane-postgres.service
+
+[Container]
+Image=ghcr.io/getarcaneapp/arcane:{{ arcane_version }}
+ContainerName=arcane
+Network=arcane.network
+Network=proxy_network.network
+Volume=/run/podman/podman.sock:/var/run/docker.sock:z
+Environment=APP_URL=https://{{ arcane_hostname }}
+Environment=PUID=1000
+Environment=PGID=1000
+Environment=ENCRYPTION_KEY={{ arcane_encryption_key }}
+Environment=JWT_SECRET={{ arcane_jwt_secret }}
+Environment=LOG_LEVEL=info
+Environment=LOG_JSON=false
+Environment=POSTGRES_DB={{ arcane_postgres_db }}
+Environment=POSTGRES_USER={{ arcane_postgres_user }}
+Environment=POSTGRES_PASSWORD={{ arcane_postgres_password }}
+Environment=DATABASE_URL=postgresql://{{ arcane_postgres_user }}:{{ arcane_postgres_password }}@arcane-postgres:5432/{{ arcane_postgres_db }}
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.arcane.rule=Host(`{{ arcane_hostname }}`)
+Label=traefik.http.routers.arcane.entrypoints=websecure
+Label=traefik.http.routers.arcane.tls.certresolver=cloudflare
+Label=traefik.http.services.arcane.loadbalancer.server.port=3552
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

@@ -1,0 +1,55 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure n8n data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ n8n_data_dir }}"
+    - "{{ n8n_data_dir }}/data"
+    - "{{ n8n_data_dir }}/postgres"
+    - "{{ n8n_data_dir }}/local-files"
+  become: true
+
+- name: Deploy n8n Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/n8n.network
+    mode: "0644"
+  become: true
+
+- name: Render n8n-postgres Quadlet container unit
+  ansible.builtin.template:
+    src: n8n-postgres.container.j2
+    dest: /etc/containers/systemd/n8n-postgres.container
+    mode: "0644"
+  become: true
+  notify: Restart n8n
+
+- name: Render n8n Quadlet container unit
+  ansible.builtin.template:
+    src: n8n.container.j2
+    dest: /etc/containers/systemd/n8n.container
+    mode: "0644"
+  become: true
+  notify: Restart n8n
+
+- name: Enable and start n8n-postgres.service
+  ansible.builtin.systemd:
+    name: n8n-postgres.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start n8n.service
+  ansible.builtin.systemd:
+    name: n8n.service
+    enabled: true
+    state: started
+  become: true
+  tags: [molecule-notest]

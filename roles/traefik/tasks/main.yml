@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure traefik data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ traefik_data_dir }}"
+    - "{{ traefik_data_dir }}/letsencrypt"
+  become: true
+
+- name: Ensure acme.json exists with restrictive permissions
+  ansible.builtin.file:
+    path: "{{ traefik_data_dir }}/letsencrypt/acme.json"
+    state: touch
+    mode: "0600"
+    modification_time: preserve
+    access_time: preserve
+  become: true
+
+- name: Render traefik static configuration
+  ansible.builtin.template:
+    src: traefik.yml.j2
+    dest: "{{ traefik_data_dir }}/traefik.yml"
+    mode: "0600"
+  become: true
+  notify: Restart traefik
+
+- name: Render traefik dynamic configuration
+  ansible.builtin.template:
+    src: dynamic_conf.yml.j2
+    dest: "{{ traefik_data_dir }}/dynamic_conf.yml"
+    mode: "0600"
+  become: true
+  notify: Restart traefik
+
+- name: Deploy proxy_network Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/proxy_network.network
+    mode: "0644"
+  become: true
+
+- name: Deploy traefik Quadlet container unit
+  ansible.builtin.template:
+    src: traefik.container.j2
+    dest: /etc/containers/systemd/traefik.container
+    mode: "0644"
+  become: true
+  notify: Restart traefik
+
+- name: Enable and start traefik.service
+  ansible.builtin.systemd:
+    name: traefik.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]

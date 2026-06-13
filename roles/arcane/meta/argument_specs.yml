@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Arcane container management UI and Postgres as Podman Quadlet units on Fedora.
+    options:
+      arcane_version:
+        type: str
+        default: latest
+        description: Arcane image tag (e.g. latest, 1.2.3).
+      arcane_hostname:
+        type: str
+        required: true
+        description: Public hostname for Arcane (e.g. arcane.example.com). Used for APP_URL and Traefik routing rule.
+      arcane_data_dir:
+        type: str
+        default: /opt/podman/arcane
+        description: Host directory for Arcane persistent data. Postgres data is stored under a postgres/ subdirectory.
+      arcane_postgres_db:
+        type: str
+        default: arcane
+        description: Name of the Postgres database created for Arcane.
+      arcane_postgres_user:
+        type: str
+        default: arcane
+        description: Postgres username Arcane connects with.
+      arcane_postgres_password:
+        type: str
+        required: true
+        description: Postgres password for arcane_postgres_user. Store in Ansible Vault.
+      arcane_encryption_key:
+        type: str
+        required: true
+        description: Encryption key used by Arcane for at-rest secret encryption. Store in Ansible Vault.
+      arcane_jwt_secret:
+        type: str
+        required: true
+        description: JWT signing secret for Arcane session tokens. Store in Ansible Vault.

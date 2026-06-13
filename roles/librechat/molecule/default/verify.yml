@@ -1,0 +1,96 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat librechat-api.container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/librechat-api.container
+      register: librechat_api_unit
+
+    - name: Assert librechat-api.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - librechat_api_unit.stat.exists
+          - librechat_api_unit.stat.mode == '0644'
+
+    - name: Stat librechat-meilisearch.container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/librechat-meilisearch.container
+      register: librechat_meilisearch_unit
+
+    - name: Assert librechat-meilisearch.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - librechat_meilisearch_unit.stat.exists
+          - librechat_meilisearch_unit.stat.mode == '0644'
+
+    - name: Stat librechat-vectordb.container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/librechat-vectordb.container
+      register: librechat_vectordb_unit
+
+    - name: Assert librechat-vectordb.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - librechat_vectordb_unit.stat.exists
+          - librechat_vectordb_unit.stat.mode == '0644'
+
+    - name: Stat librechat-rag-api.container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/librechat-rag-api.container
+      register: librechat_ragapi_unit
+
+    - name: Assert librechat-rag-api.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - librechat_ragapi_unit.stat.exists
+          - librechat_ragapi_unit.stat.mode == '0644'
+
+    - name: Stat librechat.network unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/librechat.network
+      register: librechat_network_unit
+
+    - name: Assert librechat.network unit exists
+      ansible.builtin.assert:
+        that:
+          - librechat_network_unit.stat.exists
+
+    - name: Read librechat-api.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/librechat-api.container
+      register: librechat_api_contents
+
+    - name: Assert librechat-api.container has expected hostname, networks, and image
+      vars:
+        rendered: "{{ librechat_api_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'chat.test.local' in rendered"
+          - "'librechat.network' in rendered"
+          - "'proxy_network.network' in rendered"
+          - "'librechat' in rendered"
+
+    - name: Read librechat-vectordb.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/librechat-vectordb.container
+      register: librechat_vectordb_contents
+
+    - name: Assert librechat-vectordb.container uses librechat network
+      vars:
+        rendered: "{{ librechat_vectordb_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'librechat.network' in rendered"
+
+    - name: Stat librechat.yaml config file
+      ansible.builtin.stat:
+        path: /opt/podman/librechat/librechat.yaml
+      register: librechat_yaml_stat
+
+    - name: Assert librechat.yaml exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - librechat_yaml_stat.stat.exists
+          - librechat_yaml_stat.stat.mode == '0600'

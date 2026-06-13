@@ -1,0 +1,64 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy LibreChat and its dependencies as Podman Quadlet units on Fedora.
+    options:
+      librechat_hostname:
+        type: str
+        required: true
+        description: Hostname for the LibreChat web interface (e.g. chat.example.com).
+      librechat_data_dir:
+        type: str
+        default: /opt/podman/librechat
+        description: Host base directory for all LibreChat data volumes.
+      librechat_port:
+        type: int
+        default: 3080
+        description: Port the LibreChat API container listens on (used for Traefik load balancer config).
+      librechat_api_image:
+        type: str
+        default: ghcr.io/danny-avila/librechat:latest
+        description: Container image for the LibreChat API service.
+      librechat_mongo_uri:
+        type: str
+        required: true
+        description: MongoDB connection URI for LibreChat. Store in Ansible Vault.
+      librechat_meilisearch_image:
+        type: str
+        default: getmeili/meilisearch:v1.7.3
+        description: Container image for the Meilisearch service.
+      librechat_meili_master_key:
+        type: str
+        required: true
+        description: Master key for Meilisearch authentication. Store in Ansible Vault.
+      librechat_vectordb_image:
+        type: str
+        default: ankane/pgvector:latest
+        description: Container image for the vectordb (pgvector/Postgres) service.
+      librechat_vectordb_postgres_db:
+        type: str
+        default: mydatabase
+        description: Postgres database name for the vectordb service.
+      librechat_vectordb_postgres_user:
+        type: str
+        default: myuser
+        description: Postgres username for the vectordb service.
+      librechat_vectordb_postgres_password:
+        type: str
+        required: true
+        description: Postgres password for the vectordb service. Store in Ansible Vault.
+      librechat_ragapi_image:
+        type: str
+        default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+        description: Container image for the LibreChat RAG API service.
+      librechat_obsidian_mount_enabled:
+        type: bool
+        default: false
+        description: When true, bind-mounts the Obsidian vault path into the api container.
+      librechat_obsidian_mount_path:
+        type: str
+        default: ""
+        description: >
+          Absolute path to the Obsidian vault on the host. Only used when
+          librechat_obsidian_mount_enabled is true.

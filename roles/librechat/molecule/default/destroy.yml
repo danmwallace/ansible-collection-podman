@@ -1,0 +1,9 @@
+---
+- name: Destroy molecule instance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Stop and remove librechat-instance container
+      containers.podman.podman_container:
+        name: librechat-instance
+        state: absent

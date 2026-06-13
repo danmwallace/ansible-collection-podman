@@ -1,0 +1,29 @@
+# Managed by Ansible - danmwallace.podman.traefik
+[Unit]
+Description=Traefik reverse proxy
+After=network-online.target
+
+[Container]
+Image=traefik:{{ traefik_version }}
+ContainerName=traefik
+PublishPort=443:443
+PublishPort=8081:8081
+Volume={{ traefik_data_dir }}/traefik.yml:/etc/traefik/traefik.yml:ro,z
+Volume={{ traefik_data_dir }}/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro,z
+Volume={{ traefik_data_dir }}/letsencrypt:/letsencrypt:z
+Volume=/run/podman/podman.sock:/var/run/docker.sock:ro,z
+Network=proxy_network.network
+Environment=CF_API_EMAIL={{ traefik_cloudflare_email }}
+Environment=CF_DNS_API_TOKEN={{ traefik_cloudflare_api_token }}
+Label=traefik.enable=true
+Label=traefik.docker.network=proxy_network
+Label=traefik.http.routers.traefik.rule=Host(`{{ traefik_hostname }}`)
+Label=traefik.http.routers.traefik.entrypoints=websecure
+Label=traefik.http.routers.traefik.tls.certresolver=cloudflare
+Label=traefik.http.routers.traefik.service=api@internal
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

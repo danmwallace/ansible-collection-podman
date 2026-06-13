@@ -1,0 +1,19 @@
+# Managed by Ansible - danmwallace.podman.arcane
+[Unit]
+Description=Arcane Postgres database
+After=network-online.target
+
+[Container]
+Image=postgres:17-alpine
+ContainerName=arcane-postgres
+Network=arcane.network
+Volume={{ arcane_data_dir }}/postgres:/var/lib/postgresql/data:z
+Environment=POSTGRES_DB={{ arcane_postgres_db }}
+Environment=POSTGRES_USER={{ arcane_postgres_user }}
+Environment=POSTGRES_PASSWORD={{ arcane_postgres_password }}
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

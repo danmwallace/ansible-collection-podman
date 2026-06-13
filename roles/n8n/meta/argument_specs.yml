@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy n8n workflow automation and Postgres as Podman Quadlet units on Fedora.
+    options:
+      n8n_hostname:
+        type: str
+        required: true
+        description: Hostname for the n8n web interface (e.g. n8n.example.com).
+      n8n_data_dir:
+        type: str
+        default: /opt/podman/n8n
+        description: Host base directory for n8n data, Postgres data, and local files.
+      n8n_encryption_key:
+        type: str
+        required: true
+        description: >
+          Encryption key used by n8n to encrypt credentials at rest.
+          Must be set to a stable secret value; changing it invalidates stored credentials.
+      n8n_postgres_password:
+        type: str
+        required: true
+        description: Password for the Postgres n8n user. Store in Ansible Vault.
+      n8n_postgres_user:
+        type: str
+        default: n8n
+        description: Postgres username for the n8n database.
+      n8n_postgres_db:
+        type: str
+        default: n8n
+        description: Postgres database name for n8n.

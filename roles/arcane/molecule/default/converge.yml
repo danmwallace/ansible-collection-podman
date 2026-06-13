@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply arcane role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.arcane
+      vars:
+        arcane_hostname: arcane.test.local
+        arcane_postgres_password: test-pass
+        arcane_encryption_key: test-key
+        arcane_jwt_secret: test-secret
