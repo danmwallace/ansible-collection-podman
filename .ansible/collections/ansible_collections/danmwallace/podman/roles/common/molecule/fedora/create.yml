@@ -3,11 +3,11 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start podman-common-ubuntu-instance container
+    - name: Start podman-common-fedora-instance container
       containers.podman.podman_container:
-        name: podman-common-ubuntu-instance
-        image: docker.io/jrei/systemd-ubuntu:noble
-        hostname: podman-common-ubuntu-instance
+        name: podman-common-fedora-instance
+        image: docker.io/jrei/systemd-fedora:42
+        hostname: podman-common-fedora-instance
         state: started
         command: /sbin/init
         privileged: true

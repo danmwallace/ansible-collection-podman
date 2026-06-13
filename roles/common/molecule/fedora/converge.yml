@@ -7,9 +7,9 @@
       ansible.builtin.include_role:
         name: danmwallace.podman.common
       vars:
-        podman_common_timezone: "Etc/UTC"
-        podman_common_cockpit_enabled: false
-        podman_common_users:
+        common_timezone: "Etc/UTC"
+        common_cockpit_enabled: false
+        common_users:
           - name: ansible
             groups:
               - wheel

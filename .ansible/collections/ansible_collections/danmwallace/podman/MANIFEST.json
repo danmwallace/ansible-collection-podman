@@ -1,0 +1,40 @@
+{
+ "collection_info": {
+  "namespace": "danmwallace",
+  "name": "podman",
+  "version": "0.1.0",
+  "authors": [
+   "danmwallace"
+  ],
+  "readme": "README.md",
+  "tags": [
+   "linux",
+   "fedora",
+   "podman",
+   "containers",
+   "systemd"
+  ],
+  "description": "Ansible collection for managing Podman-based homelab services on Fedora Server",
+  "license": [
+   "MIT"
+  ],
+  "license_file": null,
+  "dependencies": {
+   "containers.podman": ">=1.11.0",
+   "ansible.posix": ">=1.5.0",
+   "community.general": ">=8.0.0"
+  },
+  "repository": "https://github.com/danmwallace/ansible-collection-podman",
+  "documentation": "https://github.com/danmwallace/ansible-collection-podman",
+  "homepage": "https://github.com/danmwallace/ansible-collection-podman",
+  "issues": "https://github.com/danmwallace/ansible-collection-podman/issues"
+ },
+ "file_manifest_file": {
+  "name": "FILES.json",
+  "ftype": "file",
+  "chksum_type": "sha256",
+  "chksum_sha256": "07116e8d7284a4a009e522a7d7c00771df92c5da7f6a58f035ef1c9d282b3381",
+  "format": 1
+ },
+ "format": 1
+}
