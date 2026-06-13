@@ -4,7 +4,7 @@ Description=Semaphore Ansible UI
 After=network-online.target semaphore-postgres.service
 
 [Container]
-Image=semaphoreui/semaphore:{{ semaphore_version }}
+Image=docker.io/semaphoreui/semaphore:{{ semaphore_version }}
 ContainerName=semaphore
 Network=semaphore.network
 Network=proxy_network.network

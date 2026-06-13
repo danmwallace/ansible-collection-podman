@@ -4,7 +4,7 @@ Description=n8n Postgres database
 After=network-online.target
 
 [Container]
-Image=postgres:15
+Image=docker.io/library/postgres:15
 ContainerName=n8n-postgres
 Network=n8n.network
 Volume={{ n8n_data_dir }}/postgres:/var/lib/postgresql/data:z

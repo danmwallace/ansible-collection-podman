@@ -4,7 +4,7 @@ Description=n8n workflow automation
 After=network-online.target n8n-postgres.service
 
 [Container]
-Image=n8nio/n8n:latest
+Image=docker.io/n8nio/n8n:latest
 ContainerName=n8n
 Network=n8n.network
 Network=proxy_network.network

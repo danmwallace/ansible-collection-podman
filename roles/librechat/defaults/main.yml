@@ -9,11 +9,11 @@ librechat_api_image: ghcr.io/danny-avila/librechat:latest
 librechat_mongo_uri: ""
 
 # Meilisearch
-librechat_meilisearch_image: getmeili/meilisearch:v1.7.3
+librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.7.3
 librechat_meili_master_key: ""
 
 # VectorDB (postgres for RAG)
-librechat_vectordb_image: ankane/pgvector:latest
+librechat_vectordb_image: docker.io/ankane/pgvector:latest
 librechat_vectordb_postgres_db: mydatabase
 librechat_vectordb_postgres_user: myuser
 librechat_vectordb_postgres_password: ""

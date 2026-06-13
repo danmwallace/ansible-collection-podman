@@ -4,7 +4,7 @@ Description=Traefik reverse proxy
 After=network-online.target
 
 [Container]
-Image=traefik:{{ traefik_version }}
+Image=docker.io/library/traefik:{{ traefik_version }}
 ContainerName=traefik
 PublishPort=443:443
 PublishPort=8081:8081

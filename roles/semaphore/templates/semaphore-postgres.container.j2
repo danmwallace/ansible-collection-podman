@@ -4,7 +4,7 @@ Description=Semaphore Postgres database
 After=network-online.target
 
 [Container]
-Image=postgres:17-alpine
+Image=docker.io/library/postgres:17-alpine
 ContainerName=semaphore-postgres
 Network=semaphore.network
 Volume={{ semaphore_data_dir }}/postgres:/var/lib/postgresql:z
