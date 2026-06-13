@@ -1,9 +1,0 @@
----
-- name: Destroy molecule instance
-  hosts: localhost
-  gather_facts: false
-  tasks:
-    - name: Stop and remove podman-common-fedora-instance container
-      containers.podman.podman_container:
-        name: podman-common-fedora-instance
-        state: absent

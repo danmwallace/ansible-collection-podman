@@ -1,0 +1,5 @@
+.ansible/
+.claude/
+.venv/
+group_vars/
+host_vars/
