@@ -48,6 +48,30 @@ argument_specs:
         type: str
         required: true
         description: Postgres password for the vectordb service. Store in Ansible Vault.
+      librechat_jwt_secret:
+        type: str
+        required: true
+        description: >
+          Secret key for JWT session token signing. Generate with `openssl rand -hex 32`.
+          Store in Ansible Vault.
+      librechat_jwt_refresh_secret:
+        type: str
+        required: true
+        description: >
+          Secret key for JWT refresh token signing (must differ from librechat_jwt_secret).
+          Generate with `openssl rand -hex 32`. Store in Ansible Vault.
+      librechat_creds_key:
+        type: str
+        required: true
+        description: >
+          32-byte hex key for credential encryption at rest.
+          Generate with `openssl rand -hex 32`. Store in Ansible Vault.
+      librechat_creds_iv:
+        type: str
+        required: true
+        description: >
+          16-byte hex IV for credential encryption at rest.
+          Generate with `openssl rand -hex 16`. Store in Ansible Vault.
       librechat_ragapi_image:
         type: str
         default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest

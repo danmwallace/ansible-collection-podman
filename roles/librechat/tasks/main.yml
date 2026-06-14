@@ -1,5 +1,17 @@
 # SPDX-License-Identifier: MIT
 ---
+- name: Assert required secrets are set
+  ansible.builtin.assert:
+    that:
+      - librechat_jwt_secret | length > 0
+      - librechat_jwt_refresh_secret | length > 0
+      - librechat_creds_key | length > 0
+      - librechat_creds_iv | length > 0
+    fail_msg: >
+      librechat_jwt_secret, librechat_jwt_refresh_secret, librechat_creds_key,
+      and librechat_creds_iv must all be set (generate with openssl rand -hex 32/16
+      and store in Ansible Vault).
+
 - name: Ensure librechat base data directory exists
   ansible.builtin.file:
     path: "{{ librechat_data_dir }}"
