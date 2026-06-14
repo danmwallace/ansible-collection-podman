@@ -6,6 +6,7 @@ After=network-online.target semaphore-postgres.service
 [Container]
 Image=docker.io/semaphoreui/semaphore:{{ semaphore_version }}
 ContainerName=semaphore
+Exec=server --no-config
 Network=semaphore.network
 Network=proxy_network.network
 Volume={{ semaphore_data_dir }}/data:/var/lib/semaphore:z
@@ -19,6 +20,8 @@ Environment=SEMAPHORE_ADMIN={{ semaphore_admin }}
 Environment=SEMAPHORE_ADMIN_PASSWORD={{ semaphore_admin_password }}
 Environment=SEMAPHORE_ADMIN_NAME={{ semaphore_admin_name }}
 Environment=SEMAPHORE_ADMIN_EMAIL={{ semaphore_admin_email }}
+Environment=SEMAPHORE_ACCESS_KEY_ENCRYPTION={{ semaphore_access_key_encryption }}
+Environment=SEMAPHORE_PLAYBOOK_PATH={{ semaphore_playbook_path }}
 Environment=ANSIBLE_HOST_KEY_CHECKING={{ semaphore_ansible_host_key_checking }}
 Label=traefik.enable=true
 Label=traefik.docker.network=proxy_network

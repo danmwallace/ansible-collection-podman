@@ -44,6 +44,14 @@ argument_specs:
         type: str
         default: admin@example.com
         description: Email address for the Semaphore admin user.
+      semaphore_access_key_encryption:
+        type: str
+        required: true
+        description: Encryption key for Semaphore stored credentials (SEMAPHORE_ACCESS_KEY_ENCRYPTION). Must not be empty.
+      semaphore_playbook_path:
+        type: str
+        default: /tmp/semaphore/
+        description: Path inside the container where Semaphore stores temporary playbook files.
       semaphore_ansible_host_key_checking:
         type: str
         default: "False"
