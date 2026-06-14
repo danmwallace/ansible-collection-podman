@@ -21,6 +21,10 @@ Environment=MEILI_HOST=http://librechat-meilisearch:7700
 Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
 Environment=RAG_PORT=8000
 Environment=RAG_API_URL=http://librechat-rag-api:8000
+Environment=JWT_SECRET={{ librechat_jwt_secret }}
+Environment=JWT_REFRESH_SECRET={{ librechat_jwt_refresh_secret }}
+Environment=CREDS_KEY={{ librechat_creds_key }}
+Environment=CREDS_IV={{ librechat_creds_iv }}
 Label=traefik.enable=true
 Label=traefik.docker.network=systemd-proxy_network
 Label=traefik.http.routers.librechat.rule=Host(`{{ librechat_hostname }}`)

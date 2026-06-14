@@ -7,6 +7,10 @@ librechat_port: 3080
 # LibreChat API
 librechat_api_image: ghcr.io/danny-avila/librechat:latest
 librechat_mongo_uri: ""
+librechat_jwt_secret: ""
+librechat_jwt_refresh_secret: ""
+librechat_creds_key: ""
+librechat_creds_iv: ""
 
 # Meilisearch
 librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.7.3
