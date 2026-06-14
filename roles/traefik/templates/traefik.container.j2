@@ -12,6 +12,7 @@ Volume={{ traefik_data_dir }}/traefik.yml:/etc/traefik/traefik.yml:ro,z
 Volume={{ traefik_data_dir }}/dynamic_conf.yml:/etc/traefik/dynamic_conf.yml:ro,z
 Volume={{ traefik_data_dir }}/letsencrypt:/letsencrypt:z
 Volume=/run/podman/podman.sock:/var/run/docker.sock:ro,z
+SecurityLabelDisable=true
 Network=proxy_network.network
 Environment=CF_API_EMAIL={{ traefik_cloudflare_email }}
 Environment=CF_DNS_API_TOKEN={{ traefik_cloudflare_api_token }}
