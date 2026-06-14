@@ -1,0 +1,40 @@
+---
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    name: Publish to Ansible Galaxy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout into collection path
+        uses: actions/checkout@v6
+        with:
+          path: ansible_collections/danmwallace/podman
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install ansible-core
+        run: pip install ansible-core
+      - name: Verify tag matches galaxy.yml version
+        working-directory: ansible_collections/danmwallace/podman
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          GALAXY_VERSION=$(python -c "import yaml; print(yaml.safe_load(open('galaxy.yml'))['version'])")
+          TAG_VERSION="${TAG_NAME#v}"
+          if [ "$GALAXY_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::tag $TAG_NAME does not match galaxy.yml version $GALAXY_VERSION"
+            exit 1
+          fi
+      - name: Build collection
+        working-directory: ansible_collections/danmwallace/podman
+        run: ansible-galaxy collection build --output-path dist/
+      - name: Publish to Galaxy
+        working-directory: ansible_collections/danmwallace/podman
+        env:
+          GALAXY_TOKEN: ${{ secrets.GALAXY_API_KEY }}
+        run: ansible-galaxy collection publish dist/*.tar.gz --token "$GALAXY_TOKEN"
