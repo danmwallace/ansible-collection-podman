@@ -1,14 +1,30 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Ensure librechat data directories exist
+- name: Ensure librechat base data directory exists
+  ansible.builtin.file:
+    path: "{{ librechat_data_dir }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Ensure librechat container-writable directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: "0755"
+  loop:
+    - "{{ librechat_data_dir }}/images"
+    - "{{ librechat_data_dir }}/logs"
+  become: true
+
+- name: Ensure librechat sidecar data directories exist
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: "0755"
   loop:
-    - "{{ librechat_data_dir }}"
-    - "{{ librechat_data_dir }}/images"
-    - "{{ librechat_data_dir }}/logs"
     - "{{ librechat_data_dir }}/meilisearch"
     - "{{ librechat_data_dir }}/vectordb"
   become: true
@@ -17,7 +33,7 @@
   ansible.builtin.template:
     src: librechat.yaml.j2
     dest: "{{ librechat_data_dir }}/librechat.yaml"
-    mode: "0600"
+    mode: "0644"
   become: true
   notify: Restart librechat
 
