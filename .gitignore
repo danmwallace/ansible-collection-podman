@@ -3,3 +3,5 @@
 .venv/
 group_vars/
 host_vars/
+*.tar.gz
+dist/
