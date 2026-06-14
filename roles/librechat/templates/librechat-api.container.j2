@@ -22,7 +22,7 @@ Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
 Environment=RAG_PORT=8000
 Environment=RAG_API_URL=http://librechat-rag-api:8000
 Label=traefik.enable=true
-Label=traefik.docker.network=proxy_network
+Label=traefik.docker.network=systemd-proxy_network
 Label=traefik.http.routers.librechat.rule=Host(`{{ librechat_hostname }}`)
 Label=traefik.http.routers.librechat.entrypoints=websecure
 Label=traefik.http.routers.librechat.tls.certresolver=cloudflare

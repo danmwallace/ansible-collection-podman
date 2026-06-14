@@ -22,7 +22,7 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: proxy_network
+    network: systemd-proxy_network
   file:
     filename: /etc/traefik/dynamic_conf.yml
     watch: true

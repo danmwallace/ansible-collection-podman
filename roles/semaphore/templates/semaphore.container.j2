@@ -25,7 +25,7 @@ Environment=SEMAPHORE_ACCESS_KEY_ENCRYPTION={{ semaphore_access_key_encryption }
 Environment=SEMAPHORE_PLAYBOOK_PATH={{ semaphore_playbook_path }}
 Environment=ANSIBLE_HOST_KEY_CHECKING={{ semaphore_ansible_host_key_checking }}
 Label=traefik.enable=true
-Label=traefik.docker.network=proxy_network
+Label=traefik.docker.network=systemd-proxy_network
 Label=traefik.http.routers.semaphore.rule=Host(`{{ semaphore_hostname }}`)
 Label=traefik.http.routers.semaphore.entrypoints=websecure
 Label=traefik.http.routers.semaphore.tls.certresolver=cloudflare

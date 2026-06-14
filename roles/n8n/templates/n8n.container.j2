@@ -25,7 +25,7 @@ Environment=DB_POSTGRESDB_PORT=5432
 Environment=DB_POSTGRESDB_USER={{ n8n_postgres_user }}
 Environment=DB_POSTGRESDB_PASSWORD={{ n8n_postgres_password }}
 Label=traefik.enable=true
-Label=traefik.docker.network=proxy_network
+Label=traefik.docker.network=systemd-proxy_network
 Label=traefik.http.routers.n8n.rule=Host(`{{ n8n_hostname }}`)
 Label=traefik.http.routers.n8n.entrypoints=websecure
 Label=traefik.http.routers.n8n.tls.certresolver=cloudflare
