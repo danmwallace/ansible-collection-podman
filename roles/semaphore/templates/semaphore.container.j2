@@ -6,7 +6,7 @@ After=network-online.target semaphore-postgres.service
 [Container]
 Image=docker.io/semaphoreui/semaphore:{{ semaphore_version }}
 ContainerName=semaphore
-Exec=server --no-config
+Exec=/usr/local/bin/semaphore server --no-config
 Network=semaphore.network
 Network=proxy_network.network
 Volume={{ semaphore_data_dir }}/data:/var/lib/semaphore:z
