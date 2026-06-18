@@ -82,6 +82,10 @@ argument_specs:
         type: str
         default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
         description: Container image for the LibreChat RAG API service.
+      librechat_rag_port:
+        type: int
+        default: 8000
+        description: Port the RAG API service listens on. Used to set RAG_PORT in the env file.
       librechat_rag_api_url:
         type: str
         default: "http://librechat-rag-api:8000"

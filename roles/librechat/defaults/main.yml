@@ -164,6 +164,7 @@ librechat_rag_azure_openai_api_version: ""
 librechat_rag_use_full_context: false
 librechat_embeddings_provider: ""
 librechat_embeddings_model: ""
+librechat_rag_port: 8000
 librechat_rag_api_url: "http://librechat-rag-api:8000"
 
 # Moderation
