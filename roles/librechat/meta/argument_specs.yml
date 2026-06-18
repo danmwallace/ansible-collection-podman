@@ -32,6 +32,12 @@ argument_specs:
         type: str
         required: true
         description: Master key for Meilisearch authentication. Store in Ansible Vault.
+      librechat_meili_host:
+        type: str
+        default: "http://librechat-meilisearch:7700"
+        description: >
+          URL for the Meilisearch service as seen from the LibreChat API container.
+          Defaults to the Podman container name on the librechat network.
       librechat_vectordb_image:
         type: str
         default: ankane/pgvector:latest
@@ -76,6 +82,12 @@ argument_specs:
         type: str
         default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
         description: Container image for the LibreChat RAG API service.
+      librechat_rag_api_url:
+        type: str
+        default: "http://librechat-rag-api:8000"
+        description: >
+          URL for the RAG API service as seen from the LibreChat API container.
+          Defaults to the Podman container name on the librechat network.
       librechat_obsidian_mount_enabled:
         type: bool
         default: false
@@ -86,3 +98,121 @@ argument_specs:
         description: >
           Absolute path to the Obsidian vault on the host. Only used when
           librechat_obsidian_mount_enabled is true.
+      librechat_allow_social_login:
+        type: bool
+        default: false
+        description: Enable OAuth/social login providers (Google, OpenID, etc.).
+      librechat_allow_social_registration:
+        type: bool
+        default: false
+        description: Allow new user registration via social login providers.
+      librechat_allow_email_login:
+        type: bool
+        default: false
+        description: Enable local email/password login.
+      librechat_allow_registration:
+        type: bool
+        default: false
+        description: Allow new user self-registration via email/password.
+      librechat_anthropic_api_key:
+        type: str
+        default: ""
+        description: Anthropic API key. Store in Ansible Vault.
+      librechat_anthropic_models:
+        type: str
+        default: ""
+        description: Comma-separated list of Anthropic models to offer.
+      librechat_endpoints:
+        type: str
+        default: ""
+        description: >
+          Comma-separated list of enabled endpoints.
+          E.g. "azureOpenAI,anthropic,agents,azureAssistants".
+      librechat_app_title:
+        type: str
+        default: LibreChat
+        description: Application title shown in the browser tab and header.
+      librechat_openid_client_id:
+        type: str
+        default: ""
+        description: OpenID Connect / Entra ID application (client) ID.
+      librechat_openid_client_secret:
+        type: str
+        default: ""
+        description: OpenID Connect / Entra ID client secret. Store in Ansible Vault.
+      librechat_openid_issuer:
+        type: str
+        default: ""
+        description: OpenID Connect issuer URL (e.g. https://login.microsoftonline.com/<tenant>/v2.0/).
+      librechat_openid_session_secret:
+        type: str
+        default: ""
+        description: Session secret for the OpenID Connect strategy. Store in Ansible Vault.
+      librechat_openid_scope:
+        type: str
+        default: "openid profile email offline_access"
+        description: Space-separated OpenID Connect scopes to request.
+      librechat_openid_button_label:
+        type: str
+        default: ""
+        description: Label shown on the OpenID Connect login button (e.g. "Sign-in with Microsoft").
+      librechat_openid_image_url:
+        type: str
+        default: ""
+        description: URL of the icon shown on the OpenID Connect login button.
+      librechat_openid_callback_url:
+        type: str
+        default: /oauth/openid/callback
+        description: Callback path for the OpenID Connect provider redirect.
+      librechat_openid_required_role:
+        type: str
+        default: ""
+        description: >
+          Group/role ID that a user must have in the ID token to be granted access.
+          Leave blank to allow all authenticated users.
+      librechat_openid_required_role_token_kind:
+        type: str
+        default: ""
+        description: Token kind to inspect for the required role ("id" or "access").
+      librechat_openid_required_role_parameter_path:
+        type: str
+        default: ""
+        description: JSON path in the token where group/role IDs are found (e.g. "groups").
+      librechat_google_client_id:
+        type: str
+        default: ""
+        description: Google OAuth 2.0 client ID.
+      librechat_google_client_secret:
+        type: str
+        default: ""
+        description: Google OAuth 2.0 client secret. Store in Ansible Vault.
+      librechat_google_callback_url:
+        type: str
+        default: /oauth/google/callback
+        description: Callback path for the Google OAuth redirect.
+      librechat_hermes_personal_enabled:
+        type: bool
+        default: false
+        description: When true, registers Hermes Personal as a custom endpoint in librechat.yaml.
+      librechat_hermes_personal_url:
+        type: str
+        default: ""
+        description: Base URL of the Hermes Personal gateway API (e.g. https://hermes-api-ai01.wallace.boston).
+      librechat_hermes_personal_api_key:
+        type: str
+        default: ""
+        no_log: true
+        description: Bearer token for the Hermes Personal API. Must match hermes_api_server_key on ai01. Store in Ansible Vault.
+      librechat_hermes_infra_enabled:
+        type: bool
+        default: false
+        description: When true, registers Hermes Infra as a custom endpoint in librechat.yaml.
+      librechat_hermes_infra_url:
+        type: str
+        default: ""
+        description: Base URL of the Hermes Infra gateway API (e.g. https://hermes-api-ai-master.wallace.boston).
+      librechat_hermes_infra_api_key:
+        type: str
+        default: ""
+        no_log: true
+        description: Bearer token for the Hermes Infra API. Must match hermes_api_server_key on ai-master. Store in Ansible Vault.

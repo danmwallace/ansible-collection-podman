@@ -28,3 +28,369 @@ librechat_ragapi_image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
 # Optional Obsidian vault bind mount
 librechat_obsidian_mount_enabled: false
 librechat_obsidian_mount_path: ""
+
+# Server
+librechat_no_index: true
+librechat_trust_proxy: 1
+librechat_min_password_length: ""
+librechat_continue_on_uncaught_exception: ""
+librechat_console_json: true
+librechat_debug_logging: true
+librechat_debug_console: false
+librechat_agent_debug_logging: false
+librechat_mem_diag: ""
+librechat_uid: 0
+librechat_gid: 0
+librechat_node_max_old_space_size: 6144
+librechat_mongo_max_pool_size: ""
+librechat_mongo_min_pool_size: ""
+librechat_mongo_max_connecting: ""
+librechat_mongo_max_idle_time_ms: ""
+librechat_mongo_wait_queue_timeout_ms: ""
+librechat_mongo_auto_index: ""
+librechat_mongo_auto_create: ""
+
+# Tracing
+librechat_langfuse_public_key: ""
+librechat_langfuse_secret_key: ""
+librechat_langfuse_base_url: ""
+
+# Endpoints
+librechat_endpoints: ""
+librechat_proxy: ""
+
+# Anthropic
+librechat_anthropic_api_key: ""
+librechat_anthropic_models: ""
+librechat_anthropic_reverse_proxy: ""
+librechat_anthropic_use_vertex: ""
+librechat_anthropic_vertex_region: ""
+
+# BingAI
+librechat_bingai_token: ""
+librechat_bingai_host: ""
+
+# Google / Gemini
+librechat_gemini_api_key: ""
+librechat_google_key: ""
+librechat_google_auth_header: ""
+librechat_google_models: ""
+librechat_google_loc: ""
+librechat_google_cloud_location: ""
+librechat_google_service_key_file: ""
+
+# OpenAI
+librechat_openai_api_key: ""
+librechat_openai_models: ""
+librechat_debug_openai: false
+
+# Assistants API
+librechat_assistants_api_key: ""
+librechat_assistants_base_url: ""
+librechat_assistants_models: ""
+
+# OpenRouter
+librechat_openrouter_key: ""
+
+# Plugins
+librechat_plugin_models: ""
+librechat_debug_plugins: false
+
+# Azure AI Search
+librechat_azure_ai_search_service_endpoint: ""
+librechat_azure_ai_search_index_name: ""
+librechat_azure_ai_search_api_key: ""
+librechat_azure_ai_search_api_version: ""
+librechat_azure_ai_search_search_option_query_type: ""
+librechat_azure_ai_search_search_option_top: ""
+librechat_azure_ai_search_search_option_select: ""
+
+# Image generation
+librechat_image_gen_oai_api_key: ""
+librechat_image_gen_oai_baseurl: ""
+librechat_image_gen_oai_azure_api_version: ""
+librechat_image_gen_oai_model: ""
+librechat_image_gen_oai_description: ""
+librechat_image_gen_oai_description_with_files: ""
+librechat_image_gen_oai_description_no_files: ""
+librechat_image_edit_oai_description: ""
+librechat_image_gen_oai_prompt_description: ""
+librechat_image_edit_oai_prompt_description: ""
+librechat_dalle_api_key: ""
+librechat_dalle3_api_key: ""
+librechat_dalle2_api_key: ""
+librechat_dalle3_system_prompt: ""
+librechat_dalle2_system_prompt: ""
+librechat_dalle_reverse_proxy: ""
+librechat_dalle3_baseurl: ""
+librechat_dalle2_baseurl: ""
+librechat_dalle3_azure_api_version: ""
+librechat_dalle2_azure_api_version: ""
+librechat_flux_api_base_url: ""
+librechat_flux_api_key: ""
+
+# Search plugins
+librechat_google_search_api_key: ""
+librechat_google_cse_id: ""
+librechat_serpapi_api_key: ""
+librechat_sd_webui_url: ""
+librechat_tavily_api_key: ""
+librechat_traversaal_api_key: ""
+librechat_wolfram_app_id: ""
+librechat_zapier_nla_api_key: ""
+librechat_openweather_api_key: ""
+
+# Search / Meilisearch
+librechat_search: true
+librechat_meili_no_analytics: true
+librechat_meili_host: "http://librechat-meilisearch:7700"
+librechat_meili_no_sync: ""
+
+# Web search providers
+librechat_serper_api_key: ""
+librechat_firecrawl_api_key: ""
+librechat_firecrawl_api_url: ""
+librechat_jina_api_key: ""
+librechat_cohere_api_key: ""
+
+# Speech
+librechat_stt_api_key: ""
+librechat_tts_api_key: ""
+
+# RAG
+librechat_rag_azure_openai_api_key: ""
+librechat_rag_azure_openai_endpoint: ""
+librechat_rag_azure_openai_api_version: ""
+librechat_rag_use_full_context: false
+librechat_embeddings_provider: ""
+librechat_embeddings_model: ""
+librechat_rag_api_url: "http://librechat-rag-api:8000"
+
+# Moderation
+librechat_openai_moderation: false
+librechat_openai_moderation_api_key: ""
+
+# Rate limiting / violations
+librechat_ban_violations: true
+librechat_ban_duration: "1000 * 60 * 60 * 2"
+librechat_ban_interval: 20
+librechat_login_violation_score: 1
+librechat_registration_violation_score: 1
+librechat_concurrent_violation_score: 1
+librechat_message_violation_score: 1
+librechat_non_browser_violation_score: 20
+librechat_tts_violation_score: 1
+librechat_stt_violation_score: 1
+librechat_fork_violation_score: 1
+librechat_import_violation_score: 1
+librechat_file_upload_violation_score: 1
+librechat_login_max: 50
+librechat_login_window: 5
+librechat_register_max: 50
+librechat_register_window: 60
+librechat_limit_concurrent_messages: true
+librechat_concurrent_message_max: 2
+librechat_limit_message_ip: true
+librechat_message_ip_max: 40
+librechat_message_ip_window: 1
+librechat_limit_message_user: false
+librechat_message_user_max: 40
+librechat_message_user_window: 1
+librechat_illegal_model_req_score: 5
+librechat_check_balance: ~
+librechat_start_balance: ~
+
+# Registration and Login
+librechat_allow_email_login: false
+librechat_allow_registration: false
+librechat_allow_social_login: false
+librechat_allow_social_registration: false
+librechat_allow_password_reset: false
+librechat_allow_account_deletion: true
+librechat_allow_unverified_email_login: false
+librechat_session_expiry: "1000 * 60 * 15"
+librechat_refresh_token_expiry: "(1000 * 60 * 60 * 24) * 7"
+
+# OAuth providers
+librechat_discord_client_id: ""
+librechat_discord_client_secret: ""
+librechat_discord_callback_url: "/oauth/discord/callback"
+librechat_facebook_client_id: ""
+librechat_facebook_client_secret: ""
+librechat_facebook_callback_url: "/oauth/facebook/callback"
+librechat_github_client_id: ""
+librechat_github_client_secret: ""
+librechat_github_callback_url: "/oauth/github/callback"
+librechat_github_enterprise_base_url: ""
+librechat_github_enterprise_user_agent: ""
+librechat_google_client_id: ""
+librechat_google_client_secret: ""
+librechat_google_callback_url: "/oauth/google/callback"
+librechat_apple_client_id: ""
+librechat_apple_team_id: ""
+librechat_apple_key_id: ""
+librechat_apple_private_key_path: ""
+librechat_apple_callback_url: "/oauth/apple/callback"
+
+# OpenID / Entra ID
+librechat_openid_client_id: ""
+librechat_openid_client_secret: ""
+librechat_openid_issuer: ""
+librechat_openid_session_secret: ""
+librechat_openid_callback_url: "/oauth/openid/callback"
+librechat_openid_scope: "openid profile email offline_access"
+librechat_openid_reuse_tokens: true
+librechat_openid_required_role: ""
+librechat_openid_required_role_token_kind: ""
+librechat_openid_required_role_parameter_path: ""
+librechat_openid_admin_role: ""
+librechat_openid_admin_role_parameter_path: ""
+librechat_openid_admin_role_token_kind: ""
+librechat_openid_username_claim: ""
+librechat_openid_name_claim: ""
+librechat_openid_email_claim: ""
+librechat_openid_audience: ""
+librechat_openid_button_label: ""
+librechat_openid_image_url: ""
+librechat_openid_auto_redirect: false
+librechat_openid_use_pkce: false
+librechat_openid_post_logout_redirect_uri: ""
+librechat_openid_max_logout_url_length: ~
+
+# Entra ID people search
+librechat_use_entra_id_for_people_search: false
+librechat_entra_id_include_owners_as_members: false
+librechat_openid_graph_scopes: ""
+
+# SharePoint
+librechat_enable_sharepoint_filepicker: false
+librechat_sharepoint_base_url: ""
+librechat_sharepoint_picker_sharepoint_scope: ""
+librechat_sharepoint_picker_graph_scope: ""
+
+# SAML
+librechat_saml_entry_point: ""
+librechat_saml_issuer: ""
+librechat_saml_cert: ""
+librechat_saml_callback_url: ""
+librechat_saml_session_secret: ""
+librechat_saml_email_claim: ""
+librechat_saml_username_claim: ""
+librechat_saml_given_name_claim: ""
+librechat_saml_family_name_claim: ""
+librechat_saml_picture_claim: ""
+librechat_saml_name_claim: ""
+librechat_saml_button_label: ""
+librechat_saml_image_url: ""
+librechat_saml_use_authn_response_signed: false
+
+# LDAP
+librechat_ldap_url: ""
+librechat_ldap_bind_dn: ""
+librechat_ldap_bind_credentials: ""
+librechat_ldap_user_search_base: ""
+librechat_ldap_search_filter: "mail="
+librechat_ldap_ca_cert_path: ""
+librechat_ldap_tls_reject_unauthorized: ""
+librechat_ldap_starttls: false
+librechat_ldap_login_uses_username: true
+librechat_ldap_id: ""
+librechat_ldap_username: ""
+librechat_ldap_email: ""
+librechat_ldap_full_name: ""
+
+# Email
+librechat_email_service: ""
+librechat_email_host: ""
+librechat_email_port: 25
+librechat_email_encryption: ""
+librechat_email_encryption_hostname: ""
+librechat_email_allow_selfsigned: ""
+librechat_email_username: ""
+librechat_email_password: ""
+librechat_email_from_name: ""
+librechat_email_from: ""
+librechat_mailgun_api_key: ""
+librechat_mailgun_domain: ""
+librechat_mailgun_host: ""
+
+# Firebase CDN
+librechat_firebase_api_key: ""
+librechat_firebase_auth_domain: ""
+librechat_firebase_project_id: ""
+librechat_firebase_storage_bucket: ""
+librechat_firebase_messaging_sender_id: ""
+librechat_firebase_app_id: ""
+
+# S3
+librechat_aws_endpoint_url: ""
+librechat_aws_access_key_id: ""
+librechat_aws_secret_access_key: ""
+librechat_aws_region: ""
+librechat_aws_bucket_name: ""
+librechat_aws_force_path_style: ""
+
+# Azure Blob Storage
+librechat_azure_storage_connection_string: ""
+librechat_azure_storage_public_access: ""
+librechat_azure_container_name: ""
+
+# Shared Links
+librechat_allow_shared_links: ""
+librechat_allow_shared_links_public: ""
+
+# Cache
+librechat_static_cache_max_age: 172800
+librechat_static_cache_s_max_age: 86400
+librechat_disable_compression: false
+librechat_enable_image_output_gzip_scan: false
+librechat_conversation_import_max_file_size_bytes: ~
+
+# UI
+librechat_app_title: "LibreChat"
+librechat_custom_footer: ""
+librechat_help_and_faq_url: ""
+librechat_show_birthday_icon: false
+librechat_analytics_gtm_id: ""
+librechat_index_cache_control: ""
+librechat_index_pragma: ""
+librechat_index_expires: ""
+
+# Redis
+librechat_redis_uri: ""
+librechat_use_redis: ""
+librechat_use_redis_streams: ""
+librechat_redis_ca: ""
+librechat_redis_use_alternative_dns_lookup: ""
+librechat_redis_username: ""
+librechat_redis_password: ""
+librechat_redis_key_prefix_var: ""
+librechat_redis_key_prefix: ""
+librechat_redis_max_listeners: ""
+librechat_redis_ping_interval: ""
+librechat_forced_in_memory_cache_namespaces: ""
+librechat_leader_lease_duration: ""
+librechat_leader_renew_interval: ""
+librechat_leader_renew_attempts: ""
+librechat_leader_renew_retry_delay: ""
+
+# MCP
+librechat_mcp_oauth_on_auth_error: ~
+librechat_mcp_oauth_detection_timeout: ~
+librechat_mcp_connection_check_ttl: ~
+librechat_mcp_skip_code_challenge_check: ~
+librechat_mcp_cb_max_cycles: ~
+librechat_mcp_cb_cycle_window_ms: ~
+librechat_mcp_cb_cycle_cooldown_ms: ~
+librechat_mcp_cb_max_failed_rounds: ~
+librechat_mcp_cb_failed_window_ms: ~
+librechat_mcp_cb_base_backoff_ms: ~
+librechat_mcp_cb_max_backoff_ms: ~
+
+# Hermes custom endpoints
+librechat_hermes_personal_enabled: false
+librechat_hermes_personal_url: ""
+librechat_hermes_personal_api_key: ""
+librechat_hermes_infra_enabled: false
+librechat_hermes_infra_url: ""
+librechat_hermes_infra_api_key: ""
