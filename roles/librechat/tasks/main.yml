@@ -82,6 +82,17 @@
   become: true
   notify: Restart librechat
 
+- name: Render librechat env file
+  ansible.builtin.template:
+    src: librechat.env.j2
+    dest: "{{ librechat_data_dir }}/librechat.env"
+    mode: "0640"
+    owner: root
+    group: root
+  become: true
+  no_log: true
+  notify: Restart librechat
+
 - name: Render librechat-api Quadlet container unit
   ansible.builtin.template:
     src: librechat-api.container.j2
