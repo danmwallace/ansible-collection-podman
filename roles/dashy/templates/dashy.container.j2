@@ -1,0 +1,22 @@
+# Managed by Ansible - danmwallace.podman.dashy
+[Unit]
+Description=Dashy homelab dashboard
+After=network-online.target
+
+[Container]
+Image={{ dashy_image }}
+ContainerName=dashy
+Network=proxy_network.network
+Volume={{ dashy_data_dir }}/config.yml:/app/user-data/conf.yml:ro,Z
+Label=traefik.enable=true
+Label=traefik.docker.network=systemd-proxy_network
+Label=traefik.http.routers.dashy.rule=Host(`{{ dashy_hostname }}`)
+Label=traefik.http.routers.dashy.entrypoints=websecure
+Label=traefik.http.routers.dashy.tls.certresolver=cloudflare
+Label=traefik.http.services.dashy.loadbalancer.server.port=8080
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

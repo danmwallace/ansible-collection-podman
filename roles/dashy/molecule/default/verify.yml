@@ -1,0 +1,60 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat the dashy Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/dashy.container
+      register: dashy_container_unit
+
+    - name: Assert dashy.container unit exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - dashy_container_unit.stat.exists
+          - dashy_container_unit.stat.mode == '0644'
+
+    - name: Read dashy.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/dashy.container
+      register: dashy_container_contents
+
+    - name: Assert dashy.container has expected hostname, image, and network
+      vars:
+        rendered: "{{ dashy_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'home.test.local' in rendered"
+          - "'lissy93/dashy:latest' in rendered"
+          - "'proxy_network.network' in rendered"
+          - "'/opt/podman/dashy/config.yml' in rendered"
+
+    - name: Stat the dashy config file
+      ansible.builtin.stat:
+        path: /opt/podman/dashy/config.yml
+      register: dashy_config_stat
+
+    - name: Assert dashy config file exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - dashy_config_stat.stat.exists
+          - dashy_config_stat.stat.mode == '0644'
+
+    - name: Read dashy config file
+      ansible.builtin.slurp:
+        src: /opt/podman/dashy/config.yml
+      register: dashy_config_contents
+
+    - name: Assert dashy config contains expected section headings and hostnames
+      vars:
+        rendered: "{{ dashy_config_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Homelab Tools' in rendered"
+          - "'AI & Automation' in rendered"
+          - "'Public Sites' in rendered"
+          - "'Infrastructure' in rendered"
+          - "'tools.test.local' in rendered"
+          - "'ai.test.local' in rendered"
+          - "'portfolio.test.local' in rendered"
+          - "'trfk.test.local' in rendered"

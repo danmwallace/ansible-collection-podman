@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: MIT
+---
+dashy_data_dir: /opt/podman/dashy
+dashy_image: docker.io/lissy93/dashy:latest
