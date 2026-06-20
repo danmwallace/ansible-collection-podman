@@ -9,10 +9,10 @@
         name: danmwallace.podman.dashy
       vars:
         dashy_hostname: home.test.local
-        it_tools_hostname: tools.test.local
-        semaphore_hostname: semaphore.test.local
-        arcane_hostname: arcane.test.local
-        traefik_hostname: trfk.test.local
+        dashy_it_tools_hostname: tools.test.local
+        dashy_semaphore_hostname: semaphore.test.local
+        dashy_arcane_hostname: arcane.test.local
+        dashy_traefik_util01_hostname: trfk.test.local
         dashy_librechat_hostname: ai.test.local
         dashy_n8n_hostname: agents.test.local
         dashy_hermes_gateway_ai01_hostname: hermes-ai01.test.local

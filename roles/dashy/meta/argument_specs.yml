@@ -16,6 +16,22 @@ argument_specs:
         type: str
         default: docker.io/lissy93/dashy:latest
         description: Fully-qualified container image for Dashy.
+      dashy_it_tools_hostname:
+        type: str
+        required: true
+        description: Hostname for IT Tools (on util01).
+      dashy_semaphore_hostname:
+        type: str
+        required: true
+        description: Hostname for Semaphore (on util01).
+      dashy_arcane_hostname:
+        type: str
+        required: true
+        description: Hostname for Arcane secrets manager (on util01).
+      dashy_traefik_util01_hostname:
+        type: str
+        required: true
+        description: Hostname for Traefik dashboard on util01.
       dashy_librechat_hostname:
         type: str
         required: true

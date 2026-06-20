@@ -8,13 +8,13 @@ sections:
   - name: Homelab Tools
     items:
       - title: IT Tools
-        url: "https://{{ it_tools_hostname }}"
+        url: "https://{{ dashy_it_tools_hostname }}"
         statusCheck: true
       - title: Semaphore
-        url: "https://{{ semaphore_hostname }}"
+        url: "https://{{ dashy_semaphore_hostname }}"
         statusCheck: true
       - title: Arcane
-        url: "https://{{ arcane_hostname }}"
+        url: "https://{{ dashy_arcane_hostname }}"
         statusCheck: true
 
   - name: AI & Automation
@@ -44,7 +44,7 @@ sections:
   - name: Infrastructure
     items:
       - title: Traefik (util01)
-        url: "https://{{ traefik_hostname }}"
+        url: "https://{{ dashy_traefik_util01_hostname }}"
         statusCheck: false
       - title: Traefik (ai01)
         url: "https://{{ dashy_traefik_ai01_hostname }}"
