@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 ---
 - name: Create molecule instance
   hosts: localhost

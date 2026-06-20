@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 ---
 - name: Prepare molecule instance
   hosts: molecule
@@ -7,6 +8,8 @@
       ansible.builtin.raw: dnf install -y python3 sudo
       changed_when: false
 
-    - name: Create /etc/containers/systemd directory
-      ansible.builtin.raw: mkdir -p /etc/containers/systemd
-      changed_when: false
+    - name: Ensure /etc/containers/systemd exists
+      ansible.builtin.file:
+        path: /etc/containers/systemd
+        state: directory
+        mode: "0755"

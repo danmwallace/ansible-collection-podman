@@ -2,6 +2,7 @@
 [Unit]
 Description=Semaphore Ansible UI
 After=network-online.target semaphore-postgres.service
+Requires=semaphore-postgres.service
 
 [Container]
 Image=docker.io/semaphoreui/semaphore:{{ semaphore_version }}
@@ -32,7 +33,9 @@ Label=traefik.http.routers.semaphore.tls.certresolver=cloudflare
 Label=traefik.http.services.semaphore.loadbalancer.server.port=3000
 
 [Service]
-Restart=always
+Restart=on-failure
+RestartSec=5s
+StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target default.target
