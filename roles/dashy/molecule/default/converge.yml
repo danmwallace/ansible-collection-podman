@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply dashy role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.dashy
+      vars:
+        dashy_hostname: home.test.local
+        dashy_it_tools_hostname: tools.test.local
+        dashy_semaphore_hostname: semaphore.test.local
+        dashy_arcane_hostname: arcane.test.local
+        dashy_traefik_util01_hostname: trfk.test.local
+        dashy_librechat_hostname: ai.test.local
+        dashy_n8n_hostname: agents.test.local
+        dashy_hermes_gateway_ai01_hostname: hermes-ai01.test.local
+        dashy_hermes_gateway_aimaster_hostname: hermes-master.test.local
+        dashy_portfolio_hostname: portfolio.test.local
+        dashy_wsb_hostname: wsb.test.local
+        dashy_traefik_ai01_hostname: trfk-ai01.test.local
+        dashy_traefik_aimaster_hostname: trfk-master.test.local

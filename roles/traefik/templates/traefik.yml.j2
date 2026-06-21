@@ -24,7 +24,7 @@ providers:
     exposedByDefault: false
     network: systemd-proxy_network
   file:
-    filename: /etc/traefik/dynamic_conf.yml
+    directory: /etc/traefik/conf.d/
     watch: true
 
 certificatesResolvers:

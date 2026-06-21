@@ -7,6 +7,24 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-21
+
+### Added
+
+- `dashy` role — deploys Dashy homelab dashboard as a Podman Quadlet unit with a
+  fully rendered `dashy-config.yml` template; supports configurable sections,
+  status checks, and `statusCheckUrl` overrides per item.
+- `librechat`: `librechat_hermes_personal_model` and `librechat_hermes_infra_model`
+  variables for the model name reported to LibreChat (defaults to `hermes-agent`).
+- `librechat`: Hermes custom endpoint support with `librechat_hermes_personal_enabled`
+  and `librechat_hermes_infra_enabled` toggles, URLs, and API key variables.
+
+### Changed
+
+- `traefik`: file provider switched from a single `dynamic_conf.yml` to a
+  `conf.d/` directory (`watch: true`), allowing other roles to drop their own
+  route files without touching the traefik role.
+
 ## [0.1.0] - 2026-06-14
 
 ### Added

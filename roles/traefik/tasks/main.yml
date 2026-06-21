@@ -8,6 +8,7 @@
   loop:
     - "{{ traefik_data_dir }}"
     - "{{ traefik_data_dir }}/letsencrypt"
+    - "{{ traefik_data_dir }}/conf.d"
   become: true
 
 - name: Ensure acme.json exists with restrictive permissions
@@ -30,7 +31,7 @@
 - name: Render traefik dynamic configuration
   ansible.builtin.template:
     src: dynamic_conf.yml.j2
-    dest: "{{ traefik_data_dir }}/dynamic_conf.yml"
+    dest: "{{ traefik_data_dir }}/conf.d/dynamic_conf.yml"
     mode: "0600"
   become: true
   notify: Restart traefik

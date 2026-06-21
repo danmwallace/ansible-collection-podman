@@ -11,6 +11,11 @@ Volume={{ semaphore_data_dir }}/postgres:/var/lib/postgresql:z
 Environment=POSTGRES_DB={{ semaphore_postgres_db }}
 Environment=POSTGRES_USER={{ semaphore_postgres_user }}
 Environment=POSTGRES_PASSWORD={{ semaphore_postgres_password }}
+HealthCmd=pg_isready -U {{ semaphore_postgres_user }}
+HealthInterval=5s
+HealthTimeout=3s
+HealthRetries=5
+HealthStartPeriod=15s
 
 [Service]
 Restart=always

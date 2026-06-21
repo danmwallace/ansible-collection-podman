@@ -1,0 +1,66 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Dashy homelab dashboard as a Podman Quadlet on Fedora.
+    options:
+      dashy_hostname:
+        type: str
+        required: true
+        description: Hostname for the Dashy web interface (e.g. home.wallace.boston).
+      dashy_data_dir:
+        type: str
+        default: /opt/podman/dashy
+        description: Host directory for the Dashy config file.
+      dashy_image:
+        type: str
+        default: docker.io/lissy93/dashy:latest
+        description: Fully-qualified container image for Dashy.
+      dashy_it_tools_hostname:
+        type: str
+        required: true
+        description: Hostname for IT Tools (on util01).
+      dashy_semaphore_hostname:
+        type: str
+        required: true
+        description: Hostname for Semaphore (on util01).
+      dashy_arcane_hostname:
+        type: str
+        required: true
+        description: Hostname for Arcane secrets manager (on util01).
+      dashy_traefik_util01_hostname:
+        type: str
+        required: true
+        description: Hostname for Traefik dashboard on util01.
+      dashy_librechat_hostname:
+        type: str
+        required: true
+        description: Hostname for LibreChat (on ai01).
+      dashy_n8n_hostname:
+        type: str
+        required: true
+        description: Hostname for n8n (on ai01).
+      dashy_hermes_gateway_ai01_hostname:
+        type: str
+        required: true
+        description: Hostname for Hermes Gateway on ai01.
+      dashy_hermes_gateway_aimaster_hostname:
+        type: str
+        required: true
+        description: Hostname for Hermes Gateway on ai-master.
+      dashy_portfolio_hostname:
+        type: str
+        required: true
+        description: Hostname for the portfolio site (on web01).
+      dashy_wsb_hostname:
+        type: str
+        required: true
+        description: Hostname for WSB Pulse (on web01).
+      dashy_traefik_ai01_hostname:
+        type: str
+        required: true
+        description: Hostname for Traefik dashboard on ai01.
+      dashy_traefik_aimaster_hostname:
+        type: str
+        required: true
+        description: Hostname for Traefik dashboard on ai-master.

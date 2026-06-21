@@ -1,0 +1,62 @@
+# Managed by Ansible - danmwallace.podman.dashy
+---
+pageInfo:
+  title: Homelab
+  description: Wallace homelab services
+
+sections:
+  - name: Homelab Tools
+    items:
+      - title: IT Tools
+        url: "https://{{ dashy_it_tools_hostname }}"
+        statusCheck: true
+      - title: Semaphore
+        url: "https://{{ dashy_semaphore_hostname }}"
+        statusCheck: true
+      - title: Arcane
+        url: "https://{{ dashy_arcane_hostname }}"
+        statusCheck: true
+
+  - name: AI & Automation
+    items:
+      - title: LibreChat
+        url: "https://{{ dashy_librechat_hostname }}"
+        statusCheck: true
+      - title: n8n
+        url: "https://{{ dashy_n8n_hostname }}"
+        statusCheck: true
+      - title: Hermes Gateway (ai01)
+        url: "https://{{ dashy_hermes_gateway_ai01_hostname }}"
+        statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_gateway_ai01_hostname }}/health"
+      - title: Hermes Dashboard (ai01)
+        url: "https://{{ dashy_hermes_dash_ai01_hostname }}"
+        statusCheck: true
+      - title: Hermes Gateway (ai-master)
+        url: "https://{{ dashy_hermes_gateway_aimaster_hostname }}"
+        statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_gateway_aimaster_hostname }}/health"
+      - title: Hermes Dashboard (ai-master)
+        url: "https://{{ dashy_hermes_dash_aimaster_hostname }}"
+        statusCheck: true
+
+  - name: Public Sites
+    items:
+      - title: Portfolio
+        url: "https://{{ dashy_portfolio_hostname }}"
+        statusCheck: true
+      - title: WSB Pulse
+        url: "https://{{ dashy_wsb_hostname }}"
+        statusCheck: true
+
+  - name: Infrastructure
+    items:
+      - title: Traefik (util01)
+        url: "https://{{ dashy_traefik_util01_hostname }}"
+        statusCheck: false
+      - title: Traefik (ai01)
+        url: "https://{{ dashy_traefik_ai01_hostname }}"
+        statusCheck: false
+      - title: Traefik (ai-master)
+        url: "https://{{ dashy_traefik_aimaster_hostname }}"
+        statusCheck: false
