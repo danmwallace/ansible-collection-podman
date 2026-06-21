@@ -28,8 +28,16 @@ sections:
       - title: Hermes Gateway (ai01)
         url: "https://{{ dashy_hermes_gateway_ai01_hostname }}"
         statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_gateway_ai01_hostname }}/health"
+      - title: Hermes Dashboard (ai01)
+        url: "https://{{ dashy_hermes_dash_ai01_hostname }}"
+        statusCheck: true
       - title: Hermes Gateway (ai-master)
         url: "https://{{ dashy_hermes_gateway_aimaster_hostname }}"
+        statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_gateway_aimaster_hostname }}/health"
+      - title: Hermes Dashboard (ai-master)
+        url: "https://{{ dashy_hermes_dash_aimaster_hostname }}"
         statusCheck: true
 
   - name: Public Sites

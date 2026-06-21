@@ -9,19 +9,19 @@ endpoints:
       apiKey: "${HERMES_PERSONAL_API_KEY}"
       baseURL: "{{ librechat_hermes_personal_url }}/v1"
       models:
-        default: ["hermes-agent"]
+        default: ["{{ librechat_hermes_personal_model }}"]
         fetch: false
       titleConvo: true
-      titleModel: "hermes-agent"
+      titleModel: "{{ librechat_hermes_personal_model }}"
 {% endif %}
 {% if librechat_hermes_infra_enabled %}
     - name: "Hermes Infra"
       apiKey: "${HERMES_INFRA_API_KEY}"
       baseURL: "{{ librechat_hermes_infra_url }}/v1"
       models:
-        default: ["hermes-agent"]
+        default: ["{{ librechat_hermes_infra_model }}"]
         fetch: false
       titleConvo: true
-      titleModel: "hermes-agent"
+      titleModel: "{{ librechat_hermes_infra_model }}"
 {% endif %}
 {% endif %}
