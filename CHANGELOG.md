@@ -7,6 +7,14 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-24
+
+### Added
+
+- `grimmory` role — deploys Grimmory eBook library and MariaDB 11 as rootful Podman
+  Quadlet units; mounts an NFS share for the books volume; routes traffic via Traefik
+  container labels on `proxy_network.network`.
+
 ## [0.2.0] - 2026-06-21
 
 ### Added
