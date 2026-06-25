@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Ensure grimmory data directories exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ grimmory_data_dir }}"
+    - "{{ grimmory_data_dir }}/data"
+    - "{{ grimmory_data_dir }}/bookdrop"
+    - "{{ grimmory_data_dir }}/db"
+  become: true
+
+- name: Ensure NFS mount point exists
+  ansible.builtin.file:
+    path: "{{ grimmory_nfs_mountpoint }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Mount NFS books share
+  ansible.posix.mount:
+    src: "{{ grimmory_nfs_server }}:{{ grimmory_nfs_path }}"
+    path: "{{ grimmory_nfs_mountpoint }}"
+    fstype: nfs4
+    opts: defaults,_netdev,nofail
+    state: mounted
+  become: true
+  tags: [molecule-notest]
+
+- name: Deploy grimmory Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/grimmory.network
+    mode: "0644"
+  become: true
+
+- name: Deploy grimmory-db Quadlet container unit
+  ansible.builtin.template:
+    src: grimmory-db.container.j2
+    dest: /etc/containers/systemd/grimmory-db.container
+    mode: "0644"
+  become: true
+  notify: Restart grimmory-db
+
+- name: Enable and start grimmory-db.service
+  ansible.builtin.systemd:
+    name: grimmory-db.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Deploy grimmory Quadlet container unit
+  ansible.builtin.template:
+    src: grimmory.container.j2
+    dest: /etc/containers/systemd/grimmory.container
+    mode: "0644"
+  become: true
+  notify: Restart grimmory
+
+- name: Enable and start grimmory.service
+  ansible.builtin.systemd:
+    name: grimmory.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]

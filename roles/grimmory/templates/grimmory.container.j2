@@ -1,0 +1,34 @@
+# Managed by Ansible - danmwallace.podman.grimmory
+[Unit]
+Description=Grimmory eBook library
+After=network-online.target remote-fs.target grimmory-db.service
+Requires=grimmory-db.service remote-fs.target
+
+[Container]
+Image={{ grimmory_image }}:{{ grimmory_image_tag }}
+ContainerName=grimmory
+Network=grimmory.network
+Network=proxy_network.network
+Volume={{ grimmory_data_dir }}/data:/app/data:z
+Volume={{ grimmory_data_dir }}/bookdrop:/app/bookdrop:z
+Volume={{ grimmory_nfs_mountpoint }}:/app/books:z
+Environment=DATABASE_URL=jdbc:mariadb://grimmory-db:3306/{{ grimmory_db_name }}
+Environment=DB_USER={{ grimmory_db_user }}
+Environment=DB_PASSWORD={{ grimmory_db_password }}
+Environment=APP_USER_ID={{ grimmory_app_uid }}
+Environment=APP_GROUP_ID={{ grimmory_app_gid }}
+Environment=TZ={{ grimmory_timezone }}
+Label=traefik.enable=true
+Label=traefik.docker.network={{ grimmory_traefik_network }}
+Label=traefik.http.routers.grimmory.rule=Host(`{{ grimmory_hostname }}`)
+Label=traefik.http.routers.grimmory.entrypoints=websecure
+Label=traefik.http.routers.grimmory.tls.certresolver=cloudflare
+Label=traefik.http.services.grimmory.loadbalancer.server.port=6060
+
+[Service]
+Restart=on-failure
+RestartSec=5s
+StartLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target default.target
