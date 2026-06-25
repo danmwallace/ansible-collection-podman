@@ -1,0 +1,15 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply grimmory role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.grimmory
+      vars:
+        grimmory_hostname: books.test.local
+        grimmory_db_password: test-db-pass
+        grimmory_db_root_password: test-root-pass
+        grimmory_nfs_server: 10.10.99.3
+        grimmory_nfs_path: /mnt/ssd-mirror/books

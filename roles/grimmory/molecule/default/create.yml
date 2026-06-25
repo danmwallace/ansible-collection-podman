@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Create molecule instance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Start grimmory-instance container
+      containers.podman.podman_container:
+        name: grimmory-instance
+        image: docker.io/jrei/systemd-fedora:42
+        state: started
+        command: /sbin/init
+        privileged: true
+        systemd: always
+        volumes:
+          - /sys/fs/cgroup:/sys/fs/cgroup:rw
+        cgroupns: host

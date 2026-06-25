@@ -1,0 +1,25 @@
+# Managed by Ansible - danmwallace.podman.grimmory
+[Unit]
+Description=Grimmory MariaDB database
+After=network-online.target
+
+[Container]
+Image={{ grimmory_db_image }}:{{ grimmory_db_image_tag }}
+ContainerName=grimmory-db
+Network=grimmory.network
+Volume={{ grimmory_data_dir }}/db:/var/lib/mysql:z
+Environment=MARIADB_DATABASE={{ grimmory_db_name }}
+Environment=MARIADB_USER={{ grimmory_db_user }}
+Environment=MARIADB_PASSWORD={{ grimmory_db_password }}
+Environment=MARIADB_ROOT_PASSWORD={{ grimmory_db_root_password }}
+HealthCmd=mysqladmin ping -h localhost -u root -p{{ grimmory_db_root_password }}
+HealthInterval=10s
+HealthTimeout=5s
+HealthRetries=5
+HealthStartPeriod=30s
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

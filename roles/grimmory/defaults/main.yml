@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+---
+grimmory_image: ghcr.io/grimmory-tools/grimmory
+grimmory_image_tag: latest
+grimmory_db_image: docker.io/library/mariadb
+grimmory_db_image_tag: "11"
+
+grimmory_data_dir: /opt/podman/grimmory
+grimmory_nfs_mountpoint: /mnt/nfs/books
+
+grimmory_app_uid: 1000
+grimmory_app_gid: 1000
+grimmory_timezone: America/New_York
+
+grimmory_db_name: grimmory
+grimmory_db_user: grimmory
+
+grimmory_traefik_network: systemd-proxy_network

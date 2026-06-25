@@ -1,0 +1,10 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Destroy molecule instance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Stop and remove grimmory-instance container
+      containers.podman.podman_container:
+        name: grimmory-instance
+        state: absent

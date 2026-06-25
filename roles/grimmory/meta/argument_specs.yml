@@ -1,0 +1,74 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Grimmory eBook library with MariaDB as Podman Quadlets on Fedora.
+    options:
+      grimmory_hostname:
+        type: str
+        required: true
+        description: Hostname for the Grimmory web interface (e.g. books.wallace.boston).
+      grimmory_db_password:
+        type: str
+        required: true
+        description: MariaDB password for the grimmory application user. Supply from vault.
+      grimmory_db_root_password:
+        type: str
+        required: true
+        description: MariaDB root password. Supply from vault.
+      grimmory_nfs_server:
+        type: str
+        required: true
+        description: NFS server hostname or IP (e.g. 10.10.99.3).
+      grimmory_nfs_path:
+        type: str
+        required: true
+        description: Exported path on the NFS server (e.g. /mnt/ssd-mirror/books).
+      grimmory_image:
+        type: str
+        default: ghcr.io/grimmory-tools/grimmory
+        description: Grimmory container image.
+      grimmory_image_tag:
+        type: str
+        default: latest
+        description: Grimmory image tag. Pin to a release tag in production.
+      grimmory_db_image:
+        type: str
+        default: docker.io/library/mariadb
+        description: MariaDB container image.
+      grimmory_db_image_tag:
+        type: str
+        default: "11"
+        description: MariaDB image tag.
+      grimmory_data_dir:
+        type: str
+        default: /opt/podman/grimmory
+        description: Host base directory for Grimmory data, bookdrop, and MariaDB volumes.
+      grimmory_nfs_mountpoint:
+        type: str
+        default: /mnt/nfs/books
+        description: Host path where the NFS books share is mounted.
+      grimmory_app_uid:
+        type: int
+        default: 1000
+        description: UID the Grimmory container process runs as (APP_USER_ID).
+      grimmory_app_gid:
+        type: int
+        default: 1000
+        description: GID the Grimmory container process runs as (APP_GROUP_ID).
+      grimmory_timezone:
+        type: str
+        default: America/New_York
+        description: Timezone passed to the container as the TZ env var.
+      grimmory_db_name:
+        type: str
+        default: grimmory
+        description: MariaDB database name.
+      grimmory_db_user:
+        type: str
+        default: grimmory
+        description: MariaDB application user.
+      grimmory_traefik_network:
+        type: str
+        default: systemd-proxy_network
+        description: Podman network shared with Traefik (used in traefik.docker.network label).

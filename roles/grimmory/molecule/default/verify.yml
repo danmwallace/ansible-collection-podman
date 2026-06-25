@@ -1,0 +1,68 @@
+# SPDX-License-Identifier: MIT
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat the grimmory Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/grimmory.container
+      register: grimmory_container_unit
+
+    - name: Assert grimmory.container unit exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - grimmory_container_unit.stat.exists
+          - grimmory_container_unit.stat.mode == '0644'
+
+    - name: Stat the grimmory-db Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/grimmory-db.container
+      register: grimmory_db_container_unit
+
+    - name: Assert grimmory-db.container unit exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - grimmory_db_container_unit.stat.exists
+          - grimmory_db_container_unit.stat.mode == '0644'
+
+    - name: Stat the grimmory Quadlet network unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/grimmory.network
+      register: grimmory_network_unit
+
+    - name: Assert grimmory.network unit exists
+      ansible.builtin.assert:
+        that:
+          - grimmory_network_unit.stat.exists
+
+    - name: Read grimmory.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/grimmory.container
+      register: grimmory_container_contents
+
+    - name: Assert grimmory.container has expected hostname, image, and networks
+      vars:
+        rendered: "{{ grimmory_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'books.test.local' in rendered"
+          - "'grimmory-tools/grimmory:latest' in rendered"
+          - "'proxy_network.network' in rendered"
+          - "'grimmory.network' in rendered"
+          - "'grimmory-db' in rendered"
+
+    - name: Stat grimmory data directories
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      register: grimmory_dirs
+      loop:
+        - /opt/podman/grimmory
+        - /opt/podman/grimmory/data
+        - /opt/podman/grimmory/bookdrop
+        - /opt/podman/grimmory/db
+
+    - name: Assert all data directories exist
+      ansible.builtin.assert:
+        that: item.stat.exists and item.stat.isdir
+      loop: "{{ grimmory_dirs.results }}"
