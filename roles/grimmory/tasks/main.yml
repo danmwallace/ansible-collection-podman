@@ -12,6 +12,12 @@
     - "{{ grimmory_data_dir }}/db"
   become: true
 
+- name: Ensure nfs-utils is installed
+  ansible.builtin.package:
+    name: nfs-utils
+    state: present
+  become: true
+
 - name: Ensure NFS mount point exists
   ansible.builtin.file:
     path: "{{ grimmory_nfs_mountpoint }}"
