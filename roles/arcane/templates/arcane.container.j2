@@ -9,7 +9,6 @@ ContainerName=arcane
 Network=arcane.network
 Network=proxy_network.network
 Volume=/run/podman/podman.sock:/var/run/docker.sock:z
-SecurityLabelDisable=true
 Environment=APP_URL=https://{{ arcane_hostname }}
 Environment=PUID=1000
 Environment=PGID=1000
