@@ -7,7 +7,7 @@ After=network-online.target
 Image={{ uptime_kuma_image }}
 ContainerName=uptime-kuma
 Network=proxy_network.network
-Volume={{ uptime_kuma_data_dir }}:/app/data
+Volume={{ uptime_kuma_data_dir }}:/app/data:z
 Label=traefik.enable=true
 Label=traefik.docker.network=systemd-proxy_network
 Label=traefik.http.routers.uptime-kuma.rule=Host(`{{ uptime_kuma_hostname }}`)

@@ -5,6 +5,8 @@
     path: "{{ uptime_kuma_data_dir }}"
     state: directory
     mode: "0755"
+    owner: "{{ uptime_kuma_data_owner | default('1000') }}"
+    group: "{{ uptime_kuma_data_owner | default('1000') }}"
   become: true
 
 - name: Deploy uptime-kuma Quadlet container unit

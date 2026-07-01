@@ -7,6 +7,16 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-07-01
+
+### Fixed
+
+- `uptime_kuma`: add `:z` SELinux relabeling to the data volume mount so the
+  container's entrypoint can `chown` the directory on Fedora hosts with SELinux
+  enforcing.
+- `uptime_kuma`: pre-create data directory with owner UID 1000 (`node` user) so
+  the container starts cleanly on first deploy without a manual `chcon`.
+
 ## [0.4.0] - 2026-07-01
 
 ### Added
