@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: MIT
+---
+argument_specs:
+  main:
+    short_description: Deploy Uptime Kuma self-hosted monitoring dashboard as a Podman Quadlet on Fedora.
+    options:
+      uptime_kuma_hostname:
+        type: str
+        required: true
+        description: Hostname for the Uptime Kuma web interface (e.g. uptime.example.com).
+      uptime_kuma_data_dir:
+        type: str
+        default: /opt/podman/uptime-kuma
+        description: Host directory mounted into the container at /app/data for persistent storage.
+      uptime_kuma_image:
+        type: str
+        default: docker.io/louislam/uptime-kuma:1
+        description: Container image to use. Pin to a digest or specific tag for reproducible deploys.

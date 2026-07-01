@@ -1,0 +1,30 @@
+---
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Stat the uptime-kuma Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/uptime-kuma.container
+      register: uptime_kuma_container_unit
+
+    - name: Assert uptime-kuma.container unit exists with correct mode
+      ansible.builtin.assert:
+        that:
+          - uptime_kuma_container_unit.stat.exists
+          - uptime_kuma_container_unit.stat.mode == '0644'
+
+    - name: Read uptime-kuma.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/uptime-kuma.container
+      register: uptime_kuma_container_contents
+
+    - name: Assert uptime-kuma.container has expected hostname, image, network, and volume
+      vars:
+        rendered: "{{ uptime_kuma_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'uptime-kuma.test.local' in rendered"
+          - "'louislam/uptime-kuma' in rendered"
+          - "'proxy_network.network' in rendered"
+          - "'/app/data' in rendered"

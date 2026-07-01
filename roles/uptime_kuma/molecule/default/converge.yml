@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply uptime_kuma role with test values
+      ansible.builtin.include_role:
+        name: danmwallace.podman.uptime_kuma
+      vars:
+        uptime_kuma_hostname: uptime-kuma.test.local
