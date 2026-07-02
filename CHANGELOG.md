@@ -14,6 +14,16 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 - `uptime_kuma` role — deploys Uptime Kuma self-hosted monitoring dashboard as a rootful Podman
   Quadlet unit; mounts a persistent data volume; routes traffic via Traefik container labels on
   `proxy_network.network`.
+  
+## [0.3.1] - 2026-06-24
+
+### Fixed
+
+- `grimmory`: install `nfs-utils` before attempting the NFS mount (fixes
+  "mount program didn't pass remote address" on hosts without nfs-utils).
+- `grimmory`: embed `user` and `password` as JDBC URL query parameters in
+  `DATABASE_URL` so Spring Boot picks up the application credentials rather
+  than defaulting to `root`.
 
 ## [0.3.0] - 2026-06-24
 

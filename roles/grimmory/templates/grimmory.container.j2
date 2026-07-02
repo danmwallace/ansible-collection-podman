@@ -12,7 +12,7 @@ Network=proxy_network.network
 Volume={{ grimmory_data_dir }}/data:/app/data:z
 Volume={{ grimmory_data_dir }}/bookdrop:/app/bookdrop:z
 Volume={{ grimmory_nfs_mountpoint }}:/app/books:z
-Environment=DATABASE_URL=jdbc:mariadb://grimmory-db:3306/{{ grimmory_db_name }}
+Environment=DATABASE_URL=jdbc:mariadb://grimmory-db:3306/{{ grimmory_db_name }}?user={{ grimmory_db_user }}&password={{ grimmory_db_password }}
 Environment=DB_USER={{ grimmory_db_user }}
 Environment=DB_PASSWORD={{ grimmory_db_password }}
 Environment=APP_USER_ID={{ grimmory_app_uid }}
