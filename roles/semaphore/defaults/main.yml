@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-semaphore_version: latest
+semaphore_version: v2.18.14
 semaphore_hostname: semaphore.example.com
 semaphore_data_dir: /opt/podman/semaphore
 semaphore_postgres_db: semaphore

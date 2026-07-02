@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
 dashy_data_dir: /opt/podman/dashy
-dashy_image: docker.io/lissy93/dashy:{{ dashy_version | default('3.1.0') }}
+# NOTE: v4 is a major rewrite — verify dashboard renders at https://home.wallace.boston after deploy.
+dashy_version: 4.3.12
+dashy_image: docker.io/lissy93/dashy:{{ dashy_version }}
