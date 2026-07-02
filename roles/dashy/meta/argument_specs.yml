@@ -14,8 +14,13 @@ argument_specs:
         description: Host directory for the Dashy config file.
       dashy_image:
         type: str
-        default: docker.io/lissy93/dashy:latest
-        description: Fully-qualified container image for Dashy.
+        default: "docker.io/lissy93/dashy:{{ dashy_version }}"
+        description: Fully-qualified container image for Dashy. Defaults to the official image at the version set by dashy_version.
+      dashy_version:
+        type: str
+        required: false
+        default: "4.3.12"
+        description: Image tag for the Dashy container image.
       dashy_it_tools_hostname:
         type: str
         required: true

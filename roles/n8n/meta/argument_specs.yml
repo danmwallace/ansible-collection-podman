@@ -30,3 +30,8 @@ argument_specs:
         type: str
         default: n8n
         description: Postgres database name for n8n.
+      n8n_version:
+        type: str
+        required: false
+        default: "2.28.5"
+        description: Image tag for the n8n container image.
