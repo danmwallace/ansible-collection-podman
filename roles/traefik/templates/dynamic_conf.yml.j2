@@ -29,7 +29,10 @@ http:
         burst: 50
 
   serversTransports:
-    insecure-transport:
+    # Used exclusively for backends with self-signed certs (e.g. UniFi on port 8443).
+    # Do NOT reference this transport from any other service.
+    # Long-term fix: replace insecureSkipVerify with rootCAs cert pinning. See issue #6.
+    unifi-insecure-transport:
       insecureSkipVerify: true
 
 tls:

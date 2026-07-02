@@ -7,6 +7,14 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-01
+
+### Added
+
+- `uptime_kuma` role — deploys Uptime Kuma self-hosted monitoring dashboard as a rootful Podman
+  Quadlet unit; mounts a persistent data volume; routes traffic via Traefik container labels on
+  `proxy_network.network`.
+  
 ## [0.3.1] - 2026-06-24
 
 ### Fixed

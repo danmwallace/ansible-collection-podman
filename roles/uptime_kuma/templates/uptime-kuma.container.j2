@@ -1,0 +1,22 @@
+# Managed by Ansible - danmwallace.podman.uptime_kuma
+[Unit]
+Description=Uptime Kuma — self-hosted uptime monitoring
+After=network-online.target
+
+[Container]
+Image={{ uptime_kuma_image }}
+ContainerName=uptime-kuma
+Network=proxy_network.network
+Volume={{ uptime_kuma_data_dir }}:/app/data
+Label=traefik.enable=true
+Label=traefik.docker.network=systemd-proxy_network
+Label=traefik.http.routers.uptime-kuma.rule=Host(`{{ uptime_kuma_hostname }}`)
+Label=traefik.http.routers.uptime-kuma.entrypoints=websecure
+Label=traefik.http.routers.uptime-kuma.tls.certresolver=cloudflare
+Label=traefik.http.services.uptime-kuma.loadbalancer.server.port=3001
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target
