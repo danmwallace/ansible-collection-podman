@@ -5,7 +5,7 @@ librechat_data_dir: /opt/podman/librechat
 librechat_port: 3080
 
 # LibreChat API
-librechat_api_image: ghcr.io/danny-avila/librechat:v0.7.8
+librechat_api_image: ghcr.io/danny-avila/librechat:v0.8.7
 librechat_mongo_uri: ""
 librechat_jwt_secret: ""
 librechat_jwt_refresh_secret: ""
@@ -13,17 +13,19 @@ librechat_creds_key: ""
 librechat_creds_iv: ""
 
 # Meilisearch
-librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.7.3
+# NOTE: upgrading across v1.x minors may require index dump/restore.
+# See https://www.meilisearch.com/docs/learn/update_and_migration/updating
+librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.48.3
 librechat_meili_master_key: ""
 
 # VectorDB (postgres for RAG)
-librechat_vectordb_image: docker.io/pgvector/pgvector:0.8.0-pg17
+librechat_vectordb_image: docker.io/pgvector/pgvector:0.8.4-pg17
 librechat_vectordb_postgres_db: mydatabase
 librechat_vectordb_postgres_user: myuser
 librechat_vectordb_postgres_password: ""
 
 # RAG API
-librechat_ragapi_image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.4.6
+librechat_ragapi_image: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.8.0
 
 # Optional Obsidian vault bind mount
 librechat_obsidian_mount_enabled: false

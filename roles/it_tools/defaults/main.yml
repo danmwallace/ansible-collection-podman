@@ -2,3 +2,4 @@
 ---
 it_tools_hostname: it-tools.example.com
 it_tools_data_dir: /opt/podman/it-tools
+it_tools_version: "2024.10.22-7ca5933"

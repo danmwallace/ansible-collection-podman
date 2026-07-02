@@ -12,3 +12,8 @@ argument_specs:
         type: str
         default: /opt/podman/it-tools
         description: Host directory for IT-Tools data files.
+      it_tools_version:
+        type: str
+        required: false
+        default: "2024.10.22-7ca5933"
+        description: Image tag for the it-tools container image.

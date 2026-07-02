@@ -13,10 +13,6 @@ sections:
       - title: Semaphore
         url: "https://{{ dashy_semaphore_hostname }}"
         statusCheck: true
-      - title: Arcane
-        url: "https://{{ dashy_arcane_hostname }}"
-        statusCheck: true
-
   - name: AI & Automation
     items:
       - title: LibreChat
@@ -60,3 +56,12 @@ sections:
       - title: Traefik (ai-master)
         url: "https://{{ dashy_traefik_aimaster_hostname }}"
         statusCheck: false
+      - title: Arcane (util01)
+        url: "https://{{ dashy_arcane_hostname }}"
+        statusCheck: true
+      - title: Arcane (ai01)
+        url: "https://{{ dashy_arcane_ai01_hostname }}"
+        statusCheck: true
+      - title: Uptime Kuma
+        url: "https://{{ dashy_uptime_kuma_hostname }}"
+        statusCheck: true

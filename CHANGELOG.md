@@ -7,6 +7,33 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.4.2] - 2026-07-02
+
+### Changed
+
+- `traefik`: update default image tag from `v3.6.2` to `v3.7.6`
+- `arcane`: pin image from `latest` to `v2.3.1`; pin Postgres from `17-alpine` to `17.10-alpine`
+- `semaphore`: pin image from `latest` to `v2.18.14`; pin Postgres from `17-alpine` to `17.10-alpine`
+- `dashy`: update image from `3.1.0` to `4.3.12` (major version — verify dashboard after deploy);
+  add `dashy_version` variable; declare `dashy_version` and `dashy_image` in `argument_specs`
+- `it_tools`: add `it_tools_version` variable; pin image from `latest` to `2024.10.22-7ca5933`;
+  declare `it_tools_version` in `argument_specs`
+- `grimmory`: pin image from `latest` to `v3.2.4`; pin MariaDB from `11` to `11.8.8`
+- `n8n`: add `n8n_version` variable; pin image from `latest` to `2.28.5`; pin Postgres from `15`
+  to `15.18`; declare `n8n_version` in `argument_specs`
+- `librechat`: update API image to `v0.8.7`, Meilisearch to `v1.48.3` (index migration note
+  added), RAG API to `v0.8.0`, pgvector to `0.8.4-pg17`
+
+## [0.4.1] - 2026-07-01
+
+### Fixed
+
+- `uptime_kuma`: add `:z` SELinux relabeling to the data volume mount so the
+  container's entrypoint can `chown` the directory on Fedora hosts with SELinux
+  enforcing.
+- `uptime_kuma`: pre-create data directory with owner UID 1000 (`node` user) so
+  the container starts cleanly on first deploy without a manual `chcon`.
+
 ## [0.4.0] - 2026-07-01
 
 ### Added
