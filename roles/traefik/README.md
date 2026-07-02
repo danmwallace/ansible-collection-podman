@@ -80,7 +80,7 @@ firewall before it reaches this host.
 `dynamic_conf.yml` is not templated with Jinja2 variables — it is a static file rendered by a
 template with no substitutions. It ships a `secure-headers` middleware (HSTS, XSS protection,
 `X-Frame-Options: SAMEORIGIN`), a `compression` middleware, a `rate-limit` middleware
-(100 req/s, burst 50), an `insecure-transport` server transport, and a TLS options block
+(100 req/s, burst 50), a `unifi-insecure-transport` server transport (scoped to UniFi backends with self-signed certs), and a TLS options block
 enforcing TLS 1.2+ with three explicit cipher suites.
 
 ### Molecule
