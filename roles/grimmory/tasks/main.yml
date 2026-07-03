@@ -2,14 +2,20 @@
 ---
 - name: Ensure grimmory data directories exist
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ item.path }}"
     state: directory
     mode: "0755"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.owner | default('root') }}"
   loop:
-    - "{{ grimmory_data_dir }}"
-    - "{{ grimmory_data_dir }}/data"
-    - "{{ grimmory_data_dir }}/bookdrop"
-    - "{{ grimmory_data_dir }}/db"
+    - path: "{{ grimmory_data_dir }}"
+    - path: "{{ grimmory_data_dir }}/data"
+      owner: "{{ grimmory_app_uid }}"
+    - path: "{{ grimmory_data_dir }}/books"
+      owner: "{{ grimmory_app_uid }}"
+    - path: "{{ grimmory_data_dir }}/bookdrop"
+      owner: "{{ grimmory_app_uid }}"
+    - path: "{{ grimmory_data_dir }}/db"
   become: true
 
 - name: Ensure nfs-utils is installed

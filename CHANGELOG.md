@@ -7,6 +7,14 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.4.3] - 2026-07-02
+
+### Fixed
+
+- `grimmory`: mount books volume to `/books` (correct container path) instead of `/app/books`
+- `grimmory`: use local persistent directory (`{{ grimmory_data_dir }}/books`) for book storage so uploads survive container restarts
+- `grimmory`: set `owner/group` to `grimmory_app_uid` on `books`, `data`, and `bookdrop` directories so the container user can write to them
+
 ## [0.4.2] - 2026-07-02
 
 ### Changed
