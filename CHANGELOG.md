@@ -7,6 +7,14 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.4.4] - 2026-07-10
+
+### Fixed
+
+- `dashy`: add `statusCheckUrl` pointing to `/auth/password-login` for Hermes Dashboard (ai01)
+  and Hermes Dashboard (ai-master) — hermes redirects unauthenticated root requests to an OAuth
+  path that returns 500 with BasicAuth; the password-login endpoint returns 200
+
 ## [0.4.3] - 2026-07-02
 
 ### Fixed

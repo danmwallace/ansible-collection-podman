@@ -28,6 +28,7 @@ sections:
       - title: Hermes Dashboard (ai01)
         url: "https://{{ dashy_hermes_dash_ai01_hostname }}"
         statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_dash_ai01_hostname }}/auth/password-login"
       - title: Hermes Gateway (ai-master)
         url: "https://{{ dashy_hermes_gateway_aimaster_hostname }}"
         statusCheck: true
@@ -35,6 +36,7 @@ sections:
       - title: Hermes Dashboard (ai-master)
         url: "https://{{ dashy_hermes_dash_aimaster_hostname }}"
         statusCheck: true
+        statusCheckUrl: "https://{{ dashy_hermes_dash_aimaster_hostname }}/auth/password-login"
 
   - name: Public Sites
     items:

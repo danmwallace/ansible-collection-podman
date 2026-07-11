@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 namespace: danmwallace
 name: podman
-version: 0.4.3
+version: 0.4.4
 readme: README.md
 authors:
   - danmwallace
