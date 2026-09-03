@@ -1,5 +1,16 @@
 # SPDX-License-Identifier: MIT
 ---
+- name: Assert required arcane secrets are configured
+  ansible.builtin.assert:
+    that:
+      - arcane_postgres_password | length > 0
+      - arcane_encryption_key | length > 0
+      - arcane_jwt_secret | length > 0
+    fail_msg: >
+      arcane_postgres_password, arcane_encryption_key, and arcane_jwt_secret
+      must all be set (use Ansible Vault).
+  no_log: true
+
 - name: Ensure arcane data directories exist
   ansible.builtin.file:
     path: "{{ item }}"

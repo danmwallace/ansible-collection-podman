@@ -12,7 +12,7 @@ Environment=MARIADB_DATABASE={{ grimmory_db_name }}
 Environment=MARIADB_USER={{ grimmory_db_user }}
 Environment=MARIADB_PASSWORD={{ grimmory_db_password }}
 Environment=MARIADB_ROOT_PASSWORD={{ grimmory_db_root_password }}
-HealthCmd=mysqladmin ping -h localhost -u root -p{{ grimmory_db_root_password }}
+HealthCmd=mysqladmin ping -h localhost --silent
 HealthInterval=10s
 HealthTimeout=5s
 HealthRetries=5

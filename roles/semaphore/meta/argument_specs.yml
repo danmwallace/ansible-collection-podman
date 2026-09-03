@@ -6,8 +6,8 @@ argument_specs:
     options:
       semaphore_version:
         type: str
-        default: latest
-        description: Semaphore image tag.
+        default: v2.18.14
+        description: Semaphore image tag (e.g. v2.18.14).
       semaphore_hostname:
         type: str
         required: true
@@ -27,7 +27,8 @@ argument_specs:
       semaphore_postgres_password:
         type: str
         required: true
-        description: Postgres password for Semaphore. Must not be empty.
+        no_log: true
+        description: Postgres password for Semaphore. Must not be empty. Store in Ansible Vault.
       semaphore_admin:
         type: str
         default: admin
@@ -35,7 +36,8 @@ argument_specs:
       semaphore_admin_password:
         type: str
         required: true
-        description: Semaphore admin password. Must not be empty.
+        no_log: true
+        description: Semaphore admin password. Must not be empty. Store in Ansible Vault.
       semaphore_admin_name:
         type: str
         default: Admin
@@ -47,7 +49,18 @@ argument_specs:
       semaphore_access_key_encryption:
         type: str
         required: true
-        description: Encryption key for Semaphore stored credentials (SEMAPHORE_ACCESS_KEY_ENCRYPTION). Must not be empty.
+        no_log: true
+        description: Encryption key for Semaphore stored credentials (SEMAPHORE_ACCESS_KEY_ENCRYPTION). Must not be empty. Store in Ansible Vault.
+      semaphore_cookie_hash:
+        type: str
+        required: true
+        no_log: true
+        description: HMAC key for Semaphore session cookies (SEMAPHORE_COOKIE_HASH). Generate with openssl rand -hex 32. Store in Ansible Vault.
+      semaphore_cookie_encryption:
+        type: str
+        required: true
+        no_log: true
+        description: Encryption key for Semaphore session cookies (SEMAPHORE_COOKIE_ENCRYPTION). Generate with openssl rand -base64 32. Store in Ansible Vault.
       semaphore_playbook_path:
         type: str
         default: /tmp/semaphore/

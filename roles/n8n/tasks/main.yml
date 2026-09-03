@@ -1,5 +1,14 @@
 # SPDX-License-Identifier: MIT
 ---
+- name: Assert required n8n secrets are configured
+  ansible.builtin.assert:
+    that:
+      - n8n_encryption_key | length > 0
+      - n8n_postgres_password | length > 0
+    fail_msg: >
+      n8n_encryption_key and n8n_postgres_password must be set (use Ansible Vault).
+  no_log: true
+
 - name: Ensure n8n base data directory exists
   ansible.builtin.file:
     path: "{{ n8n_data_dir }}"

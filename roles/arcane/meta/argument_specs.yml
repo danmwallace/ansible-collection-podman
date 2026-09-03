@@ -6,8 +6,8 @@ argument_specs:
     options:
       arcane_version:
         type: str
-        default: latest
-        description: Arcane image tag (e.g. latest, 1.2.3).
+        default: v2.3.1
+        description: Arcane image tag (e.g. v2.3.1).
       arcane_hostname:
         type: str
         required: true
@@ -27,12 +27,15 @@ argument_specs:
       arcane_postgres_password:
         type: str
         required: true
+        no_log: true
         description: Postgres password for arcane_postgres_user. Store in Ansible Vault.
       arcane_encryption_key:
         type: str
         required: true
+        no_log: true
         description: Encryption key used by Arcane for at-rest secret encryption. Store in Ansible Vault.
       arcane_jwt_secret:
         type: str
         required: true
+        no_log: true
         description: JWT signing secret for Arcane session tokens. Store in Ansible Vault.

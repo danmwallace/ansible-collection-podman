@@ -8,6 +8,10 @@ Image=ghcr.io/getarcaneapp/arcane:{{ arcane_version }}
 ContainerName=arcane
 Network=arcane.network
 Network=proxy_network.network
+# SECURITY WARNING: raw Podman socket mount grants full host container control to
+# any process inside arcane. Replace with a socket-proxy sidecar (e.g. Tecnativa
+# docker-socket-proxy) before exposing this service to untrusted networks.
+# Tracked: https://github.com/danmwallace/ansible-collection-podman/issues/24
 Volume=/run/podman/podman.sock:/var/run/docker.sock:z
 Environment=APP_URL=https://{{ arcane_hostname }}
 Environment=PUID=1000
