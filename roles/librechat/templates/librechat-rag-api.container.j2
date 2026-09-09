@@ -13,6 +13,20 @@ Environment=POSTGRES_DB={{ librechat_vectordb_postgres_db }}
 Environment=POSTGRES_USER={{ librechat_vectordb_postgres_user }}
 Environment=POSTGRES_PASSWORD={{ librechat_vectordb_postgres_password }}
 Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
+{% if librechat_embeddings_provider | length > 0 %}
+Environment=EMBEDDINGS_PROVIDER={{ librechat_embeddings_provider }}
+{% endif %}
+{% if librechat_embeddings_model | length > 0 %}
+Environment=EMBEDDINGS_MODEL={{ librechat_embeddings_model }}
+{% endif %}
+{% if librechat_embeddings_provider == 'azure' %}
+Environment=RAG_AZURE_OPENAI_API_KEY={{ librechat_rag_azure_openai_api_key }}
+Environment=RAG_AZURE_OPENAI_ENDPOINT={{ librechat_rag_azure_openai_endpoint }}
+Environment=RAG_AZURE_OPENAI_API_VERSION={{ librechat_rag_azure_openai_api_version }}
+{% elif librechat_embeddings_provider == 'openai' %}
+Environment=OPENAI_API_KEY={{ librechat_openai_api_key }}
+{% endif %}
+Environment=RAG_USE_FULL_CONTEXT={{ librechat_rag_use_full_context | lower }}
 
 [Service]
 Restart=always

@@ -8,6 +8,11 @@ Image=ghcr.io/tecnativa/docker-socket-proxy:{{ arcane_socket_proxy_version }}
 ContainerName=arcane-socket-proxy
 Network=arcane-socket.network
 Volume=/run/podman/podman.sock:/var/run/docker.sock:ro,z
+# SELinux denies container_t "connectto" on the socket (owned by
+# container_runtime_t), so the proxy runs unconfined (spc_t) exactly like the
+# traefik unit does. The HAProxy allowlist below is the real access control;
+# only this small proxy is unconfined, never Arcane itself.
+SecurityLabelDisable=true
 # API allowlist. Everything not listed here is denied by the proxy (EXEC is
 # deliberately left at its default of 0, so container exec/console is not
 # available through Arcane).

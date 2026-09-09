@@ -185,6 +185,11 @@ supported range (e.g. v1.48 -> v1.53) are fine; v1.50 fixed a migration failure 
 
 ## Notes
 
+- **RAG API embeddings.** `librechat-rag-api.container` renders `EMBEDDINGS_PROVIDER`,
+  `EMBEDDINGS_MODEL` and `RAG_USE_FULL_CONTEXT`, plus `RAG_AZURE_OPENAI_API_KEY`,
+  `RAG_AZURE_OPENAI_ENDPOINT` and `RAG_AZURE_OPENAI_API_VERSION` when the provider is
+  `azure`, or `OPENAI_API_KEY` when it is `openai`. Leaving `librechat_embeddings_provider`
+  empty makes the RAG API default to OpenAI and fail at start with "Missing credentials".
 - **Image pins.** All four images are pinned to release tags; bump them deliberately and
   read the upgrade section above first.
 - **Start order.** `librechat-api` starts after `librechat-meilisearch` and

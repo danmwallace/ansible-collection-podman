@@ -100,6 +100,7 @@
           - "'Image=ghcr.io/tecnativa/docker-socket-proxy:v' in rendered"
           - "'Network=arcane-socket.network' in rendered"
           - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
+          - "'SecurityLabelDisable=true' in rendered"
           - "'Environment=POST=1' in rendered"
           - "'Environment=BUILD=0' in rendered"
           - "'EXEC=1' not in rendered"

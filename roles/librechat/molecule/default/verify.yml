@@ -97,6 +97,23 @@
           - "'Image=docker.io/getmeili/meilisearch:v1.53.2' in rendered"
           - "'Environment=MEILI_UPGRADE_DB=true' in rendered"
 
+    - name: Read librechat-rag-api.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/librechat-rag-api.container
+      register: librechat_ragapi_contents
+
+    - name: Assert librechat-rag-api.container carries the embeddings configuration
+      vars:
+        rendered: "{{ librechat_ragapi_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Environment=EMBEDDINGS_PROVIDER=azure' in rendered"
+          - "'Environment=EMBEDDINGS_MODEL=text-embedding-3-small' in rendered"
+          - "'Environment=RAG_AZURE_OPENAI_ENDPOINT=https://test.openai.azure.com' in rendered"
+          - "'Environment=RAG_AZURE_OPENAI_API_VERSION=2023-05-15' in rendered"
+          - "'Environment=RAG_USE_FULL_CONTEXT=false' in rendered"
+          - "'Environment=OPENAI_API_KEY=' not in rendered"
+
     - name: Stat librechat.yaml config file
       ansible.builtin.stat:
         path: /opt/podman/librechat/librechat.yaml
