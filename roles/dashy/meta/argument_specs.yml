@@ -19,7 +19,7 @@ argument_specs:
       dashy_version:
         type: str
         required: false
-        default: "4.3.12"
+        default: "4.6.0"
         description: Image tag for the Dashy container image.
       dashy_it_tools_hostname:
         type: str
@@ -33,6 +33,14 @@ argument_specs:
         type: str
         required: true
         description: Hostname for Arcane secrets manager (on util01).
+      dashy_arcane_ai01_hostname:
+        type: str
+        required: true
+        description: Hostname for Arcane container manager (on ai01).
+      dashy_uptime_kuma_hostname:
+        type: str
+        required: true
+        description: Hostname for Uptime Kuma (on util01).
       dashy_traefik_util01_hostname:
         type: str
         required: true
@@ -53,6 +61,14 @@ argument_specs:
         type: str
         required: true
         description: Hostname for Hermes Gateway on ai-master.
+      dashy_hermes_dash_ai01_hostname:
+        type: str
+        required: true
+        description: Hostname for the Hermes Dashboard on ai01.
+      dashy_hermes_dash_aimaster_hostname:
+        type: str
+        required: true
+        description: Hostname for the Hermes Dashboard on ai-master.
       dashy_portfolio_hostname:
         type: str
         required: true

@@ -30,7 +30,7 @@ argument_specs:
         description: Grimmory container image.
       grimmory_image_tag:
         type: str
-        default: latest
+        default: v3.3.3
         description: Grimmory image tag. Pin to a release tag in production.
       grimmory_db_image:
         type: str
@@ -38,7 +38,7 @@ argument_specs:
         description: MariaDB container image.
       grimmory_db_image_tag:
         type: str
-        default: "11"
+        default: "11.8.9"
         description: MariaDB image tag.
       grimmory_data_dir:
         type: str

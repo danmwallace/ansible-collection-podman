@@ -3,6 +3,10 @@
   hosts: molecule
   gather_facts: false
   tasks:
+    - name: Load traefik role defaults so the image assertion tracks the pinned tag
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../../defaults/main.yml"
+
     - name: Stat the traefik Quadlet container unit
       ansible.builtin.stat:
         path: /etc/containers/systemd/traefik.container
@@ -19,12 +23,13 @@
         src: /etc/containers/systemd/traefik.container
       register: traefik_container_contents
 
-    - name: Assert traefik.container has expected image, hostname, and socket mount
+    - name: Assert traefik.container has pinned image, hostname, and socket mount
       vars:
         rendered: "{{ traefik_container_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
-          - "'traefik:v3.6.2' in rendered"
+          - "('library/traefik:' ~ traefik_version) in rendered"
+          - "'traefik:latest' not in rendered"
           - "'traefik.test.local' in rendered"
           - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
           - "'proxy_network.network' in rendered"

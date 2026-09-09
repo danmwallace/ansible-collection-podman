@@ -3,6 +3,10 @@
   hosts: molecule
   gather_facts: false
   tasks:
+    - name: Load n8n role defaults so the image assertion tracks the pinned tag
+      ansible.builtin.include_vars:
+        file: "{{ playbook_dir }}/../../defaults/main.yml"
+
     - name: Stat the n8n Quadlet container unit
       ansible.builtin.stat:
         path: /etc/containers/systemd/n8n.container
@@ -40,13 +44,14 @@
         src: /etc/containers/systemd/n8n.container
       register: n8n_container_contents
 
-    - name: Assert n8n.container has expected image, hostname, and networks
+    - name: Assert n8n.container has pinned image, hostname, and networks
       vars:
         rendered: "{{ n8n_container_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
           - "'n8n.test.local' in rendered"
-          - "'n8nio/n8n:latest' in rendered"
+          - "('n8nio/n8n:' ~ n8n_version) in rendered"
+          - "'n8nio/n8n:latest' not in rendered"
           - "'proxy_network.network' in rendered"
           - "'n8n.network' in rendered"
 
@@ -55,12 +60,12 @@
         src: /etc/containers/systemd/n8n-postgres.container
       register: n8n_postgres_container_contents
 
-    - name: Assert n8n-postgres.container has expected image and network
+    - name: Assert n8n-postgres.container has pinned image and network
       vars:
         rendered: "{{ n8n_postgres_container_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
-          - "'postgres:15' in rendered"
+          - "'postgres:17.11-alpine' in rendered"
           - "'n8n.network' in rendered"
 
     - name: Stat the n8n data directory

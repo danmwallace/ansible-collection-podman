@@ -13,9 +13,18 @@ librechat_creds_key: ""
 librechat_creds_iv: ""
 
 # Meilisearch
-# NOTE: upgrading across v1.x minors may require index dump/restore.
+# NOTE: /meili_data persists on the host across image bumps, so a new minor must
+# upgrade the on-disk database in place. Meilisearch refuses to start on a DB
+# written by an older version unless MEILI_UPGRADE_DB=true (the --upgrade-db
+# flag, stable since v1.51; formerly --experimental-dumpless-upgrade). With
+# librechat_meilisearch_upgrade_db true the container migrates automatically on
+# first start after a bump. --upgrade-db cannot read databases created before
+# v1.12; those must be dumped with their original version and imported. Take a
+# snapshot of the data dir before bumping if you want a rollback path;
+# downgrades are not supported.
 # See https://www.meilisearch.com/docs/learn/update_and_migration/updating
-librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.48.3
+librechat_meilisearch_image: docker.io/getmeili/meilisearch:v1.53.2
+librechat_meilisearch_upgrade_db: true
 librechat_meili_master_key: ""
 
 # VectorDB (postgres for RAG)

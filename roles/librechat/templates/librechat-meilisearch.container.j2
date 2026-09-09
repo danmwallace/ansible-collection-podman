@@ -11,6 +11,9 @@ Volume={{ librechat_data_dir }}/meilisearch:/meili_data:z
 Environment=MEILI_HOST=http://librechat-meilisearch:7700
 Environment=MEILI_NO_ANALYTICS=true
 Environment=MEILI_MASTER_KEY={{ librechat_meili_master_key }}
+{% if librechat_meilisearch_upgrade_db | bool %}
+Environment=MEILI_UPGRADE_DB=true
+{% endif %}
 
 [Service]
 Restart=always

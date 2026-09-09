@@ -18,7 +18,7 @@ argument_specs:
         description: Port the LibreChat API container listens on (used for Traefik load balancer config).
       librechat_api_image:
         type: str
-        default: ghcr.io/danny-avila/librechat:latest
+        default: ghcr.io/danny-avila/librechat:v0.8.7
         description: Container image for the LibreChat API service.
       librechat_mongo_uri:
         type: str
@@ -26,8 +26,15 @@ argument_specs:
         description: MongoDB connection URI for LibreChat. Store in Ansible Vault.
       librechat_meilisearch_image:
         type: str
-        default: getmeili/meilisearch:v1.7.3
+        default: docker.io/getmeili/meilisearch:v1.53.2
         description: Container image for the Meilisearch service.
+      librechat_meilisearch_upgrade_db:
+        type: bool
+        default: true
+        description: >
+          When true, sets MEILI_UPGRADE_DB=true on the Meilisearch container so it
+          migrates the persisted database in place on first start after an image
+          bump (--upgrade-db, stable since Meilisearch v1.51).
       librechat_meili_master_key:
         type: str
         required: true
@@ -40,7 +47,7 @@ argument_specs:
           Defaults to the Podman container name on the librechat network.
       librechat_vectordb_image:
         type: str
-        default: ankane/pgvector:latest
+        default: docker.io/pgvector/pgvector:0.8.6-pg17
         description: Container image for the vectordb (pgvector/Postgres) service.
       librechat_vectordb_postgres_db:
         type: str
@@ -80,7 +87,7 @@ argument_specs:
           Generate with `openssl rand -hex 16`. Store in Ansible Vault.
       librechat_ragapi_image:
         type: str
-        default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:latest
+        default: ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.9.0
         description: Container image for the LibreChat RAG API service.
       librechat_rag_port:
         type: int

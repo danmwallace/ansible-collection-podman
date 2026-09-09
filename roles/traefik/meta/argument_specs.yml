@@ -6,7 +6,7 @@ argument_specs:
     options:
       traefik_version:
         type: str
-        default: v3.6.2
+        default: v3.7.13
         description: Traefik image tag.
       traefik_hostname:
         type: str

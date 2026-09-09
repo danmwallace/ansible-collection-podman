@@ -84,6 +84,19 @@
         that:
           - "'librechat.network' in rendered"
 
+    - name: Read librechat-meilisearch.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/librechat-meilisearch.container
+      register: librechat_meilisearch_contents
+
+    - name: Assert librechat-meilisearch.container pins the image and enables in-place DB upgrade
+      vars:
+        rendered: "{{ librechat_meilisearch_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Image=docker.io/getmeili/meilisearch:v1.53.2' in rendered"
+          - "'Environment=MEILI_UPGRADE_DB=true' in rendered"
+
     - name: Stat librechat.yaml config file
       ansible.builtin.stat:
         path: /opt/podman/librechat/librechat.yaml
@@ -93,4 +106,4 @@
       ansible.builtin.assert:
         that:
           - librechat_yaml_stat.stat.exists
-          - librechat_yaml_stat.stat.mode == '0600'
+          - librechat_yaml_stat.stat.mode == '0644'

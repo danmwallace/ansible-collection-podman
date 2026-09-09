@@ -12,7 +12,11 @@ Environment=MARIADB_DATABASE={{ grimmory_db_name }}
 Environment=MARIADB_USER={{ grimmory_db_user }}
 Environment=MARIADB_PASSWORD={{ grimmory_db_password }}
 Environment=MARIADB_ROOT_PASSWORD={{ grimmory_db_root_password }}
-HealthCmd=mysqladmin ping -h localhost --silent
+# MariaDB 11.x images no longer ship the mysql* compatibility symlinks, so
+# `mysqladmin ping` fails with "not found" and the container stays unhealthy.
+# healthcheck.sh is the official image's probe; --connect uses the unprivileged
+# healthcheck@localhost user the image creates at init, so no password is needed.
+HealthCmd=healthcheck.sh --connect --innodb_initialized
 HealthInterval=10s
 HealthTimeout=5s
 HealthRetries=5

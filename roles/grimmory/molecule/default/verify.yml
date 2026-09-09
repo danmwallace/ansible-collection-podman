@@ -47,10 +47,25 @@
       ansible.builtin.assert:
         that:
           - "'books.test.local' in rendered"
-          - "'grimmory-tools/grimmory:latest' in rendered"
+          - "'grimmory-tools/grimmory:v3.3.3' in rendered"
           - "'proxy_network.network' in rendered"
           - "'grimmory.network' in rendered"
           - "'grimmory-db' in rendered"
+
+    - name: Read grimmory-db.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/grimmory-db.container
+      register: grimmory_db_container_contents
+
+    - name: Assert grimmory-db.container pins MariaDB and uses the image healthcheck script
+      vars:
+        rendered: "{{ grimmory_db_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Image=docker.io/library/mariadb:11.8.9' in rendered"
+          - "'HealthCmd=healthcheck.sh --connect --innodb_initialized' in rendered"
+          - "'HealthCmd=mysqladmin' not in rendered"
+          - "'test-root-pass' not in (rendered | regex_findall('HealthCmd=.*') | join(' '))"
 
     - name: Stat grimmory data directories
       ansible.builtin.stat:

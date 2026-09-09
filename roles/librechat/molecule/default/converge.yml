@@ -11,3 +11,7 @@
         librechat_mongo_uri: mongodb://localhost:27017/librechat-test
         librechat_meili_master_key: test-meili-key
         librechat_vectordb_postgres_password: test-pg-pass
+        librechat_jwt_secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+        librechat_jwt_refresh_secret: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
+        librechat_creds_key: 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff
+        librechat_creds_iv: 00112233445566778899aabbccddeeff

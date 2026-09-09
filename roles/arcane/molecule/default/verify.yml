@@ -25,6 +25,17 @@
           - arcane_postgres_container_unit.stat.exists
           - arcane_postgres_container_unit.stat.mode == '0644'
 
+    - name: Stat arcane-socket-proxy Quadlet container unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/arcane-socket-proxy.container
+      register: arcane_socket_proxy_container_unit
+
+    - name: Assert arcane-socket-proxy.container exists with correct permissions
+      ansible.builtin.assert:
+        that:
+          - arcane_socket_proxy_container_unit.stat.exists
+          - arcane_socket_proxy_container_unit.stat.mode == '0644'
+
     - name: Stat arcane Quadlet network unit
       ansible.builtin.stat:
         path: /etc/containers/systemd/arcane.network
@@ -34,6 +45,28 @@
       ansible.builtin.assert:
         that:
           - arcane_network_unit.stat.exists
+
+    - name: Stat arcane-socket Quadlet network unit
+      ansible.builtin.stat:
+        path: /etc/containers/systemd/arcane-socket.network
+      register: arcane_socket_network_unit
+
+    - name: Assert arcane-socket.network unit exists
+      ansible.builtin.assert:
+        that:
+          - arcane_socket_network_unit.stat.exists
+
+    - name: Read arcane-socket.network unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/arcane-socket.network
+      register: arcane_socket_network_contents
+
+    - name: Assert arcane-socket.network is an internal network
+      vars:
+        rendered: "{{ arcane_socket_network_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Internal=true' in rendered"
 
     - name: Read arcane.container unit
       ansible.builtin.slurp:
@@ -46,10 +79,30 @@
       ansible.builtin.assert:
         that:
           - "'arcane.test.local' in rendered"
-          - "'ghcr.io/getarcaneapp/arcane:latest' in rendered"
+          - "'Image=ghcr.io/getarcaneapp/arcane:v' in rendered"
           - "'proxy_network.network' in rendered"
           - "'arcane.network' in rendered"
-          - "'/run/podman/podman.sock' in rendered"
+          - "'Network=arcane-socket.network' in rendered"
+          - "'Requires=arcane-socket-proxy.service' in rendered"
+          - "'Environment=DOCKER_HOST=tcp://arcane-socket-proxy:2375' in rendered"
+          - "'podman.sock' not in rendered"
+
+    - name: Read arcane-socket-proxy.container unit
+      ansible.builtin.slurp:
+        src: /etc/containers/systemd/arcane-socket-proxy.container
+      register: arcane_socket_proxy_container_contents
+
+    - name: Assert arcane-socket-proxy.container has expected content
+      vars:
+        rendered: "{{ arcane_socket_proxy_container_contents.content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'Image=ghcr.io/tecnativa/docker-socket-proxy:v' in rendered"
+          - "'Network=arcane-socket.network' in rendered"
+          - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
+          - "'Environment=POST=1' in rendered"
+          - "'Environment=BUILD=0' in rendered"
+          - "'EXEC=1' not in rendered"
 
     - name: Read arcane-postgres.container unit
       ansible.builtin.slurp:
@@ -61,5 +114,6 @@
         rendered: "{{ arcane_postgres_container_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
-          - "'postgres:17-alpine' in rendered"
+          - "'Image=docker.io/library/postgres:17.' in rendered"
+          - "'-alpine' in rendered"
           - "'arcane.network' in rendered"

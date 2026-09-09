@@ -14,5 +14,5 @@ argument_specs:
         description: Host directory mounted into the container at /app/data for persistent storage.
       uptime_kuma_image:
         type: str
-        default: docker.io/louislam/uptime-kuma:1.23.16
+        default: docker.io/louislam/uptime-kuma:2.5.3
         description: Container image to use. Pin to a digest or specific tag for reproducible deploys.
