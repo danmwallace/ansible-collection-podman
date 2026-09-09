@@ -1,0 +1,32 @@
+# Managed by Ansible - danmwallace.podman.arcane
+[Unit]
+Description=Arcane Podman socket proxy
+After=network-online.target
+
+[Container]
+Image=ghcr.io/tecnativa/docker-socket-proxy:{{ arcane_socket_proxy_version }}
+ContainerName=arcane-socket-proxy
+Network=arcane-socket.network
+Volume=/run/podman/podman.sock:/var/run/docker.sock:ro,z
+# API allowlist. Everything not listed here is denied by the proxy (EXEC is
+# deliberately left at its default of 0, so container exec/console is not
+# available through Arcane).
+Environment=CONTAINERS=1
+Environment=IMAGES=1
+Environment=NETWORKS=1
+Environment=VOLUMES=1
+Environment=SERVICES=1
+Environment=TASKS=1
+Environment=INFO=1
+Environment=VERSION=1
+Environment=POST=1
+Environment=BUILD=0
+Environment=AUTH=0
+Environment=SECRETS=0
+Environment=SWARM=0
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target default.target

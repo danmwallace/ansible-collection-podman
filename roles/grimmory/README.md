@@ -1,15 +1,15 @@
 # danmwallace.podman.grimmory
 
-Deploys [Grimmory](https://github.com/grimmory-tools/grimmory), a self-hosted eBook library, and a [MariaDB 11](https://mariadb.org/) database as a pair of rootful Podman Quadlet units on Fedora. An NFS share is mounted on the host and bind-mounted into the Grimmory container as the books volume (`/app/books`). Traefik handles TLS termination via the Cloudflare cert resolver; the Grimmory container joins both the role-private `grimmory` network and the shared `proxy_network` Quadlet network used by Traefik.
+Deploys [Grimmory](https://github.com/grimmory-tools/grimmory), a self-hosted eBook library, and a [MariaDB](https://mariadb.org/) database as a pair of rootful Podman Quadlet units on Fedora. Grimmory runs `ghcr.io/grimmory-tools/grimmory:{{ grimmory_image_tag }}` (default `v3.3.3`) and MariaDB runs `docker.io/library/mariadb:{{ grimmory_db_image_tag }}` (default `11.8.9`). An NFS share is mounted on the host at `grimmory_nfs_mountpoint`; the container's library volume is the local `{{ grimmory_data_dir }}/books` directory, mounted at `/books`. Traefik terminates TLS via the Cloudflare cert resolver and routes `grimmory_hostname` to the container on port 6060 (Grimmory's default `SERVER_PORT`).
 
-Host data directories (app data, bookdrop, and the MariaDB data volume) are created under `grimmory_data_dir` (default `/opt/podman/grimmory`). The MariaDB container is confined to the private `grimmory` network only and is not reachable from `proxy_network`.
+The Grimmory container joins both the role-private `grimmory` Quadlet network and the shared `proxy_network` used by Traefik. The MariaDB container is confined to the private `grimmory` network only and is not reachable from `proxy_network`. Host data directories (app data, books, bookdrop, and the MariaDB data volume) are created under `grimmory_data_dir` (default `/opt/podman/grimmory`).
 
 ## Requirements
 
 - Ansible >= 2.16
-- Collections: `containers.podman >= 1.11.0`, `ansible.posix >= 1.5.0`
+- Collections: `containers.podman >= 1.11.0`, `ansible.posix >= 1.5.0` (declared in the collection's `galaxy.yml`)
 - Target host: Fedora with Podman installed and the `proxy_network` Quadlet network already up (the `danmwallace.podman.traefik` role creates it)
-- NFS client packages installed on the target host and the NFS server reachable at deploy time
+- The NFS server reachable at deploy time (the role installs `nfs-utils` itself)
 - A Cloudflare TLS cert resolver configured in Traefik (for HTTPS)
 
 ## Role Variables
@@ -22,24 +22,24 @@ Host data directories (app data, bookdrop, and the MariaDB data volume) are crea
 | `grimmory_nfs_server` | str | yes | — | NFS server hostname or IP (e.g. `10.10.99.3`). |
 | `grimmory_nfs_path` | str | yes | — | Exported path on the NFS server (e.g. `/mnt/ssd-mirror/books`). |
 | `grimmory_image` | str | no | `ghcr.io/grimmory-tools/grimmory` | Grimmory container image. |
-| `grimmory_image_tag` | str | no | `latest` | Grimmory image tag. Pin to a release tag in production. |
+| `grimmory_image_tag` | str | no | `v3.3.3` | Grimmory image tag. Pin to a release tag in production. |
 | `grimmory_db_image` | str | no | `docker.io/library/mariadb` | MariaDB container image. |
-| `grimmory_db_image_tag` | str | no | `11` | MariaDB image tag. |
-| `grimmory_data_dir` | str | no | `/opt/podman/grimmory` | Host base directory for Grimmory data, bookdrop, and MariaDB volumes. |
+| `grimmory_db_image_tag` | str | no | `11.8.9` | MariaDB image tag. |
+| `grimmory_data_dir` | str | no | `/opt/podman/grimmory` | Host base directory for Grimmory data, books, bookdrop, and MariaDB volumes. |
 | `grimmory_nfs_mountpoint` | str | no | `/mnt/nfs/books` | Host path where the NFS books share is mounted. |
 | `grimmory_app_uid` | int | no | `1000` | UID the Grimmory container process runs as (`APP_USER_ID`). |
 | `grimmory_app_gid` | int | no | `1000` | GID the Grimmory container process runs as (`APP_GROUP_ID`). |
 | `grimmory_timezone` | str | no | `America/New_York` | Timezone passed to the container as the `TZ` env var. |
 | `grimmory_db_name` | str | no | `grimmory` | MariaDB database name. |
 | `grimmory_db_user` | str | no | `grimmory` | MariaDB application user. |
-| `grimmory_traefik_network` | str | no | `systemd-proxy_network` | Podman network shared with Traefik (used in `traefik.docker.network` label). |
+| `grimmory_traefik_network` | str | no | `systemd-proxy_network` | Podman network shared with Traefik (used in the `traefik.docker.network` label). |
 
 ## Dependencies
 
 None declared in `meta/main.yml`. In practice the target host needs:
 
 - The `proxy_network` Podman network (created by `danmwallace.podman.traefik`)
-- NFS client tooling and a reachable NFS server before the mount task runs
+- A reachable NFS server before the mount task runs
 
 ## Example Playbook
 
@@ -58,22 +58,27 @@ None declared in `meta/main.yml`. In practice the target host needs:
 
 ## What the Role Does
 
-1. Creates the base data directories — `grimmory_data_dir`, `data/`, `bookdrop/`, and `db/` — with mode `0755`.
-2. Creates the NFS mount point at `grimmory_nfs_mountpoint` (default `/mnt/nfs/books`) with mode `0755`.
-3. Mounts the NFS books share (`grimmory_nfs_server:grimmory_nfs_path`) at `grimmory_nfs_mountpoint` using `fstype: nfs4` and `opts: defaults,_netdev,nofail`.
-4. Deploys the `grimmory.network` Quadlet network unit to `/etc/containers/systemd/grimmory.network`.
-5. Renders `grimmory-db.container.j2` to `/etc/containers/systemd/grimmory-db.container`. Changes here trigger the `Restart grimmory-db` handler.
-6. Enables and starts `grimmory-db.service` via systemd with `daemon_reload: true`.
-7. Renders `grimmory.container.j2` to `/etc/containers/systemd/grimmory.container`. Changes here triggers the `Restart grimmory` handler.
-8. Enables and starts `grimmory.service` via systemd with `daemon_reload: true`.
+1. Creates the data directories — `grimmory_data_dir`, `data/`, `books/`, `bookdrop/`, and `db/` — with mode `0755`. `data/`, `books/`, and `bookdrop/` are owned by `grimmory_app_uid`; the rest by root.
+2. Ensures `nfs-utils` is installed.
+3. Creates the NFS mount point at `grimmory_nfs_mountpoint` (default `/mnt/nfs/books`) with mode `0755`.
+4. Mounts the NFS books share (`grimmory_nfs_server:grimmory_nfs_path`) at `grimmory_nfs_mountpoint` using `fstype: nfs4` and `opts: defaults,_netdev,nofail`.
+5. Deploys the `grimmory.network` Quadlet network unit to `/etc/containers/systemd/grimmory.network`.
+6. Renders `grimmory-db.container.j2` to `/etc/containers/systemd/grimmory-db.container`. Changes trigger the `Restart grimmory-db` handler.
+7. Enables and starts `grimmory-db.service` via systemd with `daemon_reload: true`.
+8. Renders `grimmory.container.j2` to `/etc/containers/systemd/grimmory.container`. Changes trigger the `Restart grimmory` handler.
+9. Enables and starts `grimmory.service` via systemd with `daemon_reload: true`.
 
-The `Restart grimmory-db` handler calls `systemctl restart grimmory-db.service` with `daemon_reload: true` when the database Quadlet unit changes. The `Restart grimmory` handler does the same for `grimmory.service`.
+The `Restart grimmory-db` handler runs `systemctl restart grimmory-db.service` with `daemon_reload: true` when the database Quadlet unit changes; `Restart grimmory` does the same for `grimmory.service`.
 
 ## Notes
 
-**NFS `nofail` behaviour:** The NFS mount uses `opts: defaults,_netdev,nofail`. This means a missing or unreachable NFS server will not hang boot, but Grimmory itself will fail to start — the `grimmory.service` unit declares `Requires=remote-fs.target`, so if the NFS mount is absent the books volume bind-mount into the container will be empty or missing.
+**Listen port.** Grimmory 3.3.0 renamed the listen-port env var from `BOOKLORE_PORT` to `SERVER_PORT` (the old name still works as a fallback). The default is unchanged at `6060`, which is what the Traefik `loadbalancer.server.port` label assumes, so the role sets neither variable. If you ever set `SERVER_PORT` in the unit, change the label to match.
 
-**`DATABASE_URL` format:** The Grimmory container receives `DATABASE_URL=jdbc:mariadb://grimmory-db:3306/{{ grimmory_db_name }}`. This is a JDBC connection string, not a plain `mysql://` URL. If Grimmory fails to connect to the database on the first deploy, verify this format against the upstream `docker-compose.yml` — the expected scheme may have changed between releases.
+**MariaDB health check.** The `grimmory-db` unit uses the official image's `healthcheck.sh --connect --innodb_initialized` probe. MariaDB 11.x images no longer ship the `mysql*` compatibility symlinks, so a `mysqladmin ping` health command reports `not found` and leaves the container permanently unhealthy. `--connect` authenticates as the unprivileged `healthcheck@localhost` user the image creates when it initialises the data directory, so no password appears on the command line. A data directory initialised by a pre-2023 image (before that user existed) would need the user created by hand.
+
+**NFS `nofail` behaviour.** The NFS mount uses `opts: defaults,_netdev,nofail`, so an unreachable NFS server will not hang boot. The `grimmory.service` unit declares `Requires=remote-fs.target` so it waits for the mount, but the container's `/books` volume is the local `{{ grimmory_data_dir }}/books` directory, not the NFS mountpoint — copy or sync from `grimmory_nfs_mountpoint` into it.
+
+**Environment variables consumed upstream.** At v3.3.3 Grimmory's `application.yaml` reads `DATABASE_URL`, `DATABASE_USERNAME`, and `DATABASE_PASSWORD`, and the image entrypoint reads `USER_ID` / `GROUP_ID`. The role's `DB_USER`, `DB_PASSWORD`, `APP_USER_ID`, and `APP_GROUP_ID` env vars are therefore not read by the container; the database credentials take effect through the `?user=…&password=…` query string on the JDBC `DATABASE_URL`, and the process runs as upstream's default UID/GID `1000`, which matches the role defaults. Changing `grimmory_app_uid`/`grimmory_app_gid` alters directory ownership on the host but not the UID inside the container. This is unchanged between v3.2.4 and v3.3.3.
 
 ## License
 

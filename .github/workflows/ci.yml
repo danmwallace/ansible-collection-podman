@@ -72,3 +72,17 @@ jobs:
           python-version: "3.12"
       - name: Audit git tags against released versions
         run: python3 .github/scripts/sync_tags.py --all-versions .
+
+  argument-specs-check:
+    name: argument_specs drift check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install PyYAML
+        run: pip install pyyaml
+      - name: Check argument_specs defaults against defaults/main.yml
+        run: python3 .github/scripts/check_argument_specs.py

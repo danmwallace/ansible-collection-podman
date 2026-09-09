@@ -30,6 +30,16 @@
     mode: "0644"
   become: true
 
+- name: Deploy arcane-socket Quadlet network unit
+  ansible.builtin.copy:
+    content: |
+      [Network]
+      Internal=true
+      Label=managed_by=ansible
+    dest: /etc/containers/systemd/arcane-socket.network
+    mode: "0644"
+  become: true
+
 - name: Deploy arcane-postgres Quadlet container unit
   ansible.builtin.template:
     src: arcane-postgres.container.j2
@@ -37,6 +47,14 @@
     mode: "0644"
   become: true
   notify: Restart arcane-postgres
+
+- name: Deploy arcane-socket-proxy Quadlet container unit
+  ansible.builtin.template:
+    src: arcane-socket-proxy.container.j2
+    dest: /etc/containers/systemd/arcane-socket-proxy.container
+    mode: "0644"
+  become: true
+  notify: Restart arcane-socket-proxy
 
 - name: Deploy arcane Quadlet container unit
   ansible.builtin.template:
@@ -49,6 +67,15 @@
 - name: Enable and start arcane-postgres.service
   ansible.builtin.systemd:
     name: arcane-postgres.service
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [molecule-notest]
+
+- name: Enable and start arcane-socket-proxy.service
+  ansible.builtin.systemd:
+    name: arcane-socket-proxy.service
     enabled: true
     state: started
     daemon_reload: true

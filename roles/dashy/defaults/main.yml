@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 ---
 dashy_data_dir: /opt/podman/dashy
-# NOTE: v4 is a major rewrite — verify dashboard renders at https://home.wallace.boston after deploy.
-dashy_version: 4.3.12
+# NOTE: Dashy >= 4.5.0 requires every section to have a unique `name` (schema-enforced)
+# and moved OIDC visibility keys to displayData.showForGroups/showForRoles/hideFor*.
+# Keep templates/dashy-config.yml.j2 in line with the upstream schema when bumping.
+dashy_version: 4.6.0
 dashy_image: docker.io/lissy93/dashy:{{ dashy_version }}

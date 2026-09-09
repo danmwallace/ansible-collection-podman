@@ -10,3 +10,6 @@
         semaphore_hostname: semaphore.test.local
         semaphore_postgres_password: test-pass
         semaphore_admin_password: test-admin-pass
+        semaphore_access_key_encryption: dGVzdC1hY2Nlc3Mta2V5LWVuY3J5cHRpb24tMzJieXRlcw==
+        semaphore_cookie_hash: dGVzdC1jb29raWUtaGFzaC0zMmJ5dGVzLWxvbmctdmFsdWU=
+        semaphore_cookie_encryption: dGVzdC1jb29raWUtZW5jcnlwdGlvbi0zMmJ5dGVzLWxvbmc=
