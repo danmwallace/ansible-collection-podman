@@ -15,3 +15,8 @@
         librechat_jwt_refresh_secret: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
         librechat_creds_key: 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff
         librechat_creds_iv: 00112233445566778899aabbccddeeff
+        librechat_embeddings_provider: azure
+        librechat_embeddings_model: text-embedding-3-small
+        librechat_rag_azure_openai_api_key: test-azure-key
+        librechat_rag_azure_openai_endpoint: https://test.openai.azure.com
+        librechat_rag_azure_openai_api_version: "2023-05-15"

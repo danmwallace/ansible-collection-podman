@@ -102,6 +102,10 @@ so Quadlet regenerates the service before restarting it.
   result, Arcane's container **exec/console feature is not available** through this
   deployment — that is deliberate. To change the allowlist, edit
   `templates/arcane-socket-proxy.container.j2`.
+- **SELinux.** The proxy unit sets `SecurityLabelDisable=true` (it runs as `spc_t`,
+  like the `traefik` unit) because a confined `container_t` process is denied
+  `connectto` on the `container_runtime_t` Podman socket. Arcane itself stays confined;
+  only the small HAProxy proxy is unconfined, and its allowlist is the access control.
 - `arcane.container` declares `Requires=arcane-socket-proxy.service`, so stopping
   the proxy stops Arcane too; starting Arcane pulls the proxy up first.
 - The `arcane-socket` network is `Internal=true`: containers on it have no external

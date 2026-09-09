@@ -7,6 +7,20 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-09-09
+
+### Fixed
+
+- `arcane`: the socket proxy could not reach the Podman socket — SELinux denies `container_t`
+  `connectto` on the `container_runtime_t` socket, so every Arcane API call got a 503. The
+  proxy unit now sets `SecurityLabelDisable=true`, the same setting the `traefik` unit
+  already relies on; Arcane itself stays confined and the HAProxy allowlist is unchanged
+- `librechat`: the RAG API unit received no embeddings configuration, so with any provider
+  other than OpenAI-with-env-key it crash-looped on "Missing credentials". The unit now
+  renders `EMBEDDINGS_PROVIDER`, `EMBEDDINGS_MODEL`, `RAG_USE_FULL_CONTEXT`, the
+  `RAG_AZURE_OPENAI_*` trio when the provider is `azure`, and `OPENAI_API_KEY` when it is
+  `openai` — all from the existing `librechat_*` variables
+
 ## [0.6.0] - 2026-09-08
 
 ### Security
