@@ -32,7 +32,7 @@ The Grimmory container joins both the role-private `grimmory` Quadlet network an
 | `grimmory_timezone` | str | no | `America/New_York` | Timezone passed to the container as the `TZ` env var. |
 | `grimmory_db_name` | str | no | `grimmory` | MariaDB database name. |
 | `grimmory_db_user` | str | no | `grimmory` | MariaDB application user. |
-| `grimmory_db_uid` | int | no | `999` | Host UID that owns the MariaDB data directory (`db/`). Must match the `mysql` user inside the image; the entrypoint chowns the directory to it on every start. |
+| `grimmory_db_uid` | int | no | _unset_ | Optional UID to own the MariaDB data directory (`db/`). Unset leaves ownership to the mariadb entrypoint, which chowns it to the image's `mysql` user on every start. |
 | `grimmory_traefik_network` | str | no | `systemd-proxy_network` | Podman network shared with Traefik (used in the `traefik.docker.network` label). |
 
 ## Dependencies
@@ -73,9 +73,11 @@ The `Restart grimmory-db` handler runs `systemctl restart grimmory-db.service` w
 
 ## Notes
 
-- **Data directory ownership.** `db/` is owned by `grimmory_db_uid` (999) and the app
-  directories by `grimmory_app_uid`; managing them any other way makes the play report a
-  change on every run because the containers reset ownership at start.
+- **Data directory ownership.** The app directories are owned by `grimmory_app_uid`. The
+  role does not manage `db/` ownership unless `grimmory_db_uid` is set: the mariadb
+  entrypoint chowns that directory to its own `mysql` user on every start, so forcing any
+  other owner makes the play report a change on every run, and baking in a uid would break
+  idempotency if the image ever changed it.
 - **Container env names.** The unit passes `DATABASE_USERNAME`, `DATABASE_PASSWORD`,
   `USER_ID` and `GROUP_ID`, the names upstream reads (earlier releases used `DB_USER`,
   `DB_PASSWORD`, `APP_USER_ID`, `APP_GROUP_ID`, which Grimmory ignores).

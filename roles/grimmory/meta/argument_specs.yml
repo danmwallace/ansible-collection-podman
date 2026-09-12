@@ -45,8 +45,8 @@ argument_specs:
         default: /opt/podman/grimmory
         description: >-
           Host base directory for Grimmory data, bookdrop, and MariaDB volumes. All directories
-          are created 0755; data/, books/, and bookdrop/ are owned by grimmory_app_uid and db/ by
-          grimmory_db_uid.
+          are created 0755; data/, books/, and bookdrop/ are owned by grimmory_app_uid, and db/
+          ownership is left to the mariadb entrypoint unless grimmory_db_uid is set.
       grimmory_nfs_mountpoint:
         type: str
         default: /mnt/nfs/books
@@ -73,10 +73,11 @@ argument_specs:
         description: MariaDB application user.
       grimmory_db_uid:
         type: int
-        default: 999
+        required: false
         description: >-
-          Host UID that owns the MariaDB data directory (db/). Must match the mysql user inside
-          the mariadb image (999), which the entrypoint chowns the data directory to on start.
+          Optional host UID to own the MariaDB data directory (db/). Unset by default, which
+          leaves ownership to the mariadb entrypoint (it chowns the directory to the image's
+          mysql user on every start). Set it only to pin ownership; it must then match that user.
       grimmory_traefik_network:
         type: str
         default: systemd-proxy_network
