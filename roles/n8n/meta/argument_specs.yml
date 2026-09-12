@@ -11,7 +11,10 @@ argument_specs:
       n8n_data_dir:
         type: str
         default: /opt/podman/n8n
-        description: Host base directory for n8n data, Postgres data, and local files.
+        description: >-
+          Host base directory for n8n data, Postgres data, and local files. The postgres/
+          subdirectory is created 0700 with ownership left to the container (the image's postgres
+          user, uid 999); data/ and local-files/ are 0755 owned by uid 1000.
       n8n_encryption_key:
         type: str
         required: true

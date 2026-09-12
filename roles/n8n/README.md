@@ -106,6 +106,9 @@ migration.
 
 ## Notes
 
+- **Postgres data directory** is created `0700` and its ownership is left to `initdb`
+  (uid 999); the postgres entrypoint runs `chmod 0700` on every start, so any other mode
+  would show as a change on every run.
 - `N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true` makes n8n require strict permissions on
   its settings file; the pre-created `data/` directory with `1000:1000` ownership
   satisfies this.

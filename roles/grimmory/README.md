@@ -32,6 +32,7 @@ The Grimmory container joins both the role-private `grimmory` Quadlet network an
 | `grimmory_timezone` | str | no | `America/New_York` | Timezone passed to the container as the `TZ` env var. |
 | `grimmory_db_name` | str | no | `grimmory` | MariaDB database name. |
 | `grimmory_db_user` | str | no | `grimmory` | MariaDB application user. |
+| `grimmory_db_uid` | int | no | `999` | Host UID that owns the MariaDB data directory (`db/`). Must match the `mysql` user inside the image; the entrypoint chowns the directory to it on every start. |
 | `grimmory_traefik_network` | str | no | `systemd-proxy_network` | Podman network shared with Traefik (used in the `traefik.docker.network` label). |
 
 ## Dependencies
@@ -72,6 +73,12 @@ The `Restart grimmory-db` handler runs `systemctl restart grimmory-db.service` w
 
 ## Notes
 
+- **Data directory ownership.** `db/` is owned by `grimmory_db_uid` (999) and the app
+  directories by `grimmory_app_uid`; managing them any other way makes the play report a
+  change on every run because the containers reset ownership at start.
+- **Container env names.** The unit passes `DATABASE_USERNAME`, `DATABASE_PASSWORD`,
+  `USER_ID` and `GROUP_ID`, the names upstream reads (earlier releases used `DB_USER`,
+  `DB_PASSWORD`, `APP_USER_ID`, `APP_GROUP_ID`, which Grimmory ignores).
 **Listen port.** Grimmory 3.3.0 renamed the listen-port env var from `BOOKLORE_PORT` to `SERVER_PORT` (the old name still works as a fallback). The default is unchanged at `6060`, which is what the Traefik `loadbalancer.server.port` label assumes, so the role sets neither variable. If you ever set `SERVER_PORT` in the unit, change the label to match.
 
 **MariaDB health check.** The `grimmory-db` unit uses the official image's `healthcheck.sh --connect --innodb_initialized` probe. MariaDB 11.x images no longer ship the `mysql*` compatibility symlinks, so a `mysqladmin ping` health command reports `not found` and leaves the container permanently unhealthy. `--connect` authenticates as the unprivileged `healthcheck@localhost` user the image creates when it initialises the data directory, so no password appears on the command line. A data directory initialised by a pre-2023 image (before that user existed) would need the user created by hand.

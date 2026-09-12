@@ -25,7 +25,7 @@ Environment=SEMAPHORE_ADMIN_EMAIL={{ semaphore_admin_email }}
 Environment=SEMAPHORE_ACCESS_KEY_ENCRYPTION={{ semaphore_access_key_encryption }}
 Environment=SEMAPHORE_COOKIE_HASH={{ semaphore_cookie_hash }}
 Environment=SEMAPHORE_COOKIE_ENCRYPTION={{ semaphore_cookie_encryption }}
-Environment=SEMAPHORE_PLAYBOOK_PATH={{ semaphore_playbook_path }}
+Environment=SEMAPHORE_TMP_PATH={{ semaphore_playbook_path | default(semaphore_tmp_path) }}
 Environment=ANSIBLE_HOST_KEY_CHECKING={{ semaphore_ansible_host_key_checking }}
 Label=traefik.enable=true
 Label=traefik.docker.network=systemd-proxy_network

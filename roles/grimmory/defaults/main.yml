@@ -14,5 +14,6 @@ grimmory_timezone: America/New_York
 
 grimmory_db_name: grimmory
 grimmory_db_user: grimmory
+grimmory_db_uid: 999
 
 grimmory_traefik_network: systemd-proxy_network

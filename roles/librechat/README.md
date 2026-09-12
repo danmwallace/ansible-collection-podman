@@ -185,6 +185,9 @@ supported range (e.g. v1.48 -> v1.53) are fine; v1.50 fixed a migration failure 
 
 ## Notes
 
+- **vectordb (pgvector) data directory** is created `0700` and its ownership is left to `initdb`
+  (uid 999); the postgres entrypoint runs `chmod 0700` on every start, so any other mode
+  would show as a change on every run.
 - **RAG API embeddings.** `librechat-rag-api.container` renders `EMBEDDINGS_PROVIDER`,
   `EMBEDDINGS_MODEL` and `RAG_USE_FULL_CONTEXT`, plus `RAG_AZURE_OPENAI_API_KEY`,
   `RAG_AZURE_OPENAI_ENDPOINT` and `RAG_AZURE_OPENAI_API_VERSION` when the provider is

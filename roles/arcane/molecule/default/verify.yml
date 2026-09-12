@@ -118,3 +118,14 @@
           - "'Image=docker.io/library/postgres:17.' in rendered"
           - "'-alpine' in rendered"
           - "'arcane.network' in rendered"
+
+    - name: Stat the arcane postgres data directory
+      ansible.builtin.stat:
+        path: /opt/podman/arcane/postgres
+      register: arcane_postgres_dir
+
+    - name: Assert arcane postgres data directory matches the image entrypoint's chmod 0700
+      ansible.builtin.assert:
+        that:
+          - arcane_postgres_dir.stat.isdir
+          - arcane_postgres_dir.stat.mode == '0700'

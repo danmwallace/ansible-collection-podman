@@ -11,14 +11,21 @@
       must all be set (use Ansible Vault).
   no_log: true
 
-- name: Ensure arcane data directories exist
+- name: Ensure arcane base data directory exists
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ arcane_data_dir }}"
     state: directory
     mode: "0755"
-  loop:
-    - "{{ arcane_data_dir }}"
-    - "{{ arcane_data_dir }}/postgres"
+  become: true
+
+# The official postgres image entrypoint runs `chmod 00700 "$PGDATA"` on every
+# start, so anything but 0700 here flips back each run. Ownership is deliberately
+# not managed: initdb chowns the directory to the image's postgres user (uid 999).
+- name: Ensure arcane postgres data directory exists
+  ansible.builtin.file:
+    path: "{{ arcane_data_dir }}/postgres"
+    state: directory
+    mode: "0700"
   become: true
 
 - name: Deploy arcane Quadlet network unit

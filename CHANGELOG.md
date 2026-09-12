@@ -7,6 +7,42 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-09-12
+
+### Fixed
+
+- `arcane`, `n8n`, `semaphore`, `librechat`: Postgres data directories (`postgres/`, and
+  `vectordb/` for LibreChat) are now created `0700`. The official `postgres` image entrypoint
+  runs `chmod 00700 "$PGDATA"` on every start, so the role's `0755` and the container undid
+  each other and every play run reported a change. Parent and sibling directories stay `0755`;
+  these tasks never set `owner`, so the uid 999 `initdb` assigns is left alone
+- `grimmory`: the MariaDB data directory (`db/`) is owned by the new `grimmory_db_uid`
+  (default `999`, the image's `mysql` user) instead of `root`. The mariadb entrypoint chowns
+  the data directory to `mysql` on every start, so the role flipped it back on every run
+- `semaphore`: the unit rendered `SEMAPHORE_PLAYBOOK_PATH`, which Semaphore never reads. The
+  real key is `SEMAPHORE_TMP_PATH` (`tmp_path` in `util/config.go`, default `/tmp/semaphore`)
+- `grimmory`: the unit passed `DB_USER`, `DB_PASSWORD`, `APP_USER_ID`, `APP_GROUP_ID` — those
+  are the host-side `.env` names from upstream's compose example. The container reads
+  `DATABASE_USERNAME`, `DATABASE_PASSWORD` (`backend/src/main/resources/application.yaml`)
+  and `USER_ID`, `GROUP_ID` (`packaging/docker/entrypoint.sh`) at v3.3.3; the wrong names are
+  gone and the right ones rendered. Credentials only worked before because `DATABASE_URL`
+  embeds them (unchanged); `grimmory_app_uid`/`grimmory_app_gid` now actually reach the
+  container instead of silently falling back to 1000
+
+### Added
+
+- `grimmory`: `grimmory_db_uid` (default `999`)
+- `semaphore`: `semaphore_tmp_path` (default `/tmp/semaphore`), rendered as
+  `SEMAPHORE_TMP_PATH`
+- Molecule: `arcane`, `n8n`, `semaphore` assert the Postgres directory mode; `grimmory` asserts
+  the `db/` owner and the container env names; `semaphore` asserts the tmp-path env name
+
+### Deprecated
+
+- `semaphore`: `semaphore_playbook_path` — still honoured when set (it wins over
+  `semaphore_tmp_path`), but it is no longer in `defaults/main.yml`; switch to
+  `semaphore_tmp_path`
+
 ## [0.6.1] - 2026-09-09
 
 ### Fixed

@@ -23,7 +23,16 @@
     - "{{ semaphore_data_dir }}"
     - "{{ semaphore_data_dir }}/data"
     - "{{ semaphore_data_dir }}/config"
-    - "{{ semaphore_data_dir }}/postgres"
+  become: true
+
+# The official postgres image entrypoint runs `chmod 00700 "$PGDATA"` on every
+# start, so anything but 0700 here flips back each run. Ownership is deliberately
+# not managed: initdb chowns the directory to the image's postgres user (uid 999).
+- name: Ensure semaphore postgres data directory exists
+  ansible.builtin.file:
+    path: "{{ semaphore_data_dir }}/postgres"
+    state: directory
+    mode: "0700"
   become: true
 
 - name: Deploy semaphore Quadlet network unit

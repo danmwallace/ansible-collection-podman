@@ -31,14 +31,22 @@
     - "{{ librechat_data_dir }}/logs"
   become: true
 
-- name: Ensure librechat sidecar data directories exist
+- name: Ensure librechat meilisearch data directory exists
   ansible.builtin.file:
-    path: "{{ item }}"
+    path: "{{ librechat_data_dir }}/meilisearch"
     state: directory
     mode: "0755"
-  loop:
-    - "{{ librechat_data_dir }}/meilisearch"
-    - "{{ librechat_data_dir }}/vectordb"
+  become: true
+
+# The pgvector image inherits the official postgres entrypoint, which runs
+# `chmod 00700 "$PGDATA"` on every start, so anything but 0700 here flips back
+# each run. Ownership is deliberately not managed: initdb chowns the directory
+# to the image's postgres user (uid 999).
+- name: Ensure librechat vectordb data directory exists
+  ansible.builtin.file:
+    path: "{{ librechat_data_dir }}/vectordb"
+    state: directory
+    mode: "0700"
   become: true
 
 - name: Render librechat.yaml config
