@@ -7,6 +7,16 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.6.3] - 2026-09-12
+
+### Changed
+
+- `grimmory`: the MariaDB data directory's ownership is no longer managed by default.
+  0.6.2 forced it to `grimmory_db_uid` (999), which only stays idempotent while the
+  mariadb image keeps that uid. `grimmory_db_uid` is now optional with no default; unset,
+  the mariadb entrypoint owns `db/` as it already does on every start. Hosts deployed with
+  0.6.2 need no action.
+
 ## [0.6.2] - 2026-09-12
 
 ### Fixed

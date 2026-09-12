@@ -88,10 +88,10 @@
         that: item.stat.exists and item.stat.isdir
       loop: "{{ grimmory_dirs.results }}"
 
-    - name: Assert the MariaDB data directory is owned by the image's mysql uid
+    - name: Assert the MariaDB data directory mode is managed but ownership is not forced
       vars:
         db_dir: "{{ grimmory_dirs.results | selectattr('item', 'equalto', '/opt/podman/grimmory/db') | first }}"
       ansible.builtin.assert:
         that:
-          - db_dir.stat.uid == 999
-          - db_dir.stat.gid == 999
+          - db_dir.stat.mode == '0755'
+          - grimmory_db_uid is not defined

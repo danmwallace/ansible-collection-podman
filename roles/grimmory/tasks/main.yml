@@ -5,20 +5,29 @@
     path: "{{ item.path }}"
     state: directory
     mode: "0755"
-    owner: "{{ item.owner | default('root') }}"
-    group: "{{ item.owner | default('root') }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
   loop:
     - path: "{{ grimmory_data_dir }}"
+      owner: root
     - path: "{{ grimmory_data_dir }}/data"
       owner: "{{ grimmory_app_uid }}"
     - path: "{{ grimmory_data_dir }}/books"
       owner: "{{ grimmory_app_uid }}"
     - path: "{{ grimmory_data_dir }}/bookdrop"
       owner: "{{ grimmory_app_uid }}"
-    # The mariadb image entrypoint chowns the data dir to its mysql user on every
-    # start, so owning it as root here would flip back each run.
-    - path: "{{ grimmory_data_dir }}/db"
-      owner: "{{ grimmory_db_uid }}"
+  become: true
+
+# The mariadb image entrypoint chowns its data dir to the image's mysql user on
+# every start. Ownership is left to the container by default so no uid is baked
+# into the role; set grimmory_db_uid only to pin it explicitly.
+- name: Ensure grimmory MariaDB data directory exists
+  ansible.builtin.file:
+    path: "{{ grimmory_data_dir }}/db"
+    state: directory
+    mode: "0755"
+    owner: "{{ grimmory_db_uid | default(omit) }}"
+    group: "{{ grimmory_db_uid | default(omit) }}"
   become: true
 
 - name: Ensure nfs-utils is installed
