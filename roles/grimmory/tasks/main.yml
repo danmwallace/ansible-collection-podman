@@ -15,7 +15,10 @@
       owner: "{{ grimmory_app_uid }}"
     - path: "{{ grimmory_data_dir }}/bookdrop"
       owner: "{{ grimmory_app_uid }}"
+    # The mariadb image entrypoint chowns the data dir to its mysql user on every
+    # start, so owning it as root here would flip back each run.
     - path: "{{ grimmory_data_dir }}/db"
+      owner: "{{ grimmory_db_uid }}"
   become: true
 
 - name: Ensure nfs-utils is installed

@@ -21,7 +21,10 @@ argument_specs:
       arcane_data_dir:
         type: str
         default: /opt/podman/arcane
-        description: Host directory for Arcane persistent data. Postgres data is stored under a postgres/ subdirectory.
+        description: >-
+          Host directory for Arcane persistent data. Postgres data is stored under a postgres/
+          subdirectory, created 0700 with ownership left to the container (the image's postgres
+          user, uid 999); the base directory is 0755.
       arcane_postgres_db:
         type: str
         default: arcane

@@ -11,7 +11,10 @@ argument_specs:
       librechat_data_dir:
         type: str
         default: /opt/podman/librechat
-        description: Host base directory for all LibreChat data volumes.
+        description: >-
+          Host base directory for all LibreChat data volumes. The vectordb/ subdirectory is
+          created 0700 with ownership left to the container (the pgvector image's postgres user,
+          uid 999); images/ and logs/ are 0755 owned by uid 1000, meilisearch/ is 0755 root.
       librechat_port:
         type: int
         default: 3080

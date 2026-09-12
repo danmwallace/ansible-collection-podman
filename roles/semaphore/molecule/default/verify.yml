@@ -54,6 +54,8 @@
           - "'semaphoreui/semaphore:latest' not in rendered"
           - "'proxy_network.network' in rendered"
           - "'semaphore.network' in rendered"
+          - "('Environment=SEMAPHORE_TMP_PATH=' ~ semaphore_tmp_path) in rendered"
+          - "'SEMAPHORE_PLAYBOOK_PATH' not in rendered"
 
     - name: Read semaphore-postgres.container unit
       ansible.builtin.slurp:
@@ -67,3 +69,14 @@
         that:
           - "'postgres:17.11-alpine' in rendered"
           - "'semaphore.network' in rendered"
+
+    - name: Stat the semaphore postgres data directory
+      ansible.builtin.stat:
+        path: /opt/podman/semaphore/postgres
+      register: semaphore_postgres_dir
+
+    - name: Assert semaphore postgres data directory matches the image entrypoint's chmod 0700
+      ansible.builtin.assert:
+        that:
+          - semaphore_postgres_dir.stat.isdir
+          - semaphore_postgres_dir.stat.mode == '0700'

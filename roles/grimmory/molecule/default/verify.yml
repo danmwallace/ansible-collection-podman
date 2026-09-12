@@ -51,6 +51,12 @@
           - "'proxy_network.network' in rendered"
           - "'grimmory.network' in rendered"
           - "'grimmory-db' in rendered"
+          - "'Environment=DATABASE_USERNAME=grimmory' in rendered"
+          - "'Environment=DATABASE_PASSWORD=test-db-pass' in rendered"
+          - "'Environment=USER_ID=1000' in rendered"
+          - "'Environment=GROUP_ID=1000' in rendered"
+          - "'Environment=DB_USER=' not in rendered"
+          - "'Environment=APP_USER_ID=' not in rendered"
 
     - name: Read grimmory-db.container unit
       ansible.builtin.slurp:
@@ -81,3 +87,11 @@
       ansible.builtin.assert:
         that: item.stat.exists and item.stat.isdir
       loop: "{{ grimmory_dirs.results }}"
+
+    - name: Assert the MariaDB data directory is owned by the image's mysql uid
+      vars:
+        db_dir: "{{ grimmory_dirs.results | selectattr('item', 'equalto', '/opt/podman/grimmory/db') | first }}"
+      ansible.builtin.assert:
+        that:
+          - db_dir.stat.uid == 999
+          - db_dir.stat.gid == 999

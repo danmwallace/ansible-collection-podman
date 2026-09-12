@@ -96,6 +96,9 @@ so Quadlet regenerates the service before restarting it.
 
 ## Notes
 
+- **Postgres data directory** is created `0700` and its ownership is left to `initdb`
+  (uid 999); the postgres entrypoint runs `chmod 0700` on every start, so any other mode
+  would show as a change on every run.
 - **Socket-proxy allowlist.** The proxy enables `CONTAINERS`, `IMAGES`, `NETWORKS`,
   `VOLUMES`, `SERVICES`, `TASKS`, `INFO`, `VERSION`, and `POST`; it disables `BUILD`,
   `AUTH`, `SECRETS`, and `SWARM`, and leaves `EXEC` at its default of `0`. As a

@@ -45,7 +45,8 @@ resolver on the `websecure` entrypoint. Data is bind-mounted from `semaphore_dat
 | `semaphore_access_key_encryption` | str | yes | — | Encryption key for stored credentials (`SEMAPHORE_ACCESS_KEY_ENCRYPTION`). Must not be empty. **Supply from vault.** |
 | `semaphore_cookie_hash` | str | yes | — | HMAC key for session cookies (`SEMAPHORE_COOKIE_HASH`). Generate with `openssl rand -hex 32`. **Supply from vault.** |
 | `semaphore_cookie_encryption` | str | yes | — | Encryption key for session cookies (`SEMAPHORE_COOKIE_ENCRYPTION`). Generate with `openssl rand -base64 32`. **Supply from vault.** |
-| `semaphore_playbook_path` | str | no | `/tmp/semaphore/` | Value passed as `SEMAPHORE_PLAYBOOK_PATH`. See **Notes**. |
+| `semaphore_tmp_path` | str | no | `/tmp/semaphore` | Path inside the container for Semaphore's temporary files (cloned repos, task workdirs). Rendered as `SEMAPHORE_TMP_PATH`. |
+| `semaphore_playbook_path` | str | no | _unset_ | Deprecated alias for `semaphore_tmp_path`; still honoured when set. |
 | `semaphore_ansible_host_key_checking` | str | no | `"False"` | Value for `ANSIBLE_HOST_KEY_CHECKING` in the Semaphore container environment. |
 
 ## Dependencies
@@ -98,6 +99,11 @@ service with a daemon-reload when the corresponding unit file changed.
 
 ## Notes
 
+- **`SEMAPHORE_TMP_PATH`.** Releases before 0.6.2 rendered `SEMAPHORE_PLAYBOOK_PATH`, which
+  Semaphore never reads; the value now goes to `SEMAPHORE_TMP_PATH` (`tmp_path`). Set
+  `semaphore_tmp_path`; the old `semaphore_playbook_path` still works as an alias.
+- **Postgres data directory** is created `0700` and its ownership is left to `initdb`
+  (uid 999), matching what the postgres entrypoint enforces on every start.
 - The Postgres unit uses `Restart=always`; the Semaphore unit uses `Restart=on-failure`
   with `RestartSec=5s` and `StartLimitBurst=10`, so a crash loop is retried rather than
   restarted forever.

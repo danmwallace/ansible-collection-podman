@@ -78,3 +78,14 @@
         that:
           - n8n_data_dir.stat.exists
           - n8n_data_dir.stat.isdir
+
+    - name: Stat the n8n postgres data directory
+      ansible.builtin.stat:
+        path: /opt/podman/n8n/postgres
+      register: n8n_postgres_dir
+
+    - name: Assert n8n postgres data directory matches the image entrypoint's chmod 0700
+      ansible.builtin.assert:
+        that:
+          - n8n_postgres_dir.stat.isdir
+          - n8n_postgres_dir.stat.mode == '0700'

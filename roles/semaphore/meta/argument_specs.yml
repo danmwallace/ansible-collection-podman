@@ -15,7 +15,10 @@ argument_specs:
       semaphore_data_dir:
         type: str
         default: /opt/podman/semaphore
-        description: Host base directory for Semaphore data, config, and Postgres volumes.
+        description: >-
+          Host base directory for Semaphore data, config, and Postgres volumes. The postgres/
+          subdirectory is created 0700 and its ownership is left to the container (the image's
+          postgres user, uid 999); the other directories are 0755.
       semaphore_postgres_db:
         type: str
         default: semaphore
@@ -61,10 +64,18 @@ argument_specs:
         required: true
         no_log: true
         description: Encryption key for Semaphore session cookies (SEMAPHORE_COOKIE_ENCRYPTION). Generate with openssl rand -base64 32. Store in Ansible Vault.
+      semaphore_tmp_path:
+        type: str
+        default: /tmp/semaphore
+        description: >-
+          Path inside the container where Semaphore keeps temporary files such as cloned
+          repositories. Rendered as SEMAPHORE_TMP_PATH (config key tmp_path).
       semaphore_playbook_path:
         type: str
-        default: /tmp/semaphore/
-        description: Path inside the container where Semaphore stores temporary playbook files.
+        required: false
+        description: >-
+          Deprecated alias for semaphore_tmp_path, honoured when set. Releases before 0.6.2
+          rendered it as SEMAPHORE_PLAYBOOK_PATH, which Semaphore never reads.
       semaphore_ansible_host_key_checking:
         type: str
         default: "False"

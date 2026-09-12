@@ -13,10 +13,10 @@ Volume={{ grimmory_data_dir }}/data:/app/data:z
 Volume={{ grimmory_data_dir }}/bookdrop:/app/bookdrop:z
 Volume={{ grimmory_data_dir }}/books:/books:z
 Environment=DATABASE_URL=jdbc:mariadb://grimmory-db:3306/{{ grimmory_db_name }}?user={{ grimmory_db_user }}&password={{ grimmory_db_password }}
-Environment=DB_USER={{ grimmory_db_user }}
-Environment=DB_PASSWORD={{ grimmory_db_password }}
-Environment=APP_USER_ID={{ grimmory_app_uid }}
-Environment=APP_GROUP_ID={{ grimmory_app_gid }}
+Environment=DATABASE_USERNAME={{ grimmory_db_user }}
+Environment=DATABASE_PASSWORD={{ grimmory_db_password }}
+Environment=USER_ID={{ grimmory_app_uid }}
+Environment=GROUP_ID={{ grimmory_app_gid }}
 Environment=TZ={{ grimmory_timezone }}
 Label=traefik.enable=true
 Label=traefik.docker.network={{ grimmory_traefik_network }}

@@ -43,7 +43,10 @@ argument_specs:
       grimmory_data_dir:
         type: str
         default: /opt/podman/grimmory
-        description: Host base directory for Grimmory data, bookdrop, and MariaDB volumes.
+        description: >-
+          Host base directory for Grimmory data, bookdrop, and MariaDB volumes. All directories
+          are created 0755; data/, books/, and bookdrop/ are owned by grimmory_app_uid and db/ by
+          grimmory_db_uid.
       grimmory_nfs_mountpoint:
         type: str
         default: /mnt/nfs/books
@@ -51,11 +54,11 @@ argument_specs:
       grimmory_app_uid:
         type: int
         default: 1000
-        description: UID the Grimmory container process runs as (APP_USER_ID).
+        description: UID the Grimmory container process runs as (USER_ID) and owner of the app data directories.
       grimmory_app_gid:
         type: int
         default: 1000
-        description: GID the Grimmory container process runs as (APP_GROUP_ID).
+        description: GID the Grimmory container process runs as (GROUP_ID).
       grimmory_timezone:
         type: str
         default: America/New_York
@@ -68,6 +71,12 @@ argument_specs:
         type: str
         default: grimmory
         description: MariaDB application user.
+      grimmory_db_uid:
+        type: int
+        default: 999
+        description: >-
+          Host UID that owns the MariaDB data directory (db/). Must match the mysql user inside
+          the mariadb image (999), which the entrypoint chowns the data directory to on start.
       grimmory_traefik_network:
         type: str
         default: systemd-proxy_network

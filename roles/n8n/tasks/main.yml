@@ -28,11 +28,14 @@
     - "{{ n8n_data_dir }}/local-files"
   become: true
 
+# The official postgres image entrypoint runs `chmod 00700 "$PGDATA"` on every
+# start, so anything but 0700 here flips back each run. Ownership is deliberately
+# not managed: initdb chowns the directory to the image's postgres user (uid 999).
 - name: Ensure n8n postgres data directory exists
   ansible.builtin.file:
     path: "{{ n8n_data_dir }}/postgres"
     state: directory
-    mode: "0755"
+    mode: "0700"
   become: true
 
 - name: Deploy n8n Quadlet network unit
