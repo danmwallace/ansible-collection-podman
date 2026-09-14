@@ -7,7 +7,7 @@ After=network-online.target
 Image=docker.io/library/postgres:17.11-alpine
 ContainerName=semaphore-postgres
 Network=semaphore.network
-Volume={{ semaphore_data_dir }}/postgres:/var/lib/postgresql:z
+Volume={{ semaphore_data_dir }}/postgres:/var/lib/postgresql/data:z
 Environment=POSTGRES_DB={{ semaphore_postgres_db }}
 Environment=POSTGRES_USER={{ semaphore_postgres_user }}
 Environment=POSTGRES_PASSWORD={{ semaphore_postgres_password }}

@@ -69,6 +69,9 @@
         that:
           - "'postgres:17.11-alpine' in rendered"
           - "'semaphore.network' in rendered"
+          # Must bind PGDATA itself. Binding the parent (/var/lib/postgresql) leaves the
+          # image's VOLUME /var/lib/postgresql/data as an anonymous volume, which --rm deletes.
+          - "('Volume=' ~ semaphore_data_dir ~ '/postgres:/var/lib/postgresql/data:z') in rendered"
 
     - name: Stat the semaphore postgres data directory
       ansible.builtin.stat:
