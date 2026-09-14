@@ -15,7 +15,7 @@ with its Postgres sidecar, and the host's `proxy_network` so Traefik can route
 `https://{{ semaphore_hostname }}` to port 3000 using the `cloudflare` certificate
 resolver on the `websecure` entrypoint. Data is bind-mounted from `semaphore_data_dir`
 (default `/opt/podman/semaphore`): `data/` to `/var/lib/semaphore`, `config/` to
-`/etc/semaphore`, and `postgres/` to `/var/lib/postgresql`.
+`/etc/semaphore`, and `postgres/` to `/var/lib/postgresql/data` (the Postgres `PGDATA`).
 
 ## Requirements
 

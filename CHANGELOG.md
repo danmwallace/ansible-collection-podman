@@ -7,6 +7,24 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.6.4] - 2026-09-14
+
+### Fixed
+
+- `semaphore`: the Postgres container now bind-mounts `semaphore_data_dir/postgres` onto
+  `PGDATA` (`/var/lib/postgresql/data`) instead of its parent `/var/lib/postgresql`. With the
+  parent mounted, the image's `VOLUME /var/lib/postgresql/data` became an anonymous volume, so
+  the database never reached the host directory and was deleted whenever Quadlet's `--rm`
+  removed the container. 0.6.2 then made this fatal: its `0700` on the host directory denied
+  the `postgres` user traversal to its data, and on util01 Postgres crashed at the next
+  checkpoint (`could not open file ".../global/pg_control": Permission denied`) and its
+  anonymous volume was deleted.
+
+  **Upgrading a running deployment:** the data lives in the container's anonymous volume, so
+  take a `pg_dumpall` first. Then stop both units, remove the empty `data/` mountpoint left
+  inside `semaphore_data_dir/postgres` (initdb needs an empty `PGDATA`), apply the role, and
+  load the dump before Semaphore starts using the database.
+
 ## [0.6.3] - 2026-09-12
 
 ### Changed
