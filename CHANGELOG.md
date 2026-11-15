@@ -7,6 +7,10 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+### Changed
+
+- `n8n`: a comment by `n8n_version` saying a bump changes n8n's MCP tool list, which frmwrk's MCP entry classifies.
+
 ## [0.6.5] - 2026-11-15
 
 ### Removed
