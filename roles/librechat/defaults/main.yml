@@ -50,8 +50,6 @@ librechat_debug_logging: true
 librechat_debug_console: false
 librechat_agent_debug_logging: false
 librechat_mem_diag: ""
-librechat_uid: 0
-librechat_gid: 0
 librechat_node_max_old_space_size: 6144
 librechat_mongo_max_pool_size: ""
 librechat_mongo_min_pool_size: ""

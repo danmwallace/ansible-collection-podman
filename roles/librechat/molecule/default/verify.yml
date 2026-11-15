@@ -124,3 +124,17 @@
         that:
           - librechat_yaml_stat.stat.exists
           - librechat_yaml_stat.stat.mode == '0644'
+
+    - name: Read the rendered LibreChat env file
+      ansible.builtin.slurp:
+        src: /opt/podman/librechat/librechat.env
+      register: librechat_env_contents
+
+    # UID/GID only matter to Docker Compose's `user:`; the Quadlet has no User=, so the
+    # container runs as the image's `node` user either way, and UID=0 only misled reviewers.
+    - name: Check the env file sets no UID or GID
+      ansible.builtin.assert:
+        that:
+          - (librechat_env_contents.content | b64decode) is not search('(?m)^UID=')
+          - (librechat_env_contents.content | b64decode) is not search('(?m)^GID=')
+        quiet: true

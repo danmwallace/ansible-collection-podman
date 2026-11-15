@@ -7,6 +7,15 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.6.5] - 2026-11-15
+
+### Removed
+
+- `librechat`: the `UID`/`GID` lines in `librechat.env`, and their `librechat_uid`/`librechat_gid` defaults (`0`).
+  - Only Docker Compose's `user:` reads those variables. The Quadlet has no `User=`, so LibreChat always ran as the image's `node` user, as shown on ai01 with `podman top`.
+  - `UID=0` did nothing except look like a root container (ansible-homelab-cfg #50).
+  - Setting the old variables is harmless; nothing reads them.
+
 ## [0.6.4] - 2026-09-14
 
 ### Fixed
