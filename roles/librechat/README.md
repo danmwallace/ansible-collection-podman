@@ -44,13 +44,13 @@ left as `""` render empty and fall back to LibreChat's own defaults.
 | `librechat_hostname` | str | yes | — | Hostname for the LibreChat web interface (e.g. chat.example.com). |
 | `librechat_data_dir` | str | no | `/opt/podman/librechat` | Host base directory for all LibreChat data volumes. |
 | `librechat_port` | int | no | `3080` | Port the LibreChat API container listens on (used for Traefik load balancer config). |
-| `librechat_api_image` | str | no | `ghcr.io/danny-avila/librechat:v0.8.7` | Container image for the LibreChat API service. |
+| `librechat_api_image` | str | no | `ghcr.io/librechat-ai/librechat:v0.8.9` | Container image for the LibreChat API service. |
 | `librechat_mongo_uri` | str | yes | — | MongoDB connection URI for LibreChat. **Supply from vault.** |
-| `librechat_meilisearch_image` | str | no | `docker.io/getmeili/meilisearch:v1.53.2` | Container image for the Meilisearch service. |
+| `librechat_meilisearch_image` | str | no | `docker.io/getmeili/meilisearch:v1.57.0` | Container image for the Meilisearch service. |
 | `librechat_meilisearch_upgrade_db` | bool | no | `true` | When true, sets MEILI_UPGRADE_DB=true on the Meilisearch container so it migrates the persisted database in place on first start after an image bump (--upgrade-db, stable since Meilisearch v1.51). |
 | `librechat_meili_master_key` | str | yes | — | Master key for Meilisearch authentication. **Supply from vault.** |
 | `librechat_meili_host` | str | no | `http://librechat-meilisearch:7700` | URL for the Meilisearch service as seen from the LibreChat API container. Defaults to the Podman container name on the librechat network. |
-| `librechat_vectordb_image` | str | no | `docker.io/pgvector/pgvector:0.8.6-pg17` | Container image for the vectordb (pgvector/Postgres) service. |
+| `librechat_vectordb_image` | str | no | `docker.io/pgvector/pgvector:0.8.7-pg17` | Container image for the vectordb (pgvector/Postgres) service. |
 | `librechat_vectordb_postgres_db` | str | no | `mydatabase` | Postgres database name for the vectordb service. |
 | `librechat_vectordb_postgres_user` | str | no | `myuser` | Postgres username for the vectordb service. |
 | `librechat_vectordb_postgres_password` | str | yes | — | Postgres password for the vectordb service. **Supply from vault.** |
@@ -163,13 +163,13 @@ and restarts the service; **it does not migrate data**. Bumping a pin over exist
 is therefore an operator task, and both services fail to start (rather than corrupt data)
 when the on-disk format does not match the new image.
 
-**Postgres / pgvector.** The pin encodes the Postgres major (`0.8.6-pg17`). Postgres
+**Postgres / pgvector.** The pin encodes the Postgres major (`0.8.7-pg17`). Postgres
 cannot open a data directory from a different major, so before changing the `-pgNN`
 suffix of `librechat_vectordb_image`, `pg_dumpall` from the *running* old container,
 move `vectordb/` aside, deploy the new image onto an empty `vectordb/`, and restore.
 Check `vectordb/PG_VERSION` against the pin if `librechat-vectordb.service` fails on
 `database files are incompatible with server`. Bumping the pgvector version within the
-same Postgres major (e.g. `0.8.5-pg17` -> `0.8.6-pg17`) needs no migration.
+same Postgres major (e.g. `0.8.6-pg17` -> `0.8.7-pg17`) needs no migration.
 
 **Meilisearch.** A Meilisearch database is only readable by the version that wrote it.
 With `librechat_meilisearch_upgrade_db: true` (the default) the container starts with
@@ -180,7 +180,7 @@ older databases make the new version fail with `Database version X.Y.Z is too ol
 upgraded via --upgrade-db`. In that case run the original image once more, create a
 dump via `POST /dumps`, start the new image on an empty `meilisearch/` with
 `--import-dump`, then return to the role-managed unit. Multi-minor jumps within the
-supported range (e.g. v1.48 -> v1.53) are fine; v1.50 fixed a migration failure from
+supported range (e.g. v1.53 -> v1.57) are fine; v1.50 fixed a migration failure from
 <= v1.48 on indexes containing empty synonyms. Downgrades are not supported, so snapshot
 `meilisearch/` before bumping if you want a rollback path.
 
@@ -196,6 +196,16 @@ supported range (e.g. v1.48 -> v1.53) are fine; v1.50 fixed a migration failure 
   empty makes the RAG API default to OpenAI and fail at start with "Missing credentials".
 - **Image pins.** All four images are pinned to release tags; bump them deliberately and
   read the upgrade section above first.
+- **LibreChat image registry.** Upstream moved to the `LibreChat-AI` organisation during
+  v0.8.8, and `ghcr.io/danny-avila/librechat` stopped at `v0.8.8-rc4`. Releases from v0.8.8 on
+  are published as `ghcr.io/librechat-ai/librechat` (also mirrored at
+  `registry.librechat.ai/librechat-ai/librechat`). An inventory that overrides
+  `librechat_api_image` with the old path must switch to the new one to get v0.8.8 or later.
+- **Blank `MONGO_AUTO_INDEX` / `MONGO_AUTO_CREATE` (v0.8.8+).** The role renders both from
+  `librechat_mongo_auto_index` / `librechat_mongo_auto_create`, which default to `""`. Before
+  v0.8.8 a blank value disabled automatic index and collection creation; from v0.8.8 a blank
+  value means Mongoose's default (enabled). Set them to `false` explicitly to keep the old
+  behaviour.
 - **Start order.** `librechat-api` starts after `librechat-meilisearch` and
   `librechat-rag-api` (`After=`); `librechat-rag-api` waits on `librechat-vectordb`.
 - **Traefik.** Routing relies on `proxy_network` existing before the role runs and the

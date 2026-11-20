@@ -21,7 +21,7 @@ argument_specs:
         description: Port the LibreChat API container listens on (used for Traefik load balancer config).
       librechat_api_image:
         type: str
-        default: ghcr.io/danny-avila/librechat:v0.8.7
+        default: ghcr.io/librechat-ai/librechat:v0.8.9
         description: Container image for the LibreChat API service.
       librechat_mongo_uri:
         type: str
@@ -29,7 +29,7 @@ argument_specs:
         description: MongoDB connection URI for LibreChat. Store in Ansible Vault.
       librechat_meilisearch_image:
         type: str
-        default: docker.io/getmeili/meilisearch:v1.53.2
+        default: docker.io/getmeili/meilisearch:v1.57.0
         description: Container image for the Meilisearch service.
       librechat_meilisearch_upgrade_db:
         type: bool
@@ -50,7 +50,7 @@ argument_specs:
           Defaults to the Podman container name on the librechat network.
       librechat_vectordb_image:
         type: str
-        default: docker.io/pgvector/pgvector:0.8.6-pg17
+        default: docker.io/pgvector/pgvector:0.8.7-pg17
         description: Container image for the vectordb (pgvector/Postgres) service.
       librechat_vectordb_postgres_db:
         type: str

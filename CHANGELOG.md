@@ -16,6 +16,7 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 - `arcane`: `v2.10.2` → `v2.17.3`, the newest 2.x release (#40). v3.x renames the image and env vars and is handled separately. From v2.17.2 Arcane logs a startup warning that the `ghcr.io/getarcaneapp/arcane` image name is deprecated; this is expected.
 - `dashy`: `4.6.0` → `4.9.0` (#44); no config schema changes.
 - `grimmory`: `v3.3.3` → `v3.5.0` (#45); the env vars upstream reads (`DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `USER_ID`, `GROUP_ID`) are unchanged.
+- `librechat`: API `v0.8.7` → `v0.8.9`, now from `ghcr.io/librechat-ai/librechat` because upstream moved organisations and `ghcr.io/danny-avila/librechat` stopped at `v0.8.8-rc4` (#47); Meilisearch `v1.53.2` → `v1.57.0` (#46); pgvector `0.8.6-pg17` → `0.8.7-pg17` (#48). README notes that a blank `MONGO_AUTO_INDEX`/`MONGO_AUTO_CREATE` means "enabled" from v0.8.8.
 
 ## [0.6.5] - 2026-11-15
 

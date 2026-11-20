@@ -94,7 +94,7 @@
         rendered: "{{ librechat_meilisearch_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
-          - "'Image=docker.io/getmeili/meilisearch:v1.53.2' in rendered"
+          - "'Image=docker.io/getmeili/meilisearch:v1.57.0' in rendered"
           - "'Environment=MEILI_UPGRADE_DB=true' in rendered"
 
     - name: Read librechat-rag-api.container unit
