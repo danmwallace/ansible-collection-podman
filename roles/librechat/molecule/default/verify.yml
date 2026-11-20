@@ -138,3 +138,11 @@
           - (librechat_env_contents.content | b64decode) is not search('(?m)^UID=')
           - (librechat_env_contents.content | b64decode) is not search('(?m)^GID=')
         quiet: true
+
+    # DEBUG_LOGGING writes verbose request data (prompts, model output, headers) to the
+    # container log, so it must stay off unless an inventory turns it on.
+    - name: Check debug logging is off by default
+      ansible.builtin.assert:
+        that:
+          - (librechat_env_contents.content | b64decode) is search('(?m)^DEBUG_LOGGING=False$')
+        quiet: true

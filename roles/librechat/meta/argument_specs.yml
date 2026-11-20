@@ -102,6 +102,13 @@ argument_specs:
         description: >
           URL for the RAG API service as seen from the LibreChat API container.
           Defaults to the Podman container name on the librechat network.
+      librechat_debug_logging:
+        type: bool
+        default: false
+        description: >
+          Sets DEBUG_LOGGING in librechat.env. When true, LibreChat logs verbose request
+          data (prompts, model responses, request headers that can include tokens) to the
+          container log. Enable only on a development host, temporarily.
       librechat_obsidian_mount_enabled:
         type: bool
         default: false

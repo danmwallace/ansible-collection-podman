@@ -61,6 +61,7 @@ left as `""` render empty and fall back to LibreChat's own defaults.
 | `librechat_ragapi_image` | str | no | `ghcr.io/danny-avila/librechat-rag-api-dev-lite:v0.9.0` | Container image for the LibreChat RAG API service. |
 | `librechat_rag_port` | int | no | `8000` | Port the RAG API service listens on. Used to set RAG_PORT in the env file. |
 | `librechat_rag_api_url` | str | no | `http://librechat-rag-api:8000` | URL for the RAG API service as seen from the LibreChat API container. Defaults to the Podman container name on the librechat network. |
+| `librechat_debug_logging` | bool | no | `false` | Sets `DEBUG_LOGGING` in `librechat.env`. When true, LibreChat logs verbose request data (prompts, model responses, request headers that can include tokens) to the container log. Enable only on a development host, temporarily. |
 | `librechat_obsidian_mount_enabled` | bool | no | `false` | When true, bind-mounts the Obsidian vault path into the api container. |
 | `librechat_obsidian_mount_path` | str | no | `""` | Absolute path to the Obsidian vault on the host. Only used when librechat_obsidian_mount_enabled is true. |
 | `librechat_allow_social_login` | bool | no | `false` | Enable OAuth/social login providers (Google, OpenID, etc.). |
