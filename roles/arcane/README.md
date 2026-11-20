@@ -39,7 +39,7 @@ containers or reach the raw socket. Postgres data is persisted under
 | `arcane_postgres_password` | str | yes | — | Postgres password for `arcane_postgres_user`. **Supply from vault.** |
 | `arcane_encryption_key` | str | yes | — | Encryption key used by Arcane for at-rest secret encryption. **Supply from vault.** |
 | `arcane_jwt_secret` | str | yes | — | JWT signing secret for Arcane session tokens. **Supply from vault.** |
-| `arcane_version` | str | no | `v2.10.2` | Arcane image tag (e.g. `v2.10.2`). |
+| `arcane_version` | str | no | `v2.17.3` | Arcane image tag (e.g. `v2.17.3`). |
 | `arcane_socket_proxy_version` | str | no | `v0.5.0` | Image tag for the `ghcr.io/tecnativa/docker-socket-proxy` sidecar that mediates Arcane's access to the Podman socket. |
 | `arcane_data_dir` | str | no | `/opt/podman/arcane` | Host directory for Arcane persistent data. Postgres data is stored under a `postgres/` subdirectory. |
 | `arcane_postgres_db` | str | no | `arcane` | Name of the Postgres database created for Arcane. |
