@@ -46,7 +46,7 @@ librechat_trust_proxy: 1
 librechat_min_password_length: ""
 librechat_continue_on_uncaught_exception: ""
 librechat_console_json: true
-librechat_debug_logging: true
+librechat_debug_logging: false
 librechat_debug_console: false
 librechat_agent_debug_logging: false
 librechat_mem_diag: ""
