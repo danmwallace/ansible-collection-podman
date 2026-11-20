@@ -9,4 +9,4 @@
       vars:
         traefik_hostname: traefik.test.local
         traefik_cloudflare_email: test@example.com
-        traefik_cloudflare_api_token: test-token-not-for-production
+        traefik_cloudflare_api_token: test-token-not-for-production  # molecule-test-only: fake value, not a real credential

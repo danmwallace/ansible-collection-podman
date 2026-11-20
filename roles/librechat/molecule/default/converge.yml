@@ -9,14 +9,14 @@
       vars:
         librechat_hostname: chat.test.local
         librechat_mongo_uri: mongodb://localhost:27017/librechat-test
-        librechat_meili_master_key: test-meili-key
-        librechat_vectordb_postgres_password: test-pg-pass
-        librechat_jwt_secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
-        librechat_jwt_refresh_secret: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
-        librechat_creds_key: 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff
-        librechat_creds_iv: 00112233445566778899aabbccddeeff
+        librechat_meili_master_key: test-meili-key  # molecule-test-only: fake value, not a real credential
+        librechat_vectordb_postgres_password: test-pg-pass  # molecule-test-only: fake value, not a real credential
+        librechat_jwt_secret: 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef  # molecule-test-only: fake value, not a real credential
+        librechat_jwt_refresh_secret: fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210  # molecule-test-only: fake value, not a real credential
+        librechat_creds_key: 00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff  # molecule-test-only: fake value, not a real credential
+        librechat_creds_iv: 00112233445566778899aabbccddeeff  # molecule-test-only: fake value, not a real credential
         librechat_embeddings_provider: azure
         librechat_embeddings_model: text-embedding-3-small
-        librechat_rag_azure_openai_api_key: test-azure-key
+        librechat_rag_azure_openai_api_key: test-azure-key  # molecule-test-only: fake value, not a real credential
         librechat_rag_azure_openai_endpoint: https://test.openai.azure.com
         librechat_rag_azure_openai_api_version: "2023-05-15"

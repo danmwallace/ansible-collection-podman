@@ -52,7 +52,7 @@
           - "'grimmory.network' in rendered"
           - "'grimmory-db' in rendered"
           - "'Environment=DATABASE_USERNAME=grimmory' in rendered"
-          - "'Environment=DATABASE_PASSWORD=test-db-pass' in rendered"
+          - "'Environment=DATABASE_PASSWORD=test-db-pass' in rendered"  # molecule-test-only: fake value, not a real credential
           - "'Environment=USER_ID=1000' in rendered"
           - "'Environment=GROUP_ID=1000' in rendered"
           - "'Environment=DB_USER=' not in rendered"
@@ -71,7 +71,7 @@
           - "'Image=docker.io/library/mariadb:11.8.9' in rendered"
           - "'HealthCmd=healthcheck.sh --connect --innodb_initialized' in rendered"
           - "'HealthCmd=mysqladmin' not in rendered"
-          - "'test-root-pass' not in (rendered | regex_findall('HealthCmd=.*') | join(' '))"
+          - "'test-root-pass' not in (rendered | regex_findall('HealthCmd=.*') | join(' '))"  # molecule-test-only: fake value, not a real credential
 
     - name: Stat grimmory data directories
       ansible.builtin.stat:

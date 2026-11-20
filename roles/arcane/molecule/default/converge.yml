@@ -8,6 +8,6 @@
         name: danmwallace.podman.arcane
       vars:
         arcane_hostname: arcane.test.local
-        arcane_postgres_password: test-pass
-        arcane_encryption_key: test-key
-        arcane_jwt_secret: test-secret
+        arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+        arcane_encryption_key: test-key  # molecule-test-only: fake value, not a real credential
+        arcane_jwt_secret: test-secret  # molecule-test-only: fake value, not a real credential

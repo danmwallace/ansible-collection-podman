@@ -56,6 +56,12 @@ collections:
         n8n_postgres_password: "{{ vault_n8n_postgres_password }}"
 ```
 
+## Testing
+
+Molecule scenarios under `roles/*/molecule/` intentionally use fake, test-only credentials
+(each line is tagged `# molecule-test-only`). Never copy them into an inventory: real secrets
+always come from Ansible Vault (e.g. `"{{ vault_n8n_encryption_key }}"`).
+
 ## License
 
 MIT

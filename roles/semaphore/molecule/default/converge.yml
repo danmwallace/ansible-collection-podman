@@ -8,8 +8,8 @@
         name: danmwallace.podman.semaphore
       vars:
         semaphore_hostname: semaphore.test.local
-        semaphore_postgres_password: test-pass
-        semaphore_admin_password: test-admin-pass
-        semaphore_access_key_encryption: dGVzdC1hY2Nlc3Mta2V5LWVuY3J5cHRpb24tMzJieXRlcw==
-        semaphore_cookie_hash: dGVzdC1jb29raWUtaGFzaC0zMmJ5dGVzLWxvbmctdmFsdWU=
-        semaphore_cookie_encryption: dGVzdC1jb29raWUtZW5jcnlwdGlvbi0zMmJ5dGVzLWxvbmc=
+        semaphore_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+        semaphore_admin_password: test-admin-pass  # molecule-test-only: fake value, not a real credential
+        semaphore_access_key_encryption: dGVzdC1hY2Nlc3Mta2V5LWVuY3J5cHRpb24tMzJieXRlcw==  # molecule-test-only: fake value, not a real credential
+        semaphore_cookie_hash: dGVzdC1jb29raWUtaGFzaC0zMmJ5dGVzLWxvbmctdmFsdWU=  # molecule-test-only: fake value, not a real credential
+        semaphore_cookie_encryption: dGVzdC1jb29raWUtZW5jcnlwdGlvbi0zMmJ5dGVzLWxvbmc=  # molecule-test-only: fake value, not a real credential
