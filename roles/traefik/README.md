@@ -2,7 +2,7 @@
 
 Deploys [Traefik](https://traefik.io/) v3 as a rootful Podman Quadlet container unit on
 Fedora Server, running `docker.io/library/traefik:{{ traefik_version }}` (default
-`v3.7.13`). Traefik publishes port 443 on the host and redirects `:80 → :443` inside the
+`v3.7.19`). Traefik publishes port 443 on the host and redirects `:80 → :443` inside the
 container; TLS certificates come from Let's Encrypt via the Cloudflare DNS-01 ACME
 challenge and are stored in `{{ traefik_data_dir }}/letsencrypt/acme.json`.
 
@@ -30,7 +30,7 @@ live reload.
 
 | Variable | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `traefik_version` | str | no | `v3.7.13` | Traefik image tag pulled from `docker.io/library/traefik`. |
+| `traefik_version` | str | no | `v3.7.19` | Traefik image tag pulled from `docker.io/library/traefik`. |
 | `traefik_hostname` | str | yes | — | Hostname for the Traefik dashboard (e.g. `traefik.example.com`). |
 | `traefik_data_dir` | str | no | `/opt/podman/traefik` | Host directory for Traefik config files and Let's Encrypt data. |
 | `traefik_cloudflare_email` | str | yes | — | Cloudflare account email for the ACME DNS challenge (`CF_API_EMAIL` and the ACME account email). |

@@ -7,11 +7,16 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+### Security
+
+- `traefik`: `v3.7.13` → `v3.7.19`, picking up the v3.7.14–v3.7.18 fixes for the SNI check bypass and the unauthenticated Compress-middleware memory DoS (#49). Matches `danmwallace.docker.traefik`.
+
 ### Changed
 
 - `librechat`: `librechat_debug_logging` now defaults to `false` (was `true`), so `DEBUG_LOGGING` is off unless an inventory turns it on (#52).
   - Debug logging writes verbose request data (prompts, model responses, request headers that can include tokens) to the container log.
   - A host that relied on the old default must now set `librechat_debug_logging: true` itself.
+- `traefik`: replace the ACME `dnsChallenge.delayBeforeCheck`, deprecated since Traefik v3.3, with `dnsChallenge.propagation.delayBeforeChecks`. The value is the same (`0`).
 - `n8n`: a comment by `n8n_version` saying a bump changes n8n's MCP tool list, which frmwrk's MCP entry classifies.
 
 ## [0.6.5] - 2026-11-15
