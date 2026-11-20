@@ -1,6 +1,6 @@
 # danmwallace.podman.uptime_kuma
 
-Deploys [Uptime Kuma](https://github.com/louislam/uptime-kuma) — a self-hosted uptime monitoring dashboard — as a rootful Podman Quadlet on Fedora Server. The container runs `docker.io/louislam/uptime-kuma:2.5.3` by default and is managed by systemd via a Quadlet unit written to `/etc/containers/systemd/uptime-kuma.container`.
+Deploys [Uptime Kuma](https://github.com/louislam/uptime-kuma) — a self-hosted uptime monitoring dashboard — as a rootful Podman Quadlet on Fedora Server. The container runs `docker.io/louislam/uptime-kuma:2.5.12` by default and is managed by systemd via a Quadlet unit written to `/etc/containers/systemd/uptime-kuma.container`.
 
 The service joins the `proxy_network` Podman network and is exposed through Traefik via container labels. Traefik terminates TLS using the `cloudflare` cert resolver and routes requests for `uptime_kuma_hostname` to the container on port 3001. No ports are published directly to the host. Persistent data (the SQLite database `kuma.db`, `db-config.json`, and uploads) lives in `uptime_kuma_data_dir` on the host, mounted at `/app/data` inside the container.
 
@@ -17,7 +17,7 @@ The service joins the `proxy_network` Podman network and is exposed through Trae
 | --- | --- | --- | --- | --- |
 | `uptime_kuma_hostname` | str | yes | `uptime-kuma.example.com` | Hostname for the Uptime Kuma web interface, used in the Traefik router rule. |
 | `uptime_kuma_data_dir` | str | no | `/opt/podman/uptime-kuma` | Host directory mounted at `/app/data` for persistent storage. |
-| `uptime_kuma_image` | str | no | `docker.io/louislam/uptime-kuma:2.5.3` | Container image. Pin to a digest or specific tag for reproducible deploys. |
+| `uptime_kuma_image` | str | no | `docker.io/louislam/uptime-kuma:2.5.12` | Container image. Pin to a digest or specific tag for reproducible deploys. |
 
 `uptime_kuma_hostname` has a placeholder default so the role renders in isolation; always override it.
 
