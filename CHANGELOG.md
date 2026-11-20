@@ -17,6 +17,7 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 - `dashy`: `4.6.0` → `4.9.0` (#44); no config schema changes.
 - `grimmory`: `v3.3.3` → `v3.5.0` (#45); the env vars upstream reads (`DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `USER_ID`, `GROUP_ID`) are unchanged.
 - `librechat`: API `v0.8.7` → `v0.8.9`, now from `ghcr.io/librechat-ai/librechat` because upstream moved organisations and `ghcr.io/danny-avila/librechat` stopped at `v0.8.8-rc4` (#47); Meilisearch `v1.53.2` → `v1.57.0` (#46); pgvector `0.8.6-pg17` → `0.8.7-pg17` (#48). README notes that a blank `MONGO_AUTO_INDEX`/`MONGO_AUTO_CREATE` means "enabled" from v0.8.8.
+- `n8n`: `2.38.4` → `2.48.6` (#42); picks up GHSA-9p7v and GHSA-q8rc. Regenerate the frmwrk MCP tool lists after deploying.
 
 ## [0.6.5] - 2026-11-15
 
