@@ -5,3 +5,9 @@ traefik_hostname: traefik.example.com
 traefik_data_dir: /opt/podman/traefik
 traefik_cloudflare_email: ""
 traefik_cloudflare_api_token: ""
+
+# Host address the HTTPS entrypoint (443) is published on. 0.0.0.0 publishes it
+# on every interface, which is intended for a public ingress and matches the
+# behaviour before this variable existed. Set it to a specific host address to
+# narrow exposure, e.g. the LAN NIC on a dual-homed host.
+traefik_https_bind_address: "0.0.0.0"

@@ -35,6 +35,7 @@ live reload.
 | `traefik_data_dir` | str | no | `/opt/podman/traefik` | Host directory for Traefik config files and Let's Encrypt data. |
 | `traefik_cloudflare_email` | str | yes | — | Cloudflare account email for the ACME DNS challenge (`CF_API_EMAIL` and the ACME account email). |
 | `traefik_cloudflare_api_token` | str | yes | — | Cloudflare DNS API token (`CF_DNS_API_TOKEN`, needs `Zone.DNS` write). **Supply from vault.** |
+| `traefik_https_bind_address` | str | no | `0.0.0.0` | Host address port 443 is published on. `0.0.0.0` (all interfaces) is for a public ingress; set a specific host address to narrow exposure. |
 
 ## Dependencies
 
@@ -84,12 +85,26 @@ unit changes, reloading the daemon and restarting `traefik.service`.
 
 | Host bind | Container port | Purpose |
 | --- | --- | --- |
-| `0.0.0.0:443` | 443 | `websecure` entrypoint (HTTPS) |
+| `{{ traefik_https_bind_address }}:443` (default `0.0.0.0:443`) | 443 | `websecure` entrypoint (HTTPS) |
 | `127.0.0.1:8081` | 8081 | Loopback-only publish; no entrypoint is bound to it in `traefik.yml` |
 
 Port 80 is not published on the host; the `web` entrypoint's permanent redirect to
 `websecure` only applies to traffic that reaches the container. Publish port 80 if HTTP
 is not already redirected upstream.
+
+`traefik_https_bind_address` defaults to `0.0.0.0`, which publishes 443 on every
+interface: the LAN address, Podman bridges, and any VPN or NIC added later. Keep that
+only where all-interface exposure is intended (a public ingress). Otherwise set it to
+a specific host address. Gotchas:
+
+- The address must exist on the host when the unit starts, or the container fails to
+  start. A DHCP address that changes breaks it.
+- Nothing on the host reaches Traefik at `127.0.0.1:443` once 443 is bound to another
+  address, so check local health checks and scripts that use `localhost:443`.
+- An IPv6 address needs brackets, e.g. `"[2001:db8::10]"`, because the value goes
+  straight into `PublishPort=<address>:443:443`.
+- Changing it rewrites the Quadlet unit, so the handler reloads systemd and restarts
+  Traefik, which briefly interrupts HTTPS for every routed service.
 
 ### Dashboard
 

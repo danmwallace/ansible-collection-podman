@@ -7,6 +7,10 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+### Added
+
+- `traefik`: `traefik_https_bind_address` (default `0.0.0.0`) sets the host address port 443 is published on (#43). The default keeps the current all-interfaces behaviour. Set a specific host address to narrow exposure. Matches the variable of the same name in `danmwallace.docker.traefik`.
+
 ### Security
 
 - `traefik`: `v3.7.13` → `v3.7.19`, picking up the v3.7.14–v3.7.18 fixes for the SNI check bypass and the unauthenticated Compress-middleware memory DoS (#49). Matches `danmwallace.docker.traefik`.
