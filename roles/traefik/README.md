@@ -101,7 +101,7 @@ over `websecure`. No authentication middleware is attached by this role.
 
 The Docker provider uses `exposedByDefault: false` (services opt in with
 `traefik.enable=true`) and `network: systemd-proxy_network`. The `cloudflare` ACME
-resolver uses the DNS-01 challenge with `delayBeforeCheck: 0` and resolvers
+resolver uses the DNS-01 challenge with `propagation.delayBeforeChecks: 0` and resolvers
 `1.1.1.1:53` / `1.0.0.1:53`. Logging is `INFO`, access logging is enabled, and version
 checks and anonymous usage reporting are disabled.
 
