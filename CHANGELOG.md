@@ -14,6 +14,7 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
   - A host that relied on the old default must now set `librechat_debug_logging: true` itself.
 - `n8n`: a comment by `n8n_version` saying a bump changes n8n's MCP tool list, which frmwrk's MCP entry classifies.
 - `arcane`: `v2.10.2` → `v2.17.3`, the newest 2.x release (#40). v3.x renames the image and env vars and is handled separately. From v2.17.2 Arcane logs a startup warning that the `ghcr.io/getarcaneapp/arcane` image name is deprecated; this is expected.
+- `dashy`: `4.6.0` → `4.9.0` (#44); no config schema changes.
 
 ## [0.6.5] - 2026-11-15
 

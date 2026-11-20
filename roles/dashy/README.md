@@ -1,6 +1,6 @@
 # danmwallace.podman.dashy
 
-Deploys [Dashy](https://dashy.to/), a self-hosted homelab dashboard, as a rootful Podman Quadlet on Fedora. The dashboard config is rendered from an Ansible Jinja2 template to `{{ dashy_data_dir }}/config.yml` and mounted read-only into the container at `/app/user-data/conf.yml`. The container runs `docker.io/lissy93/dashy:{{ dashy_version }}` (default `4.6.0`), listens on port 8080, and joins the existing `proxy_network` Quadlet network. Traefik terminates TLS via the Cloudflare cert resolver and routes `dashy_hostname` to the container; no ports are published on the host.
+Deploys [Dashy](https://dashy.to/), a self-hosted homelab dashboard, as a rootful Podman Quadlet on Fedora. The dashboard config is rendered from an Ansible Jinja2 template to `{{ dashy_data_dir }}/config.yml` and mounted read-only into the container at `/app/user-data/conf.yml`. The container runs `docker.io/lissy93/dashy:{{ dashy_version }}` (default `4.9.0`), listens on port 8080, and joins the existing `proxy_network` Quadlet network. Traefik terminates TLS via the Cloudflare cert resolver and routes `dashy_hostname` to the container; no ports are published on the host.
 
 The rendered config groups the homelab into four sections — **Homelab Tools** (IT Tools, Semaphore), **AI & Automation** (LibreChat, n8n, Hermes Gateway and Hermes Dashboard on ai01 and ai-master), **Public Sites** (Portfolio, WSB Pulse), and **Infrastructure** (Traefik dashboards on util01/ai01/ai-master, Arcane on util01 and ai01, Uptime Kuma). Every item has `statusCheck: true` except the Traefik dashboards, which are internal and unreachable from the browser. The Hermes Gateway and Hermes Dashboard items override the probe target with `statusCheckUrl` (`/health` and `/auth/password-login` respectively) because their root URLs redirect.
 
@@ -17,7 +17,7 @@ The rendered config groups the homelab into four sections — **Homelab Tools** 
 | --- | --- | --- | --- | --- |
 | `dashy_hostname` | str | yes | — | Hostname for the Dashy web interface (e.g. `home.wallace.boston`). |
 | `dashy_data_dir` | str | no | `/opt/podman/dashy` | Host directory for the rendered Dashy config file. |
-| `dashy_version` | str | no | `4.6.0` | Image tag for the Dashy container image. |
+| `dashy_version` | str | no | `4.9.0` | Image tag for the Dashy container image. |
 | `dashy_image` | str | no | `docker.io/lissy93/dashy:{{ dashy_version }}` | Fully-qualified container image for Dashy. Override to use a mirror or digest. |
 | `dashy_it_tools_hostname` | str | yes | — | Hostname for IT Tools (on util01). |
 | `dashy_semaphore_hostname` | str | yes | — | Hostname for Semaphore (on util01). |
