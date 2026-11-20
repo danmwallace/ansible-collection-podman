@@ -3,7 +3,7 @@
 Deploys [Semaphore UI](https://semaphoreui.com/) — a web UI for running Ansible
 playbooks — together with a PostgreSQL database, both as rootful Podman Quadlet
 container units on Fedora Server. The application runs
-`docker.io/semaphoreui/semaphore:{{ semaphore_version }}` (default `v2.19.12`) with
+`docker.io/semaphoreui/semaphore:{{ semaphore_version }}` (default `v2.20.23`) with
 `semaphore server --no-config`, so it is configured entirely through `SEMAPHORE_*`
 environment variables in the Quadlet unit; the sidecar runs
 `docker.io/library/postgres:17.11-alpine` with a `pg_isready` health check. Units are
@@ -32,7 +32,7 @@ resolver on the `websecure` entrypoint. Data is bind-mounted from `semaphore_dat
 
 | Variable | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `semaphore_version` | str | no | `v2.19.12` | Semaphore image tag for `docker.io/semaphoreui/semaphore`. |
+| `semaphore_version` | str | no | `v2.20.23` | Semaphore image tag for `docker.io/semaphoreui/semaphore`. |
 | `semaphore_hostname` | str | yes | — | Hostname for the Semaphore web interface (e.g. `semaphore.example.com`). Used in the Traefik router rule. |
 | `semaphore_data_dir` | str | no | `/opt/podman/semaphore` | Host base directory for Semaphore data, config, and Postgres volumes. |
 | `semaphore_postgres_db` | str | no | `semaphore` | Name of the Postgres database for Semaphore. |
