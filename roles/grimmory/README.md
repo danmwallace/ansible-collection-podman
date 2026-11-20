@@ -1,6 +1,6 @@
 # danmwallace.podman.grimmory
 
-Deploys [Grimmory](https://github.com/grimmory-tools/grimmory), a self-hosted eBook library, and a [MariaDB](https://mariadb.org/) database as a pair of rootful Podman Quadlet units on Fedora. Grimmory runs `ghcr.io/grimmory-tools/grimmory:{{ grimmory_image_tag }}` (default `v3.3.3`) and MariaDB runs `docker.io/library/mariadb:{{ grimmory_db_image_tag }}` (default `11.8.9`). An NFS share is mounted on the host at `grimmory_nfs_mountpoint`; the container's library volume is the local `{{ grimmory_data_dir }}/books` directory, mounted at `/books`. Traefik terminates TLS via the Cloudflare cert resolver and routes `grimmory_hostname` to the container on port 6060 (Grimmory's default `SERVER_PORT`).
+Deploys [Grimmory](https://github.com/grimmory-tools/grimmory), a self-hosted eBook library, and a [MariaDB](https://mariadb.org/) database as a pair of rootful Podman Quadlet units on Fedora. Grimmory runs `ghcr.io/grimmory-tools/grimmory:{{ grimmory_image_tag }}` (default `v3.5.0`) and MariaDB runs `docker.io/library/mariadb:{{ grimmory_db_image_tag }}` (default `11.8.9`). An NFS share is mounted on the host at `grimmory_nfs_mountpoint`; the container's library volume is the local `{{ grimmory_data_dir }}/books` directory, mounted at `/books`. Traefik terminates TLS via the Cloudflare cert resolver and routes `grimmory_hostname` to the container on port 6060 (Grimmory's default `SERVER_PORT`).
 
 The Grimmory container joins both the role-private `grimmory` Quadlet network and the shared `proxy_network` used by Traefik. The MariaDB container is confined to the private `grimmory` network only and is not reachable from `proxy_network`. Host data directories (app data, books, bookdrop, and the MariaDB data volume) are created under `grimmory_data_dir` (default `/opt/podman/grimmory`).
 
@@ -22,7 +22,7 @@ The Grimmory container joins both the role-private `grimmory` Quadlet network an
 | `grimmory_nfs_server` | str | yes | — | NFS server hostname or IP (e.g. `10.10.99.3`). |
 | `grimmory_nfs_path` | str | yes | — | Exported path on the NFS server (e.g. `/mnt/ssd-mirror/books`). |
 | `grimmory_image` | str | no | `ghcr.io/grimmory-tools/grimmory` | Grimmory container image. |
-| `grimmory_image_tag` | str | no | `v3.3.3` | Grimmory image tag. Pin to a release tag in production. |
+| `grimmory_image_tag` | str | no | `v3.5.0` | Grimmory image tag. Pin to a release tag in production. |
 | `grimmory_db_image` | str | no | `docker.io/library/mariadb` | MariaDB container image. |
 | `grimmory_db_image_tag` | str | no | `11.8.9` | MariaDB image tag. |
 | `grimmory_data_dir` | str | no | `/opt/podman/grimmory` | Host base directory for Grimmory data, books, bookdrop, and MariaDB volumes. |
@@ -87,7 +87,7 @@ The `Restart grimmory-db` handler runs `systemctl restart grimmory-db.service` w
 
 **NFS `nofail` behaviour.** The NFS mount uses `opts: defaults,_netdev,nofail`, so an unreachable NFS server will not hang boot. The `grimmory.service` unit declares `Requires=remote-fs.target` so it waits for the mount, but the container's `/books` volume is the local `{{ grimmory_data_dir }}/books` directory, not the NFS mountpoint — copy or sync from `grimmory_nfs_mountpoint` into it.
 
-**Environment variables consumed upstream.** At v3.3.3 Grimmory's `application.yaml` reads `DATABASE_URL`, `DATABASE_USERNAME`, and `DATABASE_PASSWORD`, and the image entrypoint reads `USER_ID` / `GROUP_ID`. The role's `DB_USER`, `DB_PASSWORD`, `APP_USER_ID`, and `APP_GROUP_ID` env vars are therefore not read by the container; the database credentials take effect through the `?user=…&password=…` query string on the JDBC `DATABASE_URL`, and the process runs as upstream's default UID/GID `1000`, which matches the role defaults. Changing `grimmory_app_uid`/`grimmory_app_gid` alters directory ownership on the host but not the UID inside the container. This is unchanged between v3.2.4 and v3.3.3.
+**Environment variables consumed upstream.** At v3.5.0 Grimmory's `application.yaml` reads `DATABASE_URL`, `DATABASE_USERNAME`, and `DATABASE_PASSWORD`, and the image entrypoint reads `USER_ID` / `GROUP_ID`. The role's `DB_USER`, `DB_PASSWORD`, `APP_USER_ID`, and `APP_GROUP_ID` env vars are therefore not read by the container; the database credentials take effect through the `?user=…&password=…` query string on the JDBC `DATABASE_URL`, and the process runs as upstream's default UID/GID `1000`, which matches the role defaults. Changing `grimmory_app_uid`/`grimmory_app_gid` alters directory ownership on the host but not the UID inside the container. This is unchanged from v3.2.4 through v3.5.0.
 
 ## License
 

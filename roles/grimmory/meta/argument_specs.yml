@@ -30,7 +30,7 @@ argument_specs:
         description: Grimmory container image.
       grimmory_image_tag:
         type: str
-        default: v3.3.3
+        default: v3.5.0
         description: Grimmory image tag. Pin to a release tag in production.
       grimmory_db_image:
         type: str
