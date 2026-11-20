@@ -8,5 +8,5 @@
         name: danmwallace.podman.n8n
       vars:
         n8n_hostname: n8n.test.local
-        n8n_encryption_key: test-key
-        n8n_postgres_password: test-password
+        n8n_encryption_key: test-key  # molecule-test-only: fake value, not a real credential
+        n8n_postgres_password: test-password  # molecule-test-only: fake value, not a real credential

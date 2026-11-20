@@ -9,7 +9,7 @@
         name: danmwallace.podman.grimmory
       vars:
         grimmory_hostname: books.test.local
-        grimmory_db_password: test-db-pass
-        grimmory_db_root_password: test-root-pass
+        grimmory_db_password: test-db-pass  # molecule-test-only: fake value, not a real credential
+        grimmory_db_root_password: test-root-pass  # molecule-test-only: fake value, not a real credential
         grimmory_nfs_server: 10.10.99.3
         grimmory_nfs_path: /mnt/ssd-mirror/books
