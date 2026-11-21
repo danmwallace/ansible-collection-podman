@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start traefik-instance container
+    - name: Start podman-traefik-instance container
       containers.podman.podman_container:
-        name: traefik-instance
+        name: podman-traefik-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

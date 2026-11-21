@@ -4,9 +4,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start dashy-instance container
+    - name: Start podman-dashy-instance container
       containers.podman.podman_container:
-        name: dashy-instance
+        name: podman-dashy-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

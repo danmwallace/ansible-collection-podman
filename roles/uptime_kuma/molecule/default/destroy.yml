@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove uptime-kuma-instance container
+    - name: Stop and remove podman-uptime-kuma-instance container
       containers.podman.podman_container:
-        name: uptime-kuma-instance
+        name: podman-uptime-kuma-instance
         state: absent

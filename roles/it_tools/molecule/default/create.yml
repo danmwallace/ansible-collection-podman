@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start it-tools-instance container
+    - name: Start podman-it-tools-instance container
       containers.podman.podman_container:
-        name: it-tools-instance
+        name: podman-it-tools-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

@@ -4,7 +4,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove dashy-instance container
+    - name: Stop and remove podman-dashy-instance container
       containers.podman.podman_container:
-        name: dashy-instance
+        name: podman-dashy-instance
         state: absent

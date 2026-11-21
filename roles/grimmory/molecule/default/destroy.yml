@@ -4,7 +4,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove grimmory-instance container
+    - name: Stop and remove podman-grimmory-instance container
       containers.podman.podman_container:
-        name: grimmory-instance
+        name: podman-grimmory-instance
         state: absent

@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start uptime-kuma-instance container
+    - name: Start podman-uptime-kuma-instance container
       containers.podman.podman_container:
-        name: uptime-kuma-instance
+        name: podman-uptime-kuma-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

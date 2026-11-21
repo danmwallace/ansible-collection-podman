@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove arcane-instance container
+    - name: Stop and remove podman-arcane-instance container
       containers.podman.podman_container:
-        name: arcane-instance
+        name: podman-arcane-instance
         state: absent
