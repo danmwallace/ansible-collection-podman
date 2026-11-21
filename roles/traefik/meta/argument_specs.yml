@@ -6,7 +6,7 @@ argument_specs:
     options:
       traefik_version:
         type: str
-        default: v3.7.13
+        default: v3.7.19
         description: Traefik image tag.
       traefik_hostname:
         type: str
@@ -24,3 +24,9 @@ argument_specs:
         type: str
         required: true
         description: Cloudflare DNS API token for ACME challenge (needs Zone.DNS write).
+      traefik_https_bind_address:
+        type: str
+        default: "0.0.0.0"
+        description:
+          - Host address the HTTPS entrypoint (443) is published on.
+          - 0.0.0.0 (all interfaces) is intended for a public ingress; set a specific host address to narrow exposure.

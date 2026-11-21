@@ -23,7 +23,7 @@
         src: /etc/containers/systemd/traefik.container
       register: traefik_container_contents
 
-    - name: Assert traefik.container has pinned image, hostname, and socket mount
+    - name: Assert traefik.container has pinned image, hostname, socket mount, and 443 bind
       vars:
         rendered: "{{ traefik_container_contents.content | b64decode }}"
       ansible.builtin.assert:
@@ -33,6 +33,8 @@
           - "'traefik.test.local' in rendered"
           - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
           - "'proxy_network.network' in rendered"
+          - "('PublishPort=' ~ traefik_https_bind_address ~ ':443:443') in rendered"
+          - "'PublishPort=443:443' not in rendered"
 
     - name: Stat the proxy_network Quadlet network unit
       ansible.builtin.stat:
