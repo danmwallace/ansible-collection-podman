@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove traefik-instance container
+    - name: Stop and remove podman-traefik-instance container
       containers.podman.podman_container:
-        name: traefik-instance
+        name: podman-traefik-instance
         state: absent

@@ -25,5 +25,5 @@
       ansible.builtin.assert:
         that:
           - "'it-tools.test.local' in rendered"
-          - "'corentinth/it-tools:latest' in rendered"
+          - "'corentinth/it-tools:2024.10.22-7ca5933' in rendered"
           - "'proxy_network.network' in rendered"

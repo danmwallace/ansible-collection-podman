@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start librechat-instance container
+    - name: Start podman-librechat-instance container
       containers.podman.podman_container:
-        name: librechat-instance
+        name: podman-librechat-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

@@ -4,9 +4,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start grimmory-instance container
+    - name: Start podman-grimmory-instance container
       containers.podman.podman_container:
-        name: grimmory-instance
+        name: podman-grimmory-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init

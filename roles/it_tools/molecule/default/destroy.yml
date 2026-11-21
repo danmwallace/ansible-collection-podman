@@ -3,7 +3,7 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Stop and remove it-tools-instance container
+    - name: Stop and remove podman-it-tools-instance container
       containers.podman.podman_container:
-        name: it-tools-instance
+        name: podman-it-tools-instance
         state: absent

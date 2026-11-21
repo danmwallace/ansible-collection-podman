@@ -3,9 +3,9 @@
   hosts: localhost
   gather_facts: false
   tasks:
-    - name: Start arcane-instance container
+    - name: Start podman-arcane-instance container
       containers.podman.podman_container:
-        name: arcane-instance
+        name: podman-arcane-instance
         image: docker.io/jrei/systemd-fedora:42
         state: started
         command: /sbin/init
