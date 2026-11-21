@@ -6,8 +6,8 @@ argument_specs:
     options:
       arcane_version:
         type: str
-        default: v2.10.2
-        description: Arcane image tag (e.g. v2.10.2).
+        default: v2.17.3
+        description: Arcane image tag (e.g. v2.17.3).
       arcane_socket_proxy_version:
         type: str
         default: v0.5.0

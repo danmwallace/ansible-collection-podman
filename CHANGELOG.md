@@ -22,6 +22,13 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
   - A host that relied on the old default must now set `librechat_debug_logging: true` itself.
 - `traefik`: replace the ACME `dnsChallenge.delayBeforeCheck`, deprecated since Traefik v3.3, with `dnsChallenge.propagation.delayBeforeChecks`. The value is the same (`0`).
 - `n8n`: a comment by `n8n_version` saying a bump changes n8n's MCP tool list, which frmwrk's MCP entry classifies.
+- `arcane`: `v2.10.2` → `v2.17.3`, the newest 2.x release (#40). v3.x renames the image and env vars and is handled separately. From v2.17.2 Arcane logs a startup warning that the `ghcr.io/getarcaneapp/arcane` image name is deprecated; this is expected.
+- `dashy`: `4.6.0` → `4.9.0` (#44); no config schema changes.
+- `grimmory`: `v3.3.3` → `v3.5.0` (#45); the env vars upstream reads (`DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `USER_ID`, `GROUP_ID`) are unchanged.
+- `librechat`: API `v0.8.7` → `v0.8.9`, now from `ghcr.io/librechat-ai/librechat` because upstream moved organisations and `ghcr.io/danny-avila/librechat` stopped at `v0.8.8-rc4` (#47); Meilisearch `v1.53.2` → `v1.57.0` (#46); pgvector `0.8.6-pg17` → `0.8.7-pg17` (#48). README notes that a blank `MONGO_AUTO_INDEX`/`MONGO_AUTO_CREATE` means "enabled" from v0.8.8.
+- `n8n`: `2.38.4` → `2.48.6` (#42); picks up GHSA-9p7v and GHSA-q8rc. Regenerate the frmwrk MCP tool lists after deploying.
+- `semaphore`: `v2.19.12` → `v2.20.23` (#50). Docker Hub publishes no 2.19 tag after v2.19.17, so v2.20.23 is the only image with the GHSA-ffp6 and GHSA-q9cq fixes. It runs DB migrations; dump the Postgres DB first.
+- `uptime_kuma`: `2.5.3` → `2.5.12` (#41, #51); patch releases only.
 
 ## [0.6.5] - 2026-11-15
 

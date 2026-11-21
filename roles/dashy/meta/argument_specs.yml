@@ -19,7 +19,7 @@ argument_specs:
       dashy_version:
         type: str
         required: false
-        default: "4.6.0"
+        default: "4.9.0"
         description: Image tag for the Dashy container image.
       dashy_it_tools_hostname:
         type: str

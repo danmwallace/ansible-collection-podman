@@ -36,5 +36,5 @@ argument_specs:
       n8n_version:
         type: str
         required: false
-        default: "2.38.4"
+        default: "2.48.6"
         description: Image tag for the n8n container image.

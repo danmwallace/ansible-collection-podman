@@ -47,7 +47,7 @@
       ansible.builtin.assert:
         that:
           - "'books.test.local' in rendered"
-          - "'grimmory-tools/grimmory:v3.3.3' in rendered"
+          - "'grimmory-tools/grimmory:v3.5.0' in rendered"
           - "'proxy_network.network' in rendered"
           - "'grimmory.network' in rendered"
           - "'grimmory-db' in rendered"

@@ -6,8 +6,8 @@ argument_specs:
     options:
       semaphore_version:
         type: str
-        default: v2.19.12
-        description: Semaphore image tag (e.g. v2.19.12).
+        default: v2.20.23
+        description: Semaphore image tag (e.g. v2.20.23).
       semaphore_hostname:
         type: str
         required: true

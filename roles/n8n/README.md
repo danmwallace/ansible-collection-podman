@@ -2,7 +2,7 @@
 
 Deploys [n8n](https://n8n.io/) workflow automation and its PostgreSQL database as
 rootful Podman Quadlet systemd units on Fedora Server. The n8n container runs
-`docker.io/n8nio/n8n:{{ n8n_version }}` (default `2.38.4`) and the sidecar runs
+`docker.io/n8nio/n8n:{{ n8n_version }}` (default `2.48.6`) and the sidecar runs
 `docker.io/library/postgres:17.11-alpine`. Both containers share a dedicated `n8n`
 Podman network; the n8n container is also attached to the shared `proxy_network`
 so Traefik can discover it via container labels and terminate TLS with the
@@ -37,7 +37,7 @@ Quadlet unit (`N8N_HOST`, `N8N_PROTOCOL=https`, `WEBHOOK_URL`, `N8N_RUNNERS_ENAB
 | `n8n_data_dir` | str | no | `/opt/podman/n8n` | Host base directory for n8n data, Postgres data, and local files. |
 | `n8n_postgres_user` | str | no | `n8n` | Postgres username for the n8n database. |
 | `n8n_postgres_db` | str | no | `n8n` | Postgres database name created by the sidecar (`POSTGRES_DB`). See **Notes** before changing it. |
-| `n8n_version` | str | no | `"2.38.4"` | Image tag for `docker.io/n8nio/n8n`. |
+| `n8n_version` | str | no | `"2.48.6"` | Image tag for `docker.io/n8nio/n8n`. |
 
 ## Dependencies
 

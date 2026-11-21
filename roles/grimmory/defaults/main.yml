@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 ---
 grimmory_image: ghcr.io/grimmory-tools/grimmory
-grimmory_image_tag: v3.3.3
+grimmory_image_tag: v3.5.0
 grimmory_db_image: docker.io/library/mariadb
 grimmory_db_image_tag: "11.8.9"
 
