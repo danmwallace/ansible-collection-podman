@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 ---
+# renovate: datasource=docker depName=ghcr.io/getarcaneapp/arcane
 arcane_version: v2.17.3
+# renovate: datasource=docker depName=ghcr.io/tecnativa/docker-socket-proxy
 arcane_socket_proxy_version: v0.5.0
 arcane_hostname: arcane.example.com
 arcane_data_dir: /opt/podman/arcane

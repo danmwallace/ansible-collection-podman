@@ -5,6 +5,7 @@ n8n_data_dir: /opt/podman/n8n
 # Bumping this changes n8n's MCP tool list. frmwrk's `n8n` MCP entry classifies every tool as read-only
 # or denied (ansible-homelab-cfg host_vars/frmwrk/mcp_servers.yml); regenerate it on upgrade
 # (vault task "Regenerate n8n MCP Tool Lists on Upgrade").
+# renovate: datasource=docker depName=docker.io/n8nio/n8n
 n8n_version: "2.48.6"
 n8n_encryption_key: ""
 n8n_postgres_password: ""
