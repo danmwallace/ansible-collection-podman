@@ -2,4 +2,5 @@
 ---
 it_tools_hostname: it-tools.example.com
 it_tools_data_dir: /opt/podman/it-tools
+# renovate: datasource=docker depName=docker.io/corentinth/it-tools versioning=regex:^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)-[0-9a-f]+$
 it_tools_version: "2024.10.22-7ca5933"

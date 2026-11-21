@@ -4,5 +4,6 @@ dashy_data_dir: /opt/podman/dashy
 # NOTE: Dashy >= 4.5.0 requires every section to have a unique `name` (schema-enforced)
 # and moved OIDC visibility keys to displayData.showForGroups/showForRoles/hideFor*.
 # Keep templates/dashy-config.yml.j2 in line with the upstream schema when bumping.
+# renovate: datasource=docker depName=docker.io/lissy93/dashy
 dashy_version: 4.9.0
 dashy_image: docker.io/lissy93/dashy:{{ dashy_version }}
