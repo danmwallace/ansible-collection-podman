@@ -79,13 +79,26 @@
       ansible.builtin.assert:
         that:
           - "'arcane.test.local' in rendered"
-          - "'Image=ghcr.io/getarcaneapp/arcane:v' in rendered"
+          - "'Image=ghcr.io/getarcaneapp/manager:v3.1.1' in rendered"
+          - "'getarcaneapp/arcane:' not in rendered"
           - "'proxy_network.network' in rendered"
           - "'arcane.network' in rendered"
           - "'Network=arcane-socket.network' in rendered"
           - "'Requires=arcane-socket-proxy.service' in rendered"
           - "'Environment=DOCKER_HOST=tcp://arcane-socket-proxy:2375' in rendered"
           - "'podman.sock' not in rendered"
+          # Arcane 3.x refuses to start if an unprefixed 2.x name is set, and ignores JWT_SECRET.
+          - "'Environment=ARCANE_APP_URL=https://arcane.test.local' in rendered"
+          - "'Environment=ARCANE_ENCRYPTION_KEY=test-encryption-key-not-for-production' in rendered"
+          - "'Environment=ARCANE_DATABASE_URL=postgresql://arcane:test-pass@arcane-postgres:5432/arcane' in rendered"
+          - "'Environment=APP_URL=' not in rendered"
+          - "'Environment=ENCRYPTION_KEY=' not in rendered"
+          - "'Environment=DATABASE_URL=' not in rendered"
+          - "'Environment=LOG_LEVEL=' not in rendered"
+          - "'JWT_SECRET' not in rendered"
+          # The POSTGRES_* names belong to arcane-postgres only.
+          - "'Environment=POSTGRES_' not in rendered"
+        fail_msg: "{{ arcane_container_contents.content | b64decode }}"
 
     - name: Read arcane-socket-proxy.container unit
       ansible.builtin.slurp:
@@ -97,7 +110,8 @@
         rendered: "{{ arcane_socket_proxy_container_contents.content | b64decode }}"
       ansible.builtin.assert:
         that:
-          - "'Image=ghcr.io/tecnativa/docker-socket-proxy:v' in rendered"
+          # 3.4 tag plus the multi-arch index digest, matching danmwallace.docker.arcane.
+          - "'Image=ghcr.io/tecnativa/docker-socket-proxy:3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab' in rendered"
           - "'Network=arcane-socket.network' in rendered"
           - "'/run/podman/podman.sock:/var/run/docker.sock:ro,z' in rendered"
           - "'SecurityLabelDisable=true' in rendered"
@@ -129,3 +143,45 @@
         that:
           - arcane_postgres_dir.stat.isdir
           - arcane_postgres_dir.stat.mode == '0700'
+
+    # Both guards fail before the role touches anything, so running them here
+    # leaves the converged instance as it was.
+    - name: Run the role with a 2.x arcane_version
+      block:
+        - name: Include arcane with arcane_version v2.17.3
+          ansible.builtin.include_role:
+            name: danmwallace.podman.arcane
+          vars:
+            arcane_hostname: arcane.test.local
+            arcane_version: v2.17.3
+            arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+            arcane_encryption_key: test-encryption-key-not-for-production  # molecule-test-only: fake value, not a real credential
+
+        - name: Fail because the 2.x guard did not stop the role
+          ansible.builtin.fail:
+            msg: The role accepted arcane_version v2.17.3 with a 3.x-only Quadlet template.
+      rescue:
+        - name: Assert the version guard is what stopped the role
+          ansible.builtin.assert:
+            that:
+              - "'older than v3.0.0' in ansible_failed_result.msg"
+
+    - name: Run the role with a 16-character encryption key
+      block:
+        - name: Include arcane with a short arcane_encryption_key
+          ansible.builtin.include_role:
+            name: danmwallace.podman.arcane
+          vars:
+            arcane_hostname: arcane.test.local
+            arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+            arcane_encryption_key: sixteen-chars-ok  # molecule-test-only: fake value, not a real credential
+
+        - name: Fail because the key-length guard did not stop the role
+          ansible.builtin.fail:
+            msg: The role accepted a 16-character arcane_encryption_key, which Arcane 3.x refuses.
+      rescue:
+        # The secrets assert is no_log, so its message is censored; match the task instead.
+        - name: Assert the key-length guard is what stopped the role
+          ansible.builtin.assert:
+            that:
+              - ansible_failed_task.name == 'Assert required arcane secrets are configured'

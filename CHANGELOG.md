@@ -7,6 +7,14 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+### Changed (breaking)
+
+- `arcane`: move to Arcane 3.x, default `v3.1.1` (#61). 2.x installs must run `v2.17.3` once (collection 0.6.x with `arcane_version: v2.17.3`) before upgrading, and back up first; see the role README.
+  - The image is now `ghcr.io/getarcaneapp/manager` (3.x dropped the `arcane` alias), and the Renovate annotation follows it.
+  - The Arcane variables carry the `ARCANE_` prefix; 3.x refuses to start with the 2.x names.
+  - The role refuses an `arcane_version` older than `v3.0.0`, and an `arcane_encryption_key` shorter than 32 characters (unless `hex:`/`base64:`), which 3.x refuses too.
+  - `arcane_jwt_secret` is optional and ignored (`JWT_SECRET` is no longer rendered), and the `POSTGRES_*` variables are no longer passed to the Arcane container. Matches `danmwallace.docker.arcane`.
+
 ### Added
 
 - `traefik`: `traefik_https_bind_address` (default `0.0.0.0`) sets the host address port 443 is published on (#43). The default keeps the current all-interfaces behaviour. Set a specific host address to narrow exposure. Matches the variable of the same name in `danmwallace.docker.traefik`.
@@ -17,6 +25,7 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ### Changed
 
+- `arcane`: socket-proxy moves from `v0.5.0` to the `3.4` tag pinned by its multi-arch index digest (`arcane_socket_proxy_version: "3.4@sha256:027f9fa5…"`). Upstream publishes no versioned tags after `v0.5.0`; `3.4` is the same proxy config on a newer HAProxy 3.4 base, with the same environment variables and port. Matches `danmwallace.docker.arcane`.
 - `librechat`: `librechat_debug_logging` now defaults to `false` (was `true`), so `DEBUG_LOGGING` is off unless an inventory turns it on (#52).
   - Debug logging writes verbose request data (prompts, model responses, request headers that can include tokens) to the container log.
   - A host that relied on the old default must now set `librechat_debug_logging: true` itself.

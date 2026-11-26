@@ -1,13 +1,18 @@
 # SPDX-License-Identifier: MIT
 ---
-# renovate: datasource=docker depName=ghcr.io/getarcaneapp/arcane
-arcane_version: v2.17.3
+# 3.x only: the template uses the 3.x image name and ARCANE_ env names. Upgrading
+# from 2.x goes through v2.17.3 first; see the README.
+# renovate: datasource=docker depName=ghcr.io/getarcaneapp/manager
+arcane_version: v3.1.1
+# Tecnativa now publishes only floating tags (lts, latest, 3.4) rebuilt weekly, so the
+# tag is pinned to the multi-arch index digest; Renovate bumps the digest.
 # renovate: datasource=docker depName=ghcr.io/tecnativa/docker-socket-proxy
-arcane_socket_proxy_version: v0.5.0
+arcane_socket_proxy_version: "3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab"
 arcane_hostname: arcane.example.com
 arcane_data_dir: /opt/podman/arcane
 arcane_postgres_db: arcane
 arcane_postgres_user: arcane
 arcane_postgres_password: ""
 arcane_encryption_key: ""
+# Deprecated and ignored: Arcane 3.x signs sessions with its own key.
 arcane_jwt_secret: ""
