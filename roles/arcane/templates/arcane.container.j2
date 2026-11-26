@@ -19,8 +19,8 @@ Volume={{ arcane_app_data_dir }}:/app/data:z
 # POSTGRES_* names belong to arcane-postgres only.
 Environment=ARCANE_APP_URL=https://{{ arcane_hostname }}
 # Arcane starts as root and drops to PUID:PGID; the role chowns /app/data to match.
-Environment=PUID=1000
-Environment=PGID=1000
+Environment=PUID={{ arcane_puid }}
+Environment=PGID={{ arcane_pgid }}
 Environment=ARCANE_LOG_LEVEL=info
 Environment=ARCANE_LOG_JSON=false
 # ARCANE_ENCRYPTION_KEY and ARCANE_DATABASE_URL. Quadlet copies Environment= values

@@ -97,6 +97,8 @@
           - "'ARCANE_ENCRYPTION_KEY' not in rendered | regex_replace('(?m)^#.*$', '')"
           - "'ARCANE_DATABASE_URL' not in rendered | regex_replace('(?m)^#.*$', '')"
           - "'Volume=/opt/podman/arcane/data:/app/data:z' in rendered"
+          - "'Environment=PUID=1000' in rendered"
+          - "'Environment=PGID=1000' in rendered"
           - "'Environment=APP_URL=' not in rendered"
           - "'Environment=ENCRYPTION_KEY=' not in rendered"
           - "'Environment=DATABASE_URL=' not in rendered"
@@ -205,7 +207,7 @@
           - arcane_app_data_dir_stat.stat.isdir
           - arcane_app_data_dir_stat.stat.uid == 1000
           - arcane_app_data_dir_stat.stat.gid == 1000
-          - arcane_app_data_dir_stat.stat.mode == '0755'
+          - arcane_app_data_dir_stat.stat.mode == '0700'
 
     # The Quadlet units are not started in Molecule, so run the Arcane image from
     # the rendered unit by hand, with its Volume= line and Quadlet's own

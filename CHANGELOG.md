@@ -17,7 +17,7 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ### Added
 
-- `arcane`: persist `/app/data` (#66). `arcane_app_data_dir` (default `{{ arcane_data_dir }}/data`, owned `1000:1000`) is bind-mounted at `/app/data:z`, so compose `projects/` and `templates/` survive a restart. Until now `/app/data` was the image's anonymous volume, which Quadlet's `--rm` deleted on every stop. The first run of this version restarts Arcane onto the empty directory; to keep what is there, copy it out first (see the role README).
+- `arcane`: persist `/app/data` (#66). `arcane_app_data_dir` (default `{{ arcane_data_dir }}/data`, `0700`, owned by the new `arcane_puid`/`arcane_pgid`, default `1000`, which also set `PUID`/`PGID`) is bind-mounted at `/app/data:z`, so compose `projects/` and `templates/` survive a restart. Until now `/app/data` was the image's anonymous volume, which Quadlet's `--rm` deleted on every stop. The first run of this version restarts Arcane onto the empty directory; to keep what is there, copy it out first (see the role README).
 - `traefik`: `traefik_https_bind_address` (default `0.0.0.0`) sets the host address port 443 is published on (#43). The default keeps the current all-interfaces behaviour. Set a specific host address to narrow exposure. Matches the variable of the same name in `danmwallace.docker.traefik`.
 
 ### Security

@@ -13,6 +13,11 @@ arcane_data_dir: /opt/podman/arcane
 # Bind-mounted at /app/data. Without it the image's anonymous volume is deleted on
 # every restart (Quadlet runs the container with --rm), taking projects/ and templates/.
 arcane_app_data_dir: "{{ arcane_data_dir }}/data"
+# Arcane starts as root and drops to this uid/gid, which owns arcane_app_data_dir.
+# On a host where 1000 is a login user, that user can edit the compose projects
+# Arcane deploys as root; pick an unused id there.
+arcane_puid: 1000
+arcane_pgid: 1000
 arcane_postgres_db: arcane
 arcane_postgres_user: arcane
 arcane_postgres_password: ""
