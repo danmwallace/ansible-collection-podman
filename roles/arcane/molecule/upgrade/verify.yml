@@ -1,0 +1,42 @@
+---
+# Each round re-applies the role with changed inputs, then counts the Podman
+# "start" events per container during the round (every unit start, restart or
+# Requires= propagated restart emits exactly one, since Quadlet runs --rm) and
+# checks Arcane's /api/health within a short timeout.
+- name: Verify
+  hosts: molecule
+  gather_facts: false
+  vars:
+    arcane_upgrade_default_socket_proxy: "3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab"
+    arcane_upgrade_rounds:
+      - name: Arcane version bump
+        arcane_version: v3.1.1
+        arcane_socket_proxy_version: "{{ arcane_upgrade_default_socket_proxy }}"
+        touch_units: []
+        expected_starts: {arcane-postgres: 0, arcane-socket-proxy: 0, arcane: 1}
+      - name: Unchanged re-run
+        arcane_version: v3.1.1
+        arcane_socket_proxy_version: "{{ arcane_upgrade_default_socket_proxy }}"
+        touch_units: []
+        expected_starts: {arcane-postgres: 0, arcane-socket-proxy: 0, arcane: 0}
+      # Requires=arcane-socket-proxy.service restarts Arcane with the proxy;
+      # the role must not restart it a second time.
+      - name: Socket-proxy image change
+        arcane_version: v3.1.1
+        arcane_socket_proxy_version: "3.4"
+        touch_units: []
+        expected_starts: {arcane-postgres: 0, arcane-socket-proxy: 1, arcane: 1}
+      # Edits every unit on disk so the role rewrites all three, as a collection
+      # upgrade that changes every unit does (0.6.5 -> 0.7.0 restarted Arcane twice).
+      - name: Every unit changes
+        arcane_version: v3.1.1
+        arcane_socket_proxy_version: "3.4"
+        touch_units: [arcane-postgres, arcane-socket-proxy, arcane]
+        expected_starts: {arcane-postgres: 1, arcane-socket-proxy: 1, arcane: 1}
+  tasks:
+    - name: Run each upgrade round
+      ansible.builtin.include_tasks: tasks/round.yml
+      loop: "{{ arcane_upgrade_rounds }}"
+      loop_control:
+        loop_var: arcane_upgrade_round
+        label: "{{ arcane_upgrade_round.name }}"

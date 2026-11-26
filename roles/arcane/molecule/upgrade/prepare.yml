@@ -1,0 +1,23 @@
+---
+- name: Prepare molecule instance
+  hosts: molecule
+  gather_facts: false
+  tasks:
+    - name: Install Python 3, sudo and Podman
+      ansible.builtin.raw: dnf install -y python3 sudo podman
+      changed_when: false
+
+    - name: Ensure the rootful Podman socket is listening
+      ansible.builtin.systemd_service:
+        name: podman.socket
+        state: started
+        enabled: true
+
+    # Same unit danmwallace.podman.traefik deploys on a real host.
+    - name: Ensure the proxy_network Quadlet network unit exists
+      ansible.builtin.copy:
+        content: |
+          [Network]
+          Label=managed_by=ansible
+        dest: /etc/containers/systemd/proxy_network.network
+        mode: "0644"

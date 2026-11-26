@@ -7,6 +7,16 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-11-26
+
+### Fixed
+
+- `arcane`: a version bump or config change restarts each unit at most once, in dependency order (danmwallace/ansible-collection-docker#77). The three handlers ran Postgres, then Arcane, then the socket proxy. Because `arcane.container` has `Requires=arcane-socket-proxy.service`, the proxy restart restarted Arcane a second time. Postgres also restarted under the running Arcane, and the next start then waited 45–110s for the stale actor-host registration to expire. The handlers are gone. The role now restarts Postgres, waits for `pg_isready` over TCP, then restarts the socket proxy, then Arcane. Arcane's own restart is skipped when the proxy restart has already restarted it, and no unit is restarted right after its start task started it. The rendered units are unchanged.
+
+### Added
+
+- `arcane`: an `upgrade` molecule scenario that runs the three Quadlet units under rootful Podman. It bumps the Arcane version, re-runs unchanged, changes the socket-proxy image, then rewrites every unit. Each round asserts the number of `start` events per container, the start order, and that `/api/health` reports `UP` within 60 seconds.
+
 ## [0.7.0] - 2026-11-26
 
 ### Changed (breaking)

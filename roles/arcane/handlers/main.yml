@@ -1,46 +1,6 @@
 # SPDX-License-Identifier: MIT
 ---
-- name: Restart arcane-postgres
-  ansible.builtin.systemd:
-    name: arcane-postgres.service
-    state: restarted
-    daemon_reload: true
-  become: true
-  tags: [molecule-notest]
-  register: _arcane_postgres_restart_result
-  # "Could not find the requested service" fires in Molecule because the
-  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
-  # that specific error so Molecule passes; any other failure still surfaces.
-  failed_when:
-    - _arcane_postgres_restart_result is failed
-    - "'Could not find the requested service' not in (_arcane_postgres_restart_result.msg | default(''))"
-
-- name: Restart arcane
-  ansible.builtin.systemd:
-    name: arcane.service
-    state: restarted
-    daemon_reload: true
-  become: true
-  tags: [molecule-notest]
-  register: _arcane_restart_result
-  # "Could not find the requested service" fires in Molecule because the
-  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
-  # that specific error so Molecule passes; any other failure still surfaces.
-  failed_when:
-    - _arcane_restart_result is failed
-    - "'Could not find the requested service' not in (_arcane_restart_result.msg | default(''))"
-
-- name: Restart arcane-socket-proxy
-  ansible.builtin.systemd:
-    name: arcane-socket-proxy.service
-    state: restarted
-    daemon_reload: true
-  become: true
-  tags: [molecule-notest]
-  register: _arcane_socket_proxy_restart_result
-  # "Could not find the requested service" fires in Molecule because the
-  # Quadlet unit isn't loaded (daemon-reload is molecule-notest). Suppress
-  # that specific error so Molecule passes; any other failure still surfaces.
-  failed_when:
-    - _arcane_socket_proxy_restart_result is failed
-    - "'Could not find the requested service' not in (_arcane_socket_proxy_restart_result.msg | default(''))"
+# Intentionally empty. tasks/main.yml starts and restarts the three units itself,
+# in dependency order and at most once each per run. The old per-unit handlers
+# restarted Arcane twice and Postgres under a running Arcane (#77).
+[]

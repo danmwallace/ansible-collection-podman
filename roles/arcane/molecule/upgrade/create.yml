@@ -1,0 +1,20 @@
+---
+- name: Create molecule instance
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    # Podman runs inside this container. A private cgroup namespace gives it a
+    # writable cgroup tree under rootless Podman on the host, and the volume
+    # keeps its overlay storage off the instance's own overlay root, which the
+    # kernel refuses to stack on.
+    - name: Start podman-arcane-upgrade-instance container
+      containers.podman.podman_container:
+        name: podman-arcane-upgrade-instance
+        image: docker.io/jrei/systemd-fedora:42
+        state: started
+        command: /sbin/init
+        privileged: true
+        systemd: always
+        cgroupns: private
+        volumes:
+          - podman-arcane-upgrade-storage:/var/lib/containers
