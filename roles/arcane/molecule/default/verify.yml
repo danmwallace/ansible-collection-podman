@@ -89,8 +89,16 @@
           - "'podman.sock' not in rendered"
           # Arcane 3.x refuses to start if an unprefixed 2.x name is set, and ignores JWT_SECRET.
           - "'Environment=ARCANE_APP_URL=https://arcane.test.local' in rendered"
-          - "'Environment=ARCANE_ENCRYPTION_KEY=test-encryption-key-not-for-production' in rendered"
-          - "'Environment=ARCANE_DATABASE_URL=postgresql://arcane:test-pass@arcane-postgres:5432/arcane' in rendered"
+          # Secrets come from the 0600 env file; Quadlet would copy Environment= values
+          # into the world-readable generated service.
+          - "'EnvironmentFile=/opt/podman/arcane/arcane.env' in rendered"
+          - "'test-encryption-key-not-for-production' not in rendered"
+          - "'test-pass' not in rendered"
+          - "'ARCANE_ENCRYPTION_KEY' not in rendered | regex_replace('(?m)^#.*$', '')"
+          - "'ARCANE_DATABASE_URL' not in rendered | regex_replace('(?m)^#.*$', '')"
+          - "'Volume=/opt/podman/arcane/data:/app/data:z' in rendered"
+          - "'Environment=PUID=1000' in rendered"
+          - "'Environment=PGID=1000' in rendered"
           - "'Environment=APP_URL=' not in rendered"
           - "'Environment=ENCRYPTION_KEY=' not in rendered"
           - "'Environment=DATABASE_URL=' not in rendered"
@@ -132,6 +140,50 @@
           - "'Image=docker.io/library/postgres:17.' in rendered"
           - "'-alpine' in rendered"
           - "'arcane.network' in rendered"
+          - "'EnvironmentFile=/opt/podman/arcane/arcane-postgres.env' in rendered"
+          - "'test-pass' not in rendered"
+          - "'POSTGRES_PASSWORD' not in rendered | regex_replace('(?m)^#.*$', '')"
+
+    - name: Stat the arcane secret env files
+      ansible.builtin.stat:
+        path: "/opt/podman/arcane/{{ item }}"
+      loop:
+        - arcane.env
+        - arcane-postgres.env
+      register: arcane_env_files
+
+    - name: Assert the arcane secret env files are 0600 root:root
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.mode == '0600'
+          - item.stat.pw_name == 'root'
+          - item.stat.gr_name == 'root'
+        fail_msg: "{{ item.item }}: {{ item.stat }}"
+      loop: "{{ arcane_env_files.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Read the arcane secret env files
+      ansible.builtin.slurp:
+        src: "/opt/podman/arcane/{{ item }}"
+      loop:
+        - arcane.env
+        - arcane-postgres.env
+      register: arcane_env_contents
+
+    - name: Assert the arcane secret env files carry the secrets
+      vars:
+        arcane_env: "{{ arcane_env_contents.results[0].content | b64decode }}"
+        arcane_postgres_env: "{{ arcane_env_contents.results[1].content | b64decode }}"
+      ansible.builtin.assert:
+        that:
+          - "'ARCANE_ENCRYPTION_KEY=test-encryption-key-not-for-production' in arcane_env"
+          - "'ARCANE_DATABASE_URL=postgresql://arcane:test-pass@arcane-postgres:5432/arcane' in arcane_env"
+          - "'POSTGRES_PASSWORD=test-pass' in arcane_postgres_env"
+          # Arcane 3.x refuses to start if an unprefixed 2.x name is set.
+          - "'\nENCRYPTION_KEY=' not in arcane_env"
+          - "'JWT_SECRET' not in arcane_env"
 
     - name: Stat the arcane postgres data directory
       ansible.builtin.stat:
@@ -143,6 +195,112 @@
         that:
           - arcane_postgres_dir.stat.isdir
           - arcane_postgres_dir.stat.mode == '0700'
+
+    - name: Stat the arcane app data directory
+      ansible.builtin.stat:
+        path: /opt/podman/arcane/data
+      register: arcane_app_data_dir_stat
+
+    - name: Assert the arcane app data directory belongs to Arcane's PUID:PGID
+      ansible.builtin.assert:
+        that:
+          - arcane_app_data_dir_stat.stat.isdir
+          - arcane_app_data_dir_stat.stat.uid == 1000
+          - arcane_app_data_dir_stat.stat.gid == 1000
+          - arcane_app_data_dir_stat.stat.mode == '0700'
+
+    # The Quadlet units are not started in Molecule, so run the Arcane image from
+    # the rendered unit by hand, with its Volume= line and Quadlet's own
+    # --replace --rm. Stopping a --rm container deletes it and any anonymous volume,
+    # which is what `systemctl restart arcane` does, so a marker written through
+    # the container only survives if /app/data is the bind mount.
+    # Installed here, not in prepare: with podman present during converge, Quadlet's
+    # generator would register the units and the restart handlers would really run.
+    - name: Install podman for the /app/data persistence check
+      ansible.builtin.dnf:
+        name: podman
+        state: present
+
+    - name: Read the image and /app/data volume from arcane.container
+      vars:
+        rendered: "{{ arcane_container_contents.content | b64decode }}"
+      ansible.builtin.set_fact:
+        arcane_verify_image: "{{ rendered | regex_search('(?m)^Image=(.+)$', '\\1') | first }}"
+        arcane_verify_volume: "{{ rendered | regex_search('(?m)^Volume=(.+:/app/data(:.*)?)$', '\\1') | first }}"
+
+    - name: Recreate the Arcane container and check /app/data survives
+      vars:
+        # Nested-podman workarounds only: `podman exec` reaches no systemd D-Bus, and
+        # the host cgroup namespace is read-only from inside the instance.
+        arcane_verify_run: >-
+          podman --cgroup-manager=cgroupfs run -d --replace --rm --cgroups=disabled
+          --name arcane-verify --network none
+          -v {{ arcane_verify_volume }}
+          -e PUID=1000 -e PGID=1000
+          -e ARCANE_ENCRYPTION_KEY=test-encryption-key-not-for-production
+          {{ arcane_verify_image }}
+      block:
+        - name: Start the Arcane image on the rendered /app/data volume
+          ansible.builtin.command: "{{ arcane_verify_run }}"
+          changed_when: true
+
+        - name: Wait for Arcane to create /app/data/templates on the host
+          ansible.builtin.wait_for:
+            path: /opt/podman/arcane/data/templates
+            timeout: 120
+
+        - name: Stat the templates directory Arcane created
+          ansible.builtin.stat:
+            path: /opt/podman/arcane/data/templates
+          register: arcane_verify_templates
+
+        - name: Assert Arcane wrote /app/data as its PUID:PGID
+          ansible.builtin.assert:
+            that:
+              - arcane_verify_templates.stat.uid == 1000
+              - arcane_verify_templates.stat.gid == 1000
+
+        - name: Stage a marker file on the instance
+          ansible.builtin.copy:
+            content: "survives-recreate\n"
+            dest: /tmp/arcane-verify-marker
+            mode: "0644"
+
+        - name: Write the marker into /app/data through the running container
+          ansible.builtin.command: podman cp /tmp/arcane-verify-marker arcane-verify:/app/data/.molecule-marker
+          changed_when: true
+
+        - name: Stop the Arcane container, which --rm deletes
+          ansible.builtin.command: podman --cgroup-manager=cgroupfs stop arcane-verify
+          changed_when: true
+
+        - name: Check the old Arcane container is gone
+          ansible.builtin.command: podman container exists arcane-verify
+          register: arcane_verify_exists
+          changed_when: false
+          failed_when: arcane_verify_exists.rc != 1
+
+        - name: Start a new Arcane container on the same volume
+          ansible.builtin.command: "{{ arcane_verify_run }}"
+          changed_when: true
+
+        - name: Read the marker back through the new container
+          ansible.builtin.command: podman cp arcane-verify:/app/data/.molecule-marker /tmp/arcane-verify-marker.out
+          changed_when: false
+
+        - name: Slurp the marker read back from the new container
+          ansible.builtin.slurp:
+            src: /tmp/arcane-verify-marker.out
+          register: arcane_verify_marker
+
+        - name: Assert the marker survived the container being recreated
+          ansible.builtin.assert:
+            that:
+              - (arcane_verify_marker.content | b64decode) == 'survives-recreate\n'
+      always:
+        - name: Remove the verify Arcane container
+          ansible.builtin.command: podman rm -f --ignore arcane-verify
+          changed_when: false
 
     # Both guards fail before the role touches anything, so running them here
     # leaves the converged instance as it was.

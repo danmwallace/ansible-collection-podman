@@ -26,7 +26,26 @@ argument_specs:
         description: >-
           Host directory for Arcane persistent data. Postgres data is stored under a postgres/
           subdirectory, created 0700 with ownership left to the container (the image's postgres
-          user, uid 999); the base directory is 0755.
+          user, uid 999); the base directory is 0755. The base directory also holds arcane.env and
+          arcane-postgres.env, the 0600 root-owned files that carry the encryption key and the
+          Postgres password.
+      arcane_app_data_dir:
+        type: str
+        default: "{{ arcane_data_dir }}/data"
+        description:
+          - Host directory bind-mounted at /app/data in the Arcane container (projects/, templates/ and Arcane's local state).
+          - Owned by arcane_puid:arcane_pgid, mode 0700.
+          - Without it, /app/data is the image's anonymous volume, which Quadlet's --rm deletes on every restart.
+      arcane_puid:
+        type: int
+        default: 1000
+        description:
+          - uid Arcane drops to (PUID) and the owner of arcane_app_data_dir, which is 0700.
+          - That uid can edit the compose projects Arcane deploys through rootful Podman, so on a host where 1000 is a login user, use an unused uid.
+      arcane_pgid:
+        type: int
+        default: 1000
+        description: gid Arcane drops to (PGID) and the group of arcane_app_data_dir.
       arcane_postgres_db:
         type: str
         default: arcane

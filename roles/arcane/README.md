@@ -18,7 +18,10 @@ Docker-compatible API on `tcp://arcane-socket-proxy:2375`, which Arcane reaches 
 containers, images, networks, and volumes; `BUILD`, `AUTH`, `SECRETS`, `SWARM`, and
 `EXEC` are denied, so a compromise of the Arcane UI cannot exec into other
 containers or reach the raw socket. Postgres data is persisted under
-`arcane_data_dir/postgres` on the host.
+`arcane_data_dir/postgres` on the host, and Arcane's own `/app/data` (compose
+`projects/`, `templates/` and its local state) under `arcane_app_data_dir`. The
+encryption key and the Postgres password live in two root-only (`0600`) env files,
+not in the Quadlet units.
 
 ## Requirements
 
@@ -41,7 +44,10 @@ containers or reach the raw socket. Postgres data is persisted under
 | `arcane_jwt_secret` | str | no | `""` | **Deprecated, ignored.** Arcane 3.x signs sessions with its own key. Still accepted so existing inventories pass. |
 | `arcane_version` | str | no | `v3.1.1` | Image tag for `ghcr.io/getarcaneapp/manager`. Must be `v3.0.0` or newer. |
 | `arcane_socket_proxy_version` | str | no | `3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab` | What follows `ghcr.io/tecnativa/docker-socket-proxy:` for the sidecar that mediates Arcane's access to the Podman socket: a tag or `tag@sha256:<digest>`. Upstream stopped versioned tags at `v0.5.0` and rebuilds `3.4` (HAProxy 3.4) weekly, so the default pins `3.4` to its multi-arch index digest. |
-| `arcane_data_dir` | str | no | `/opt/podman/arcane` | Host directory for Arcane persistent data. Postgres data is stored under a `postgres/` subdirectory. |
+| `arcane_data_dir` | str | no | `/opt/podman/arcane` | Host directory for Arcane persistent data. Postgres data is stored under a `postgres/` subdirectory; `arcane.env` and `arcane-postgres.env` (the secrets, `0600 root:root`) sit beside it. |
+| `arcane_app_data_dir` | str | no | `{{ arcane_data_dir }}/data` | Host directory bind-mounted at `/app/data` (`projects/`, `templates/`, Arcane's local state), owned `arcane_puid:arcane_pgid`, mode `0700`. |
+| `arcane_puid` | int | no | `1000` | uid Arcane drops to (`PUID`) and owner of `arcane_app_data_dir`. That uid can edit the compose projects Arcane deploys through rootful Podman; on a host where `1000` is a login user, use an unused uid. |
+| `arcane_pgid` | int | no | `1000` | gid Arcane drops to (`PGID`) and group of `arcane_app_data_dir`. |
 | `arcane_postgres_db` | str | no | `arcane` | Name of the Postgres database created for Arcane. |
 | `arcane_postgres_user` | str | no | `arcane` | Postgres username Arcane connects with. |
 
@@ -83,9 +89,9 @@ not first migrated by 2.17.x. Upstream guide:
    3.x with `upgrade to Arcane v2.17.1 first`.
 2. **Resolve job runs marked "Needs attention".** 3.x removes "Resolve after review".
 3. **Back up.** 3.x replaces its SQL migrations with one-way Goose migrations, so a
-   restore is the only way back to 2.x. This role mounts no `/app/data` volume, so
-   nothing there survives a restart anyway; the database dump plus the old unit file is
-   the backup:
+   restore is the only way back to 2.x. Collection 0.6.x mounts no `/app/data`
+   volume, so nothing there survives a restart anyway; the database dump plus the old
+   unit file is the backup:
 
    ```sh
    sudo podman exec arcane-postgres pg_dump -U arcane arcane > arcane-$(date +%F).sql
@@ -111,28 +117,65 @@ not first migrated by 2.17.x. Upstream guide:
 1. Asserts `arcane_version` is `v3.0.0` or newer, then (with `no_log`) that
    `arcane_postgres_password` is non-empty and `arcane_encryption_key` is at least 32
    characters or a `hex:`/`base64:` key.
-2. Ensures `arcane_data_dir` and `arcane_data_dir/postgres` exist (0755).
-3. Writes the `arcane` Quadlet network unit to
+2. Ensures `arcane_data_dir` (0755), `arcane_data_dir/postgres` (0700) and
+   `arcane_app_data_dir` (0700, owned `arcane_puid:arcane_pgid`) exist.
+3. Renders `arcane-postgres.env` (`POSTGRES_PASSWORD`) and `arcane.env`
+   (`ARCANE_ENCRYPTION_KEY`, `ARCANE_DATABASE_URL`) into `arcane_data_dir`, `0600`
+   `root:root`, with `no_log`.
+4. Writes the `arcane` Quadlet network unit to
    `/etc/containers/systemd/arcane.network`.
-4. Writes the `arcane-socket` Quadlet network unit
+5. Writes the `arcane-socket` Quadlet network unit
    (`/etc/containers/systemd/arcane-socket.network`) with `Internal=true`.
-5. Renders `arcane-postgres.container` (Postgres `17.11-alpine`, on the `arcane`
-   network, data volume at `arcane_data_dir/postgres`).
-6. Renders `arcane-socket-proxy.container` (`docker-socket-proxy`, on the
+6. Renders `arcane-postgres.container` (Postgres `17.11-alpine`, on the `arcane`
+   network, data volume at `arcane_data_dir/postgres`, password from
+   `arcane-postgres.env`).
+7. Renders `arcane-socket-proxy.container` (`docker-socket-proxy`, on the
    `arcane-socket` network, socket mounted `:ro,z`, API allowlist as environment).
-7. Renders `arcane.container` (on `arcane`, `arcane-socket`, and `proxy_network`;
+8. Renders `arcane.container` (on `arcane`, `arcane-socket`, and `proxy_network`;
    `Requires=`/`After=` the socket proxy; `DOCKER_HOST=tcp://arcane-socket-proxy:2375`;
-   Traefik labels).
-8. Runs `daemon-reload`, then enables and starts `arcane-postgres.service`.
-9. Runs `daemon-reload`, then enables and starts `arcane-socket-proxy.service`.
-10. Enables and starts `arcane.service`.
+   `arcane_app_data_dir` mounted at `/app/data:z`; secrets from `arcane.env`; Traefik
+   labels).
+9. Runs `daemon-reload`, then enables and starts `arcane-postgres.service`.
+10. Runs `daemon-reload`, then enables and starts `arcane-socket-proxy.service`.
+11. Enables and starts `arcane.service`.
 
 `Restart arcane-postgres`, `Restart arcane-socket-proxy`, and `Restart arcane`
-handlers fire when their respective unit file changes, each doing a `daemon-reload`
+handlers fire when their respective unit file or env file changes, each doing a `daemon-reload`
 so Quadlet regenerates the service before restarting it.
 
 ## Notes
 
+- **Secrets are in env files, not the units.** Quadlet copies every `Environment=`
+  value into the generated `/run/systemd/generator/<name>.service`, which is `0644` and
+  readable by any local user (`systemctl cat arcane`), so making the `.container` file
+  `0600` would not hide anything. The key and password go in `arcane.env` and
+  `arcane-postgres.env` (`0600 root:root`), which the units read with
+  `EnvironmentFile=`; Podman receives them as `--env-file`. The `.container` units hold
+  no secrets and stay `0644`.
+- **`/app/data` is a bind mount.** Arcane 3.x keeps compose `projects/` and
+  `templates/` there. The image declares `/app/data` as a `VOLUME`, and Quadlet runs
+  containers with `--rm`, which deletes that anonymous volume whenever the container
+  stops. Before this role mounted `arcane_app_data_dir`, every restart or reboot started
+  `/app/data` empty. Arcane starts as root and drops to `PUID`/`PGID`
+  (`arcane_puid`/`arcane_pgid`), so the directory belongs to that uid/gid, is `0700`
+  (project `.env` files live there), and is labelled `:z` like the role's other volumes.
+- **Pick `arcane_puid` deliberately.** The owner of `arcane_app_data_dir` can rewrite
+  the compose projects Arcane later deploys through rootful Podman. The default `1000`
+  is usually the first login user on Fedora; if that user should not effectively have
+  root, set `arcane_puid`/`arcane_pgid` to an unused id.
+- **Rolling the bind mount out to an existing host.** The first run of this version
+  restarts `arcane.service` onto an empty `arcane_app_data_dir`, and that stop deletes
+  the old anonymous volume. It only holds what was created since `arcane.service` last
+  started. To keep that, copy it out before running the role:
+
+  ```sh
+  sudo install -d -o 1000 -g 1000 -m 0700 /opt/podman/arcane/data
+  sudo podman cp arcane:/app/data/. /opt/podman/arcane/data/
+  sudo chown -R 1000:1000 /opt/podman/arcane/data   # podman cp writes files as root
+  ```
+
+  Use your `arcane_puid`/`arcane_pgid` in place of `1000` if you set them. Then run the role; the restart mounts the populated directory. The database is in
+  Postgres and is not affected.
 - **Postgres data directory** is created `0700` and its ownership is left to `initdb`
   (uid 999); the postgres entrypoint runs `chmod 0700` on every start, so any other mode
   would show as a change on every run.

@@ -39,6 +39,42 @@
     mode: "0700"
   become: true
 
+# Arcane starts as root and drops to PUID:PGID, so that user must own /app/data
+# (Arcane also chowns it on start). 0700: compose projects and their .env files
+# live here, and Arcane keeps the mode.
+- name: Ensure arcane app data directory exists
+  ansible.builtin.file:
+    path: "{{ arcane_app_data_dir }}"
+    state: directory
+    owner: "{{ arcane_puid }}"
+    group: "{{ arcane_pgid }}"
+    mode: "0700"
+  become: true
+
+# Secrets live here, not in Environment= lines: Quadlet copies those into the
+# generated /run/systemd/generator/*.service, which any local user can read.
+- name: Deploy arcane-postgres environment file
+  ansible.builtin.template:
+    src: arcane-postgres.env.j2
+    dest: "{{ arcane_data_dir }}/arcane-postgres.env"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  notify: Restart arcane-postgres
+
+- name: Deploy arcane environment file
+  ansible.builtin.template:
+    src: arcane.env.j2
+    dest: "{{ arcane_data_dir }}/arcane.env"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  notify: Restart arcane
+
 - name: Deploy arcane Quadlet network unit
   ansible.builtin.copy:
     content: |

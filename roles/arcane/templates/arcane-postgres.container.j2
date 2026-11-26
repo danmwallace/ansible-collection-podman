@@ -10,7 +10,9 @@ Network=arcane.network
 Volume={{ arcane_data_dir }}/postgres:/var/lib/postgresql/data:z
 Environment=POSTGRES_DB={{ arcane_postgres_db }}
 Environment=POSTGRES_USER={{ arcane_postgres_user }}
-Environment=POSTGRES_PASSWORD={{ arcane_postgres_password }}
+# POSTGRES_PASSWORD. Quadlet copies Environment= values into the world-readable
+# generated service, so the secret goes in a 0600 root env file.
+EnvironmentFile={{ arcane_data_dir }}/arcane-postgres.env
 
 [Service]
 Restart=always
