@@ -9,5 +9,6 @@
       vars:
         arcane_hostname: arcane.test.local
         arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
-        arcane_encryption_key: test-key  # molecule-test-only: fake value, not a real credential
+        arcane_encryption_key: test-encryption-key-not-for-production  # molecule-test-only: fake value, not a real credential
+        # Deprecated and ignored since 3.x; set here to prove old inventories still pass (verify checks it is not rendered).
         arcane_jwt_secret: test-secret  # molecule-test-only: fake value, not a real credential

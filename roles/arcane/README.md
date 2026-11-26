@@ -35,20 +35,21 @@ containers or reach the raw socket. Postgres data is persisted under
 
 | Variable | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `arcane_hostname` | str | yes | — | Public hostname for Arcane (e.g. `arcane.example.com`). Used for `APP_URL` and the Traefik routing rule. |
+| `arcane_hostname` | str | yes | — | Public hostname for Arcane (e.g. `arcane.example.com`). Used for `ARCANE_APP_URL` and the Traefik routing rule. |
 | `arcane_postgres_password` | str | yes | — | Postgres password for `arcane_postgres_user`. **Supply from vault.** |
-| `arcane_encryption_key` | str | yes | — | Encryption key used by Arcane for at-rest secret encryption. **Supply from vault.** |
-| `arcane_jwt_secret` | str | yes | — | JWT signing secret for Arcane session tokens. **Supply from vault.** |
-| `arcane_version` | str | no | `v2.17.3` | Arcane image tag (e.g. `v2.17.3`). |
-| `arcane_socket_proxy_version` | str | no | `v0.5.0` | Image tag for the `ghcr.io/tecnativa/docker-socket-proxy` sidecar that mediates Arcane's access to the Podman socket. |
+| `arcane_encryption_key` | str | yes | — | Encryption key (`ARCANE_ENCRYPTION_KEY`) used by Arcane for at-rest secret encryption. At least 32 characters, or a `hex:`/`base64:` encoded 32-byte key. **Supply from vault**, and keep the value 2.x used. |
+| `arcane_jwt_secret` | str | no | `""` | **Deprecated, ignored.** Arcane 3.x signs sessions with its own key. Still accepted so existing inventories pass. |
+| `arcane_version` | str | no | `v3.1.1` | Image tag for `ghcr.io/getarcaneapp/manager`. Must be `v3.0.0` or newer. |
+| `arcane_socket_proxy_version` | str | no | `3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab` | What follows `ghcr.io/tecnativa/docker-socket-proxy:` for the sidecar that mediates Arcane's access to the Podman socket: a tag or `tag@sha256:<digest>`. Upstream stopped versioned tags at `v0.5.0` and rebuilds `3.4` (HAProxy 3.4) weekly, so the default pins `3.4` to its multi-arch index digest. |
 | `arcane_data_dir` | str | no | `/opt/podman/arcane` | Host directory for Arcane persistent data. Postgres data is stored under a `postgres/` subdirectory. |
 | `arcane_postgres_db` | str | no | `arcane` | Name of the Postgres database created for Arcane. |
 | `arcane_postgres_user` | str | no | `arcane` | Postgres username Arcane connects with. |
 
 `arcane_hostname` has a placeholder default of `arcane.example.com` in
 `defaults/main.yml` but is declared required in `argument_specs.yml`; always set it.
-The three secret variables default to empty strings and the role asserts they are
-non-empty before doing anything.
+`arcane_postgres_password` and `arcane_encryption_key` default to empty strings; the
+role asserts the password is non-empty and the key is long enough for 3.x before doing
+anything.
 
 ## Dependencies
 
@@ -67,13 +68,49 @@ which `danmwallace.podman.traefik` provides.
         arcane_hostname: arcane.example.com
         arcane_postgres_password: "{{ vault_arcane_postgres_password }}"
         arcane_encryption_key: "{{ vault_arcane_encryption_key }}"
-        arcane_jwt_secret: "{{ vault_arcane_jwt_secret }}"
 ```
+
+## Upgrading from Arcane 2.x
+
+The role renders a 3.x-only Quadlet unit: the image is `ghcr.io/getarcaneapp/manager`
+(3.x removed the GHCR `arcane` alias) and every Arcane variable carries the `ARCANE_`
+prefix. 3.x refuses to start if an unprefixed 2.x name is set, or if the database was
+not first migrated by 2.17.x. Upstream guide:
+<https://getarcane.app/docs/get-started/migrate-v3>.
+
+1. **Run v2.17.3 once.** With collection 0.6.x (the 2.x template), set
+   `arcane_version: v2.17.3`, deploy, and wait until Arcane is up. Older databases stop
+   3.x with `upgrade to Arcane v2.17.1 first`.
+2. **Resolve job runs marked "Needs attention".** 3.x removes "Resolve after review".
+3. **Back up.** 3.x replaces its SQL migrations with one-way Goose migrations, so a
+   restore is the only way back to 2.x. This role mounts no `/app/data` volume, so
+   nothing there survives a restart anyway; the database dump plus the old unit file is
+   the backup:
+
+   ```sh
+   sudo podman exec arcane-postgres pg_dump -U arcane arcane > arcane-$(date +%F).sql
+   sudo cp /etc/containers/systemd/arcane.container arcane.container.2x
+   ```
+
+4. **Check `arcane_encryption_key`.** Keep the value 2.x used (it decrypts stored
+   credentials). If it is shorter than 32 characters, 3.x refuses to start and the role
+   fails first with an assert. Changing the key means Arcane can no longer decrypt what
+   2.x stored with the old one, so plan to re-enter stored registry, Git and OIDC
+   credentials, and do not upgrade until you have decided.
+5. **Deploy this role version.** `arcane_jwt_secret` can stay in the inventory; the role
+   ignores it. The `Restart arcane` handler restarts the unit; if
+   `sudo journalctl -u arcane` shows `rename X to ARCANE_X`, a 2.x variable is still set.
+6. **Afterwards:** set up notification providers again under System → Notifications
+   (they are now global to the Manager), review custom roles (permissions were renamed;
+   the built-in Deployer role loses `containers:update`), and update any scripts that call
+   `/api/environments` (now `/api/agents`) or use six-field cron schedules (now
+   five-field, converted automatically).
 
 ## What the Role Does
 
-1. Asserts `arcane_postgres_password`, `arcane_encryption_key`, and
-   `arcane_jwt_secret` are all non-empty (with `no_log`).
+1. Asserts `arcane_version` is `v3.0.0` or newer, then (with `no_log`) that
+   `arcane_postgres_password` is non-empty and `arcane_encryption_key` is at least 32
+   characters or a `hex:`/`base64:` key.
 2. Ensures `arcane_data_dir` and `arcane_data_dir/postgres` exist (0755).
 3. Writes the `arcane` Quadlet network unit to
    `/etc/containers/systemd/arcane.network`.

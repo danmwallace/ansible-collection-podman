@@ -5,22 +5,23 @@ Requires=arcane-socket-proxy.service
 After=network-online.target arcane-postgres.service arcane-socket-proxy.service
 
 [Container]
-Image=ghcr.io/getarcaneapp/arcane:{{ arcane_version }}
+# Arcane 3.x dropped the GHCR-only `arcane` alias; the image is `manager`.
+Image=ghcr.io/getarcaneapp/manager:{{ arcane_version }}
 ContainerName=arcane
 Network=arcane.network
 Network=arcane-socket.network
 Network=proxy_network.network
-Environment=APP_URL=https://{{ arcane_hostname }}
+# Arcane 3.x reads only ARCANE_-prefixed names and refuses to start if an
+# unprefixed 2.x name is set. PUID, PGID and DOCKER_HOST are standard names and
+# keep theirs. Arcane reads its DB credentials from ARCANE_DATABASE_URL; the
+# POSTGRES_* names belong to arcane-postgres only.
+Environment=ARCANE_APP_URL=https://{{ arcane_hostname }}
 Environment=PUID=1000
 Environment=PGID=1000
-Environment=ENCRYPTION_KEY={{ arcane_encryption_key }}
-Environment=JWT_SECRET={{ arcane_jwt_secret }}
-Environment=LOG_LEVEL=info
-Environment=LOG_JSON=false
-Environment=POSTGRES_DB={{ arcane_postgres_db }}
-Environment=POSTGRES_USER={{ arcane_postgres_user }}
-Environment=POSTGRES_PASSWORD={{ arcane_postgres_password }}
-Environment=DATABASE_URL=postgresql://{{ arcane_postgres_user }}:{{ arcane_postgres_password }}@arcane-postgres:5432/{{ arcane_postgres_db }}
+Environment=ARCANE_ENCRYPTION_KEY={{ arcane_encryption_key }}
+Environment=ARCANE_LOG_LEVEL=info
+Environment=ARCANE_LOG_JSON=false
+Environment=ARCANE_DATABASE_URL=postgresql://{{ arcane_postgres_user }}:{{ arcane_postgres_password }}@arcane-postgres:5432/{{ arcane_postgres_db }}
 Environment=DOCKER_HOST=tcp://arcane-socket-proxy:2375
 Label=traefik.enable=true
 Label=traefik.docker.network=systemd-proxy_network

@@ -6,18 +6,20 @@ argument_specs:
     options:
       arcane_version:
         type: str
-        default: v2.17.3
-        description: Arcane image tag (e.g. v2.17.3).
+        default: v3.1.1
+        description:
+          - Image tag for ghcr.io/getarcaneapp/manager. Must be v3.0.0 or newer; the role renders a 3.x-only Quadlet unit.
+          - Upgrading from 2.x requires running v2.17.3 once first (see the README).
       arcane_socket_proxy_version:
         type: str
-        default: v0.5.0
-        description: >-
-          Image tag for the ghcr.io/tecnativa/docker-socket-proxy sidecar that
-          mediates Arcane's access to the Podman socket (e.g. v0.5.0).
+        default: "3.4@sha256:027f9fa5ee70be5836eeaa10ce889d7a83f34a8db16a7f412818b92997e0beab"
+        description:
+          - Image reference after ghcr.io/tecnativa/docker-socket-proxy for the sidecar that mediates Arcane's access to the Podman socket.
+          - Either a tag, or a tag plus its digest (tag@sha256:...). The default pins the floating 3.4 tag to its multi-arch index digest.
       arcane_hostname:
         type: str
         required: true
-        description: Public hostname for Arcane (e.g. arcane.example.com). Used for APP_URL and Traefik routing rule.
+        description: Public hostname for Arcane (e.g. arcane.example.com). Used for ARCANE_APP_URL and the Traefik routing rule.
       arcane_data_dir:
         type: str
         default: /opt/podman/arcane
@@ -42,9 +44,15 @@ argument_specs:
         type: str
         required: true
         no_log: true
-        description: Encryption key used by Arcane for at-rest secret encryption. Store in Ansible Vault.
+        description:
+          - Encryption key used by Arcane for at-rest secret encryption (ARCANE_ENCRYPTION_KEY). Store in Ansible Vault.
+          - "At least 32 characters, or a hex: or base64: encoded 32-byte key; Arcane 3.x refuses shorter passphrases."
+          - Keep the value used under 2.x, or Arcane cannot decrypt its stored secrets.
       arcane_jwt_secret:
         type: str
-        required: true
+        required: false
+        default: ""
         no_log: true
-        description: JWT signing secret for Arcane session tokens. Store in Ansible Vault.
+        description:
+          - Deprecated and ignored. Arcane 3.x signs sessions with its own key and no longer reads JWT_SECRET.
+          - Accepted so existing inventories keep working; it will be removed in a later major release.
