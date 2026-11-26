@@ -104,7 +104,7 @@ not first migrated by 2.17.x. Upstream guide:
    2.x stored with the old one, so plan to re-enter stored registry, Git and OIDC
    credentials, and do not upgrade until you have decided.
 5. **Deploy this role version.** `arcane_jwt_secret` can stay in the inventory; the role
-   ignores it. The `Restart arcane` handler restarts the unit; if
+   ignores it. The role restarts `arcane.service` onto the new unit; if
    `sudo journalctl -u arcane` shows `rename X to ARCANE_X`, a 2.x variable is still set.
 6. **Afterwards:** set up notification providers again under System → Notifications
    (they are now global to the Manager), review custom roles (permissions were renamed;
@@ -135,13 +135,37 @@ not first migrated by 2.17.x. Upstream guide:
    `Requires=`/`After=` the socket proxy; `DOCKER_HOST=tcp://arcane-socket-proxy:2375`;
    `arcane_app_data_dir` mounted at `/app/data:z`; secrets from `arcane.env`; Traefik
    labels).
-9. Runs `daemon-reload`, then enables and starts `arcane-postgres.service`.
-10. Runs `daemon-reload`, then enables and starts `arcane-socket-proxy.service`.
-11. Enables and starts `arcane.service`.
+9. Runs `daemon-reload` so Quadlet regenerates the services, enables and starts
+   `arcane-postgres.service`, and restarts it if its unit or env file changed.
+10. Waits up to a minute for Postgres to accept TCP connections (`pg_isready`).
+11. Enables and starts `arcane-socket-proxy.service`, and restarts it if its unit
+    changed. `Requires=` restarts a running `arcane.service` with it.
+12. Enables and starts `arcane.service`, and restarts it if its unit or env file
+    changed, unless step 11 already restarted it.
 
-`Restart arcane-postgres`, `Restart arcane-socket-proxy`, and `Restart arcane`
-handlers fire when their respective unit file or env file changes, each doing a `daemon-reload`
-so Quadlet regenerates the service before restarting it.
+### Rolling out changes
+
+The role starts and restarts the units itself, in dependency order (Postgres, then
+the socket proxy, then Arcane), and has no handlers. A run restarts each container
+at most once (#77). A unit restarts only if its own files changed and the start task
+did not just start it on the new config. Arcane starts only after Postgres accepts
+connections.
+
+| What changed | Restarted |
+| --- | --- |
+| `arcane_version`, `arcane_hostname`, the key, or other Arcane settings | `arcane` |
+| `arcane_socket_proxy_version` | `arcane-socket-proxy`, then `arcane` (through `Requires=`) |
+| The Postgres unit or password file | `arcane-postgres`; Arcane keeps running and reconnects |
+| Every unit (for example a collection upgrade) | each of them once, in that order |
+
+Up to 0.7.0, three handlers ran in the order Postgres, Arcane, socket proxy. The proxy
+restart restarted Arcane a second time through `Requires=`. Postgres also restarted
+under the running Arcane, so Arcane's shutdown could not deregister. The next start
+then waited 45–110s for the stale actor-host registration to expire.
+
+The `upgrade` molecule scenario (`cd roles/arcane && molecule test -s upgrade`) runs
+the units under real rootful Podman. It bumps the versions and counts each container's
+`start` events, and asserts `/api/health` reports `UP` within 60 seconds.
 
 ## Notes
 
@@ -190,14 +214,13 @@ so Quadlet regenerates the service before restarting it.
   `connectto` on the `container_runtime_t` Podman socket. Arcane itself stays confined;
   only the small HAProxy proxy is unconfined, and its allowlist is the access control.
 - `arcane.container` declares `Requires=arcane-socket-proxy.service`, so stopping
-  the proxy stops Arcane too; starting Arcane pulls the proxy up first.
+  or restarting the proxy stops or restarts Arcane too; starting Arcane pulls the
+  proxy up first.
 - The `arcane-socket` network is `Internal=true`: containers on it have no external
   connectivity, and only Arcane and the proxy are attached. The proxy is reachable
   from nowhere else.
-- All three handlers suppress the `Could not find the requested service` systemd
-  error that fires in Molecule (where `daemon-reload` is skipped via
-  `molecule-notest` tags and the Quadlet units are never registered). Any other
-  failure is still surfaced.
+- The systemd and `podman exec` tasks are tagged `molecule-notest`. The `default`
+  scenario only renders files, so it skips them; the `upgrade` scenario runs them.
 - The Traefik label `traefik.docker.network=systemd-proxy_network` uses the
   Quadlet-generated network name (Quadlet prefixes `.network` units with
   `systemd-`), which is what the Traefik provider sees via the Podman socket.

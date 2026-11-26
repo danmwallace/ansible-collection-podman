@@ -1,0 +1,14 @@
+---
+# Starts one Arcane release behind so verify.yml can bump it.
+- name: Converge
+  hosts: molecule
+  gather_facts: true
+  tasks:
+    - name: Apply arcane role at the previous Arcane release
+      ansible.builtin.include_role:
+        name: danmwallace.podman.arcane
+      vars:
+        arcane_hostname: arcane.test.local
+        arcane_version: v3.1.0
+        arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+        arcane_encryption_key: test-encryption-key-not-for-production  # molecule-test-only: fake value, not a real credential

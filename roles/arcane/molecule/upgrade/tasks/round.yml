@@ -1,0 +1,100 @@
+---
+# One ../verify.yml round; arcane_upgrade_round holds the inputs and expectations.
+- name: "Record when the round starts ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.command: date +%s.%N
+  register: arcane_upgrade_t0
+  changed_when: false
+
+- name: "Edit the unit files the role should rewrite ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.lineinfile:
+    path: /etc/containers/systemd/{{ item }}.container
+    line: "# edited by molecule verify"
+  loop: "{{ arcane_upgrade_round.touch_units }}"
+
+- name: "Re-apply the arcane role ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.include_role:
+    name: danmwallace.podman.arcane
+  vars:
+    arcane_hostname: arcane.test.local
+    arcane_version: "{{ arcane_upgrade_round.arcane_version }}"
+    arcane_socket_proxy_version: "{{ arcane_upgrade_round.arcane_socket_proxy_version }}"
+    arcane_postgres_password: test-pass  # molecule-test-only: fake value, not a real credential
+    arcane_encryption_key: test-encryption-key-not-for-production  # molecule-test-only: fake value, not a real credential
+
+# A real play runs notified handlers before it ends; without this they would
+# only run once, after the last round.
+- name: "Run any handlers the role notified ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.meta: flush_handlers
+
+- name: "Look up Arcane's address on the arcane network ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.command:
+    argv:
+      - podman
+      - inspect
+      - --format
+      - '{{ "{{" }}(index .NetworkSettings.Networks "systemd-arcane").IPAddress{{ "}}" }}'
+      - arcane
+  register: arcane_upgrade_ip
+  changed_when: false
+
+# Before #77 the restarts left Arcane waiting 45-110s for its stale actor-host
+# registration to expire.
+- name: "Wait up to 60s for /api/health to report UP ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.uri:
+    url: "http://{{ arcane_upgrade_ip.stdout }}:3552/api/health"
+    return_content: true
+  register: arcane_upgrade_health
+  until:
+    - arcane_upgrade_health.status | default(0) == 200
+    - (arcane_upgrade_health.json | default({})).status | default('') == 'UP'
+  retries: 30
+  delay: 2
+
+- name: "Record when the round ends ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.command: date +%s.%N
+  register: arcane_upgrade_t1
+  changed_when: false
+
+- name: "List container starts during the round ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.command:
+    argv:
+      - podman
+      - events
+      - --stream=false
+      - --since={{ arcane_upgrade_t0.stdout }}
+      - --until={{ arcane_upgrade_t1.stdout }}
+      - --filter=type=container
+      - --filter=event=start
+      - --format={{ '{{' }}.Name{{ '}}' }} {{ '{{' }}.TimeNano{{ '}}' }}
+  register: arcane_upgrade_events
+  changed_when: false
+
+- name: "Show the starts and the health result ({{ arcane_upgrade_round.name }})"
+  ansible.builtin.debug:
+    msg:
+      starts: "{{ arcane_upgrade_events.stdout_lines }}"
+      health: "{{ arcane_upgrade_health.json }}"
+      health_attempts: "{{ arcane_upgrade_health.attempts | default(1) }}"
+
+- name: "Assert each container started the expected number of times ({{ arcane_upgrade_round.name }})"
+  vars:
+    arcane_upgrade_started: "{{ arcane_upgrade_events.stdout_lines | map('split', ' ') | map('first') | list }}"
+  ansible.builtin.assert:
+    that:
+      - arcane_upgrade_started | select('equalto', item.key) | list | length == item.value
+    fail_msg: >-
+      {{ item.key }} started {{ arcane_upgrade_started | select('equalto', item.key) | list | length }}
+      time(s), expected {{ item.value }}. Starts: {{ arcane_upgrade_events.stdout_lines }}
+  loop: "{{ arcane_upgrade_round.expected_starts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}={{ item.value }}"
+
+- name: "Assert the units started in dependency order ({{ arcane_upgrade_round.name }})"
+  vars:
+    arcane_upgrade_start_ns: "{{ dict(arcane_upgrade_events.stdout_lines | map('split', ' ')) }}"
+  ansible.builtin.assert:
+    that:
+      - arcane_upgrade_start_ns['arcane-socket-proxy'] | int > arcane_upgrade_start_ns['arcane-postgres'] | int
+      - arcane_upgrade_start_ns['arcane'] | int > arcane_upgrade_start_ns['arcane-socket-proxy'] | int
+    fail_msg: "Start order was wrong: {{ arcane_upgrade_events.stdout_lines }}"
+  when: arcane_upgrade_round.expected_starts.values() | min > 0

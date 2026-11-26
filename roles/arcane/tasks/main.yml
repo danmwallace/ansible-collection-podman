@@ -62,7 +62,7 @@
     mode: "0600"
   become: true
   no_log: true
-  notify: Restart arcane-postgres
+  register: arcane_postgres_env_file
 
 - name: Deploy arcane environment file
   ansible.builtin.template:
@@ -73,7 +73,7 @@
     mode: "0600"
   become: true
   no_log: true
-  notify: Restart arcane
+  register: arcane_env_file
 
 - name: Deploy arcane Quadlet network unit
   ansible.builtin.copy:
@@ -100,7 +100,7 @@
     dest: /etc/containers/systemd/arcane-postgres.container
     mode: "0644"
   become: true
-  notify: Restart arcane-postgres
+  register: arcane_postgres_unit
 
 - name: Deploy arcane-socket-proxy Quadlet container unit
   ansible.builtin.template:
@@ -108,7 +108,7 @@
     dest: /etc/containers/systemd/arcane-socket-proxy.container
     mode: "0644"
   become: true
-  notify: Restart arcane-socket-proxy
+  register: arcane_socket_proxy_unit
 
 - name: Deploy arcane Quadlet container unit
   ansible.builtin.template:
@@ -116,8 +116,15 @@
     dest: /etc/containers/systemd/arcane.container
     mode: "0644"
   become: true
-  notify: Restart arcane
+  register: arcane_unit
 
+# Start and restart in dependency order, each unit at most once per run (#77).
+# Handlers ran postgres -> arcane -> socket-proxy, and because arcane.container
+# has Requires=arcane-socket-proxy.service, restarting the proxy restarted
+# Arcane a second time. Each unit is restarted below only if its own files
+# changed and the start task did not just start it on the new config. A proxy
+# restart already restarts Arcane through Requires=, so Arcane's own restart is
+# skipped then. Arcane is never started before Postgres accepts connections.
 - name: Enable and start arcane-postgres.service
   ansible.builtin.systemd:
     name: arcane-postgres.service
@@ -125,6 +132,37 @@
     state: started
     daemon_reload: true
   become: true
+  register: arcane_postgres_started
+  tags: [molecule-notest]
+
+- name: Ensure arcane-postgres.service runs its changed config
+  ansible.builtin.systemd:
+    name: arcane-postgres.service
+    state: restarted
+  become: true
+  when:
+    - arcane_postgres_env_file is changed or arcane_postgres_unit is changed
+    - arcane_postgres_started is not changed
+  tags: [molecule-notest]
+
+# TCP, not the Unix socket: during first-run initdb the entrypoint's temporary
+# server listens only on the socket, so a socket check would pass too early.
+- name: Ensure arcane-postgres accepts connections before Arcane starts
+  containers.podman.podman_container_exec:
+    name: arcane-postgres
+    argv:
+      - pg_isready
+      - --host=127.0.0.1
+      - --port=5432
+      - --username={{ arcane_postgres_user }}
+      - --dbname={{ arcane_postgres_db }}
+  become: true
+  register: arcane_postgres_ready
+  until: arcane_postgres_ready.rc | default(1) == 0
+  retries: 30
+  delay: 2
+  changed_when: false
+  when: not ansible_check_mode
   tags: [molecule-notest]
 
 - name: Enable and start arcane-socket-proxy.service
@@ -134,6 +172,19 @@
     state: started
     daemon_reload: true
   become: true
+  register: arcane_socket_proxy_started
+  tags: [molecule-notest]
+
+# Requires= makes systemd restart a running arcane.service along with the proxy.
+- name: Ensure arcane-socket-proxy.service (and with it arcane.service) runs its changed config
+  ansible.builtin.systemd:
+    name: arcane-socket-proxy.service
+    state: restarted
+  become: true
+  register: arcane_socket_proxy_restarted
+  when:
+    - arcane_socket_proxy_unit is changed
+    - arcane_socket_proxy_started is not changed
   tags: [molecule-notest]
 
 - name: Enable and start arcane.service
@@ -142,4 +193,16 @@
     enabled: true
     state: started
   become: true
+  register: arcane_started
+  tags: [molecule-notest]
+
+- name: Ensure arcane.service runs its changed config
+  ansible.builtin.systemd:
+    name: arcane.service
+    state: restarted
+  become: true
+  when:
+    - arcane_env_file is changed or arcane_unit is changed
+    - arcane_started is not changed
+    - arcane_socket_proxy_restarted is skipped
   tags: [molecule-notest]
