@@ -7,6 +7,8 @@ and this collection adheres to [Semantic Versioning](https://semver.org/spec/v2.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-26
+
 ### Changed (breaking)
 
 - `arcane`: move to Arcane 3.x, default `v3.1.1` (#61). 2.x installs must run `v2.17.3` once (collection 0.6.x with `arcane_version: v2.17.3`) before upgrading, and back up first; see the role README.
